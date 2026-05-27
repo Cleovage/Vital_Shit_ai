@@ -24,45 +24,39 @@ class DashboardViewModel @Inject constructor(
 
     init {
         loadData()
-        observeLiveSensors()
     }
 
     fun loadData() {
         viewModelScope.launch {
-            _uiState.value = DashboardUiState.Loading
-            try {
-                if (healthConnectManager.hasAllPermissions()) {
-                    val snapshot = repository.getDailySnapshot()
-                    val insight = repository.getAiInsight(snapshot)
-                    val mood = moodRepository.currentMood.value
-                    _uiState.value = DashboardUiState.Success(snapshot, insight, mood)
-                } else {
-                    _uiState.value = DashboardUiState.PermissionsRequired
-                }
-            } catch (e: Exception) {
-                _uiState.value = DashboardUiState.Error(e.message ?: "Unknown error")
+            if (!healthConnectManager.hasAllPermissions()) {
+                _uiState.value = DashboardUiState.PermissionsRequired
+                return@launch
             }
+            
+            repository.healthSnapshotFlow
+                .combine(moodRepository.currentMood) { snapshot, mood ->
+                    val insight = repository.getAiInsight(snapshot)
+                    DashboardUiState.Success(snapshot, insight, mood) as DashboardUiState
+                }
+                .catch { e ->
+                    _uiState.value = DashboardUiState.Error(e.message ?: "Unknown error")
+                }
+                .collect { state ->
+                    _uiState.value = state
+                }
         }
     }
 
     fun getRequiredPermissions() = healthConnectManager.permissions
 
-    private fun observeLiveSensors() {
-        sensorManager.getStepCountFlow()
-            .onEach { steps -> _liveSteps.value = steps.toLong() }
-            .launchIn(viewModelScope)
-    }
-
     fun logWater(oz: Int) {
         viewModelScope.launch {
             repository.logWater(oz * 0.0295735) // convert oz to liters
-            loadData()
         }
     }
 
     fun recordMood(score: Int) {
         moodRepository.recordMood(score)
-        loadData()
     }
 }
 

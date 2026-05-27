@@ -30,7 +30,8 @@ class HealthConnectManager @Inject constructor(
         HealthPermission.getWritePermission(ActiveCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(HydrationRecord::class),
         HealthPermission.getWritePermission(HydrationRecord::class),
-        HealthPermission.getReadPermission(ExerciseSessionRecord::class)
+        HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+        HealthPermission.getReadPermission(DistanceRecord::class)
     )
 
     suspend fun hasAllPermissions(): Boolean {
@@ -133,6 +134,20 @@ class HealthConnectManager @Inject constructor(
             response.records
         } catch (e: Exception) {
             emptyList()
+        }
+    }
+
+    suspend fun readDistance(startTime: Instant, endTime: Instant): Double {
+        return try {
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    DistanceRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            response.records.sumOf { it.distance.inMeters }
+        } catch (e: Exception) {
+            0.0
         }
     }
 

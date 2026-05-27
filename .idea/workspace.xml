@@ -18,30 +18,6 @@
   <component name="ChangeListManager">
     <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="Implement Apex Vitality design system and health data integration&#10;&#10;- Update color palette to &quot;Electric Lime&quot; and technical zinc tones, replacing the previous neon teal theme.&#10;- Replace glassmorphism components with a new &quot;Apex&quot; design language, including `ApexCard` and a technical `ApexNavigationBar`.&#10;- Integrate `HealthConnectManager` to support reading and writing steps, active calories, hydration, and exercise sessions.&#10;- Implement `LiveSensorManager` to provide real-time step count and heart rate data flows using Android hardware sensors.&#10;- Add `MoodRepository` for persisting daily user sentiment via `SharedPreferences`.&#10;- Refactor `DashboardScreen` with a bento-grid layout featuring a calorie progress ring, live metrics, and a mood tracker.&#10;- Update `ActivityScreen` to support manual telemetry input (RPE) and display recent exercise vectors.&#10;- Update `AnalyticsScreen` with daily step trends and muscle recovery metrics.&#10;- Refactor `ProfileScreen` to display body composition metrics and health data source status.&#10;- Simplify typography by transitioning to system font families and updating the `VitaTypography` scale.&#10;- Add required permissions for Health Connect and hardware sensors to `AndroidManifest.xml`.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ProfileScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ProfileScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/hello_aligned.apk" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/hello_aligned.apk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/hello_signed.apk" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/hello_signed.apk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/hello_signed.apk.idsig" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/hello_signed.apk.idsig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/hello_unsigned.apk" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/hello_unsigned.apk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/MainActivity.class" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/MainActivity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/R$layout.class" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/R$layout.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/R$string.class" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/R$string.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/R.class" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/R.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitaai/build/classes.dex" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/classes.dex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/R.class" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/R.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/data/HealthSnapshot.class" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/data/HealthSnapshot.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/ui/MainActivity$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/ui/MainActivity$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/ui/MainActivity$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/ui/MainActivity$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/ui/MainActivity.class" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/ui/MainActivity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitaai/build/vitaai_aligned.apk" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/vitaai_aligned.apk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitaai/build/vitaai_signed.apk" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/vitaai_signed.apk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitaai/build/vitaai_signed.apk.idsig" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/vitaai_signed.apk.idsig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitaai/build/vitaai_unsigned.apk" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/vitaai_unsigned.apk" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,7 +90,7 @@
       <entry key="chat-panel" value="Gemini 3.1 Pro" />
     </selectedModels>
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[PhysicalDevice::serial=9P85BMOJFM6LXWTK]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />

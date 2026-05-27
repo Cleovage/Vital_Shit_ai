@@ -3,6 +3,7 @@ package com.example.vitaai.ui.screens
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vitaai.data.HealthConnectManager
+import com.example.vitaai.data.VitaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,13 +14,22 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
-    private val healthConnectManager: HealthConnectManager
+    private val healthConnectManager: HealthConnectManager,
+    private val repository: VitaRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<AnalyticsUiState>(AnalyticsUiState.Loading)
     val uiState: StateFlow<AnalyticsUiState> = _uiState
+    
+    private val _timeframe = MutableStateFlow(7) // default 7 days
+    val timeframe: StateFlow<Int> = _timeframe
 
     init {
+        loadTrends()
+    }
+    
+    fun setTimeframe(days: Int) {
+        _timeframe.value = days
         loadTrends()
     }
 
@@ -27,9 +37,7 @@ class AnalyticsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = AnalyticsUiState.Loading
             try {
-                val now = Instant.now()
-                val startTime = now.minus(7, ChronoUnit.DAYS)
-                val hourlySteps = healthConnectManager.readHourlySteps(startTime, now)
+                val hourlySteps = repository.getHistoricalSteps(_timeframe.value)
                 
                 // Aggregating by day for simplicity in the chart
                 val dailyTrends = hourlySteps.entries

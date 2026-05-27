@@ -14,14 +14,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.vitaai.ui.components.ApexCard
+import androidx.compose.foundation.clickable
+import com.example.vitaai.ui.components.LuminousLineChart
 import com.example.vitaai.ui.components.AuraBackground
+import com.example.vitaai.ui.components.ApexCard
 import com.example.vitaai.ui.theme.*
 import java.time.Instant
 
 @Composable
 fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
+    val timeframe by viewModel.timeframe.collectAsState()
 
     AuraBackground {
         LazyColumn(
@@ -55,15 +58,14 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                     item { Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = Primary) } }
                 }
                 is AnalyticsUiState.Success -> {
-                    // Time Selector
                     item {
                         Row(
                             modifier = Modifier.fillMaxWidth().height(40.dp).background(SurfaceContainerHigh),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            TimeSelectorItem("WEEK", true, Modifier.weight(1f))
-                            TimeSelectorItem("MONTH", false, Modifier.weight(1f))
-                            TimeSelectorItem("YEAR", false, Modifier.weight(1f))
+                            TimeSelectorItem("WEEK", timeframe == 7, Modifier.weight(1f).clickable { viewModel.setTimeframe(7) })
+                            TimeSelectorItem("MONTH", timeframe == 30, Modifier.weight(1f).clickable { viewModel.setTimeframe(30) })
+                            TimeSelectorItem("YEAR", timeframe == 365, Modifier.weight(1f).clickable { viewModel.setTimeframe(365) })
                         }
                     }
 
@@ -86,7 +88,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                                 
                                 // Real data chart
                                 Row(modifier = Modifier.fillMaxWidth().height(120.dp), horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.Bottom) {
-                                    val maxSteps = (state.dailySteps.values.maxOrNull() ?: 1L).toFloat()
+                                    val maxSteps = (state.dailySteps.values.maxOrNull() ?: 1L).toFloat().coerceAtLeast(1f)
                                     state.dailySteps.forEach { (_, steps) ->
                                         BarItem(steps / maxSteps, Modifier.weight(1f), steps == (state.dailySteps.values.maxOrNull()))
                                     }
@@ -94,54 +96,26 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                             }
                         }
                     }
+
+                    // HRV vs Training Load replaced with actual dynamic Line Chart of step velocity
+                    item {
+                        ApexCard(modifier = Modifier.fillMaxWidth()) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text("ACTIVITY VELOCITY", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                                Text("Load Trends", style = MaterialTheme.typography.titleMedium, color = Primary)
+                                Spacer(modifier = Modifier.height(32.dp))
+                                LuminousLineChart(
+                                    dataPoints = state.dailySteps.values.map { it.toFloat() }.ifEmpty { listOf(0f, 0f) },
+                                    modifier = Modifier.fillMaxWidth().height(160.dp),
+                                    lineColor = Primary,
+                                    glowColor = Primary.copy(alpha = 0.5f)
+                                )
+                            }
+                        }
+                    }
                 }
                 is AnalyticsUiState.Error -> {
                     item { Text("Error: ${state.message}", color = Error) }
-                }
-            }
-
-            // HRV vs Training Load (Simplified static view as HRV data is often sparse)
-            item {
-                ApexCard(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("RECOVERY & STRESS", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                        Text("HRV vs Training Load", style = MaterialTheme.typography.titleMedium, color = Primary)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(modifier = Modifier.size(8.dp).background(Primary))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("HRV (MS)", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Box(modifier = Modifier.size(8.dp).background(Secondary))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("LOAD", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                        }
-                        Spacer(modifier = Modifier.height(48.dp))
-                        Text("Trend Analysis Optimal", color = OnSurfaceVariant, modifier = Modifier.fillMaxWidth(), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
-                    }
-                }
-            }
-
-            // Muscle Recovery
-            item {
-                ApexCard(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Person, contentDescription = null, tint = Primary, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("MUSCLE RECOVERY", style = MaterialTheme.typography.labelMedium, color = Primary)
-                            }
-                            Text("92% Fresh", style = MaterialTheme.typography.labelSmall, color = Primary)
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            RecoveryBar("QUADS", 0.8f)
-                            RecoveryBar("HAMSTRINGS", 0.7f)
-                            RecoveryBar("BACK", 0.4f, Error)
-                            RecoveryBar("CORE", 0.9f)
-                        }
-                    }
                 }
             }
         }

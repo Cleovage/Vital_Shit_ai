@@ -240,7 +240,7 @@ private fun DashboardContent(
                                     Text(text = "BPM", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant, modifier = Modifier.padding(bottom = 2.dp))
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
-                                Sparkline(color = Primary)
+                                Sparkline(data = snapshot.hourlyHeartRate.map { it.toFloat() }, color = Primary)
                             }
                         }
                     }
@@ -260,6 +260,24 @@ private fun DashboardContent(
                         }
                     }
 
+                    // Distance
+                    ApexCard(modifier = Modifier.weight(1f).aspectRatio(4f / 3f)) {
+                        Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.SpaceBetween) {
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Text(text = "DISTANCE", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
+                                Icon(Icons.Default.LocationOn, contentDescription = null, tint = OnSurfaceVariant, modifier = Modifier.size(16.dp))
+                            }
+                            val kilometers = String.format("%.2f", snapshot.distanceMeters / 1000.0)
+                            Row(verticalAlignment = Alignment.Bottom) {
+                                Text(text = kilometers, style = MaterialTheme.typography.headlineMedium, color = Primary, fontWeight = FontWeight.Bold)
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(text = "KM", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant, modifier = Modifier.padding(bottom = 2.dp))
+                            }
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     // Hydration (Workable)
                     ApexCard(modifier = Modifier.weight(1f).aspectRatio(4f / 3f).clickable { viewModel.logWater(8) }) {
                         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.SpaceBetween) {
@@ -278,17 +296,19 @@ private fun DashboardContent(
                             }
                         }
                     }
+                    
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
 
-        // ─── Upcoming Session ──────────────────────────────────────────
+        // ─── Last Completed Session ──────────────────────────────────────────
         item {
             ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
                 Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-                    Text(text = "UPCOMING SESSION", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
+                    Text(text = "QUICK PROTOCOL", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = "HIIT Intervals - 45m", style = MaterialTheme.typography.headlineMedium, color = Primary, fontWeight = FontWeight.Bold)
+                    Text(text = "Start tracking live metrics", style = MaterialTheme.typography.headlineMedium, color = Primary, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = { navController.navigate("session") },
@@ -305,18 +325,27 @@ private fun DashboardContent(
 }
 
 @Composable
-private fun Sparkline(color: Color) {
+private fun Sparkline(data: List<Float>, color: Color) {
     Canvas(modifier = Modifier.fillMaxWidth().height(24.dp)) {
         val w = size.width
         val h = size.height
+
         val path = androidx.compose.ui.graphics.Path().apply {
-            moveTo(0f, h * 0.5f)
-            lineTo(w * 0.2f, h * 0.6f)
-            lineTo(w * 0.4f, h * 0.3f)
-            lineTo(w * 0.5f, h * 0.8f)
-            lineTo(w * 0.6f, h * 0.1f)
-            lineTo(w * 0.8f, h * 0.6f)
-            lineTo(w, h * 0.5f)
+            if (data.isEmpty()) {
+                moveTo(0f, h * 0.5f)
+                lineTo(w, h * 0.5f)
+            } else {
+                val max = data.maxOrNull() ?: 1f
+                val min = data.minOrNull() ?: 0f
+                val range = (max - min).coerceAtLeast(1f)
+                
+                val stepX = w / (data.size - 1).coerceAtLeast(1)
+                
+                moveTo(0f, h - ((data.first() - min) / range * h))
+                for (i in 1 until data.size) {
+                    lineTo(i * stepX, h - ((data[i] - min) / range * h))
+                }
+            }
         }
         drawPath(path = path, color = color, style = Stroke(width = 2.dp.toPx(), join = androidx.compose.ui.graphics.StrokeJoin.Round))
     }

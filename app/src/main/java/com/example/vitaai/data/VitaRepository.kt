@@ -1,5 +1,8 @@
 package com.example.vitaai.data
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -11,12 +14,15 @@ data class HealthSnapshot(
     val sleepDurationHours: Double,
     val calories: Double,
     val hydrationLiters: Double,
-    val hourlySteps: Map<Instant, Long> = emptyMap()
+    val distanceMeters: Double,
+    val hourlySteps: Map<Instant, Long> = emptyMap(),
+    val hourlyHeartRate: List<Long> = emptyList() // Adding for sparkline
 )
 
 @Singleton
 class VitaRepository @Inject constructor(
-    private val healthConnectManager: HealthConnectManager
+    private val healthConnectManager: HealthConnectManager,
+    private val liveSensorManager: LiveSensorManager
 ) {
     suspend fun getDailySnapshot(): HealthSnapshot {
         val now = Instant.now()
@@ -28,16 +34,38 @@ class VitaRepository @Inject constructor(
             now.minus(24, ChronoUnit.HOURS),
             now
         )
-        val calories = healthConnectManager.readDailyCalories(startOfDay, now)
+        var calories = healthConnectManager.readDailyCalories(startOfDay, now)
         val hydration = healthConnectManager.readDailyHydration(startOfDay, now)
         val hourlySteps = healthConnectManager.readHourlySteps(startOfDay, now)
-
+        val distance = healthConnectManager.readDistance(startOfDay, now)
+        
         val avgHr = if (hrSamples.isNotEmpty()) hrSamples.average() else 0.0
         val sleepDuration = sleepSessions.sumOf { 
             java.time.Duration.between(it.startTime, it.endTime).toMinutes() 
         } / 60.0
 
-        return HealthSnapshot(steps, avgHr, sleepDuration, calories, hydration, hourlySteps)
+        if (calories == 0.0 && steps > 0) {
+            // Fallback calorie calculation: roughly ~0.04 kcal per step
+            calories = steps * 0.04
+        }
+
+        return HealthSnapshot(steps, avgHr, sleepDuration, calories, hydration, distance, hourlySteps, hrSamples)
+    }
+
+    val healthSnapshotFlow: Flow<HealthSnapshot> = flow {
+        while (true) {
+            if (healthConnectManager.hasAllPermissions()) {
+                val snapshot = getDailySnapshot()
+                emit(snapshot)
+            }
+            delay(10000) // Refresh every 10 seconds
+        }
+    }
+
+    suspend fun getHistoricalSteps(days: Int): Map<Instant, Long> {
+        val now = Instant.now()
+        val startTime = now.minus(days.toLong(), ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS)
+        return healthConnectManager.readHourlySteps(startTime, now)
     }
 
     suspend fun logWater(liters: Double) {
