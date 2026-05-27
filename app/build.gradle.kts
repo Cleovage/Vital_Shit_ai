@@ -1,4 +1,4 @@
-﻿plugins {
+plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
@@ -60,6 +60,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.animation:animation")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.1")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("com.google.android.material:material:1.12.0")
 

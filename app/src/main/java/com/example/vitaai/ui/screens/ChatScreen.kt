@@ -1,153 +1,241 @@
 package com.example.vitaai.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.rounded.SmartToy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.vitaai.ui.theme.Primary
-import com.example.vitaai.ui.theme.White
+import com.example.vitaai.ui.theme.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     val messages by viewModel.messages.collectAsState()
     var inputText by remember { mutableStateOf("") }
+    val listState = rememberLazyListState()
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "VitaAI",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
+    // Auto-scroll to latest message
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.size - 1)
         }
-    ) { innerPadding ->
-        Column(
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+    ) {
+        // ─── Header ────────────────────────────────────────────────
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            LazyColumn(
+            Box(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
+                    .size(40.dp)
+                    .background(
+                        brush = Brush.linearGradient(
+                            listOf(PrimaryContainer, Secondary)
+                        ),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                items(messages) { message ->
-                    ChatBubbleExpressive(message)
+                Icon(
+                    Icons.Rounded.SmartToy,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(
+                    text = "VitaAI",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = OnSurface,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = "Your health companion",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = OnSurfaceVariant
+                )
+            }
+        }
+
+        // ─── Messages ──────────────────────────────────────────────
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 16.dp),
+            state = listState,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(vertical = 8.dp)
+        ) {
+            items(messages) { message ->
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn()
+                ) {
+                    ChatBubble(message)
                 }
             }
-
-            ChatInputArea(
-                text = inputText,
-                onTextChange = { inputText = it },
-                onSend = {
-                    if (inputText.isNotBlank()) {
-                        viewModel.sendMessage(inputText)
-                        inputText = ""
-                    }
-                }
-            )
         }
+
+        // ─── Input Area ────────────────────────────────────────────
+        ChatInput(
+            text = inputText,
+            onTextChange = { inputText = it },
+            onSend = {
+                if (inputText.isNotBlank()) {
+                    viewModel.sendMessage(inputText)
+                    inputText = ""
+                }
+            }
+        )
     }
 }
 
 @Composable
-fun ChatBubbleExpressive(message: Message) {
+private fun ChatBubble(message: Message) {
     val isUser = message.isUser
     val alignment = if (isUser) Alignment.CenterEnd else Alignment.CenterStart
-    val containerColor = if (isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val contentColor = if (isUser) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-    
+
     val shape = if (isUser) {
         RoundedCornerShape(20.dp, 20.dp, 4.dp, 20.dp)
     } else {
         RoundedCornerShape(20.dp, 20.dp, 20.dp, 4.dp)
     }
 
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = alignment) {
-        Surface(
-            color = containerColor,
-            contentColor = contentColor,
-            shape = shape,
-            modifier = Modifier.widthIn(max = 300.dp),
-            tonalElevation = 2.dp
-        ) {
-            Text(
-                text = message.text,
-                modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.bodyLarge
-            )
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = alignment
+    ) {
+        if (isUser) {
+            // User bubble: teal-to-violet gradient
+            Box(
+                modifier = Modifier
+                    .widthIn(max = 300.dp)
+                    .clip(shape)
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            listOf(PrimaryContainer, Secondary)
+                        ),
+                        shape = shape
+                    )
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = message.text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White
+                )
+            }
+        } else {
+            // AI bubble: glassmorphism style
+            Box(
+                modifier = Modifier
+                    .widthIn(max = 300.dp)
+                    .clip(shape)
+                    .background(
+                        color = GlassFill,
+                        shape = shape
+                    )
+                    .border(
+                        width = 1.dp,
+                        brush = Brush.linearGradient(
+                            listOf(GlassBorderLight, GlassBorderDark)
+                        ),
+                        shape = shape
+                    )
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = message.text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = OnSurface
+                )
+            }
         }
     }
 }
 
 @Composable
-fun ChatInputArea(
+private fun ChatInput(
     text: String,
     onTextChange: (String) -> Unit,
     onSend: () -> Unit
 ) {
-    Surface(
-        tonalElevation = 8.dp,
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(SurfaceContainerLow)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .navigationBarsPadding()
+            .imePadding(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
+        TextField(
+            value = text,
+            onValueChange = onTextChange,
             modifier = Modifier
-                .padding(16.dp)
-                .navigationBarsPadding()
-                .imePadding()
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextField(
-                value = text,
-                onValueChange = onTextChange,
-                modifier = Modifier
-                    .weight(1f)
-                    .heightIn(min = 52.dp),
-                placeholder = { Text("How can I help you today?") },
-                shape = RoundedCornerShape(26.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
+                .weight(1f)
+                .heightIn(min = 48.dp),
+            placeholder = {
+                Text(
+                    "Ask me anything...",
+                    color = OnSurfaceVariant.copy(alpha = 0.6f)
                 )
+            },
+            shape = RoundedCornerShape(24.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = SurfaceContainer,
+                unfocusedContainerColor = SurfaceContainer,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                cursorColor = PrimaryContainer,
+                focusedTextColor = OnSurface,
+                unfocusedTextColor = OnSurface
+            ),
+            singleLine = false,
+            maxLines = 4
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        FloatingActionButton(
+            onClick = onSend,
+            shape = CircleShape,
+            containerColor = PrimaryContainer,
+            contentColor = OnPrimaryContainer,
+            modifier = Modifier.size(48.dp),
+            elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
+        ) {
+            Icon(
+                Icons.AutoMirrored.Rounded.Send,
+                contentDescription = "Send",
+                modifier = Modifier.size(20.dp)
             )
-            Spacer(modifier = Modifier.width(12.dp))
-            FloatingActionButton(
-                onClick = onSend,
-                shape = CircleShape,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(52.dp),
-                elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
-            ) {
-                Icon(Icons.Default.Send, contentDescription = "Send")
-            }
         }
     }
 }

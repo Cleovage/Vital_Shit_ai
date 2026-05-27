@@ -16,7 +16,17 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="Base app" />
+    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="Base app">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ChatScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ChatScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Color.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Color.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Theme.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Theme.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Typography.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Typography.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/themes.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/themes.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -114,12 +124,12 @@
     &quot;assignee&quot;: &quot;Cleovage&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Jyothsna010106/wellbeing.git&quot;,
-    &quot;accountId&quot;: &quot;af8135c0-608f-4eb8-85da-80ab2bae7b3f&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Cleovage/Vital_Shit_ai.git",
+    "accountId": "af8135c0-608f-4eb8-85da-80ab2bae7b3f"
   }
-}</component>
+}]]></component>
   <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="C:\Users\rk107\.gradle\wrapper\dists\gradle-8.13-bin\5xuhj0ry160q40clulazy9h7d\gradle-8.13" javaHome="C:\Program Files\Android\Android Studio\jbr" gradleVersion="8.13">
     <option name="jvmArguments">
       <list>
@@ -175,10 +185,10 @@
     "cidr.known.project.marker": "true",
     "com.google.services.firebase.aqiPopupShown": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
