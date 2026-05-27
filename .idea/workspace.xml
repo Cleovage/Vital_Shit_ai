@@ -16,15 +16,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="Implement Apex Vitality design system and health data integration&#10;&#10;- Update color palette to &quot;Electric Lime&quot; and technical zinc tones, replacing the previous neon teal theme.&#10;- Replace glassmorphism components with a new &quot;Apex&quot; design language, including `ApexCard` and a technical `ApexNavigationBar`.&#10;- Integrate `HealthConnectManager` to support reading and writing steps, active calories, hydration, and exercise sessions.&#10;- Implement `LiveSensorManager` to provide real-time step count and heart rate data flows using Android hardware sensors.&#10;- Add `MoodRepository` for persisting daily user sentiment via `SharedPreferences`.&#10;- Refactor `DashboardScreen` with a bento-grid layout featuring a calorie progress ring, live metrics, and a mood tracker.&#10;- Update `ActivityScreen` to support manual telemetry input (RPE) and display recent exercise vectors.&#10;- Update `AnalyticsScreen` with daily step trends and muscle recovery metrics.&#10;- Refactor `ProfileScreen` to display body composition metrics and health data source status.&#10;- Simplify typography by transitioning to system font families and updating the `VitaTypography` scale.&#10;- Add required permissions for Health Connect and hardware sensors to `AndroidManifest.xml`.">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/HealthConnectManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/HealthConnectManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/VitaRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/VitaRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardViewModel.kt" afterDir="false" />
-    </list>
+    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="Implement Apex Vitality design system and health data integration&#10;&#10;- Update color palette to &quot;Electric Lime&quot; and technical zinc tones, replacing the previous neon teal theme.&#10;- Replace glassmorphism components with a new &quot;Apex&quot; design language, including `ApexCard` and a technical `ApexNavigationBar`.&#10;- Integrate `HealthConnectManager` to support reading and writing steps, active calories, hydration, and exercise sessions.&#10;- Implement `LiveSensorManager` to provide real-time step count and heart rate data flows using Android hardware sensors.&#10;- Add `MoodRepository` for persisting daily user sentiment via `SharedPreferences`.&#10;- Refactor `DashboardScreen` with a bento-grid layout featuring a calorie progress ring, live metrics, and a mood tracker.&#10;- Update `ActivityScreen` to support manual telemetry input (RPE) and display recent exercise vectors.&#10;- Update `AnalyticsScreen` with daily step trends and muscle recovery metrics.&#10;- Refactor `ProfileScreen` to display body composition metrics and health data source status.&#10;- Simplify typography by transitioning to system font families and updating the `VitaTypography` scale.&#10;- Add required permissions for Health Connect and hardware sensors to `AndroidManifest.xml`." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -208,7 +200,7 @@
     "cidr.known.project.marker": "true",
     "com.google.services.firebase.aqiPopupShown": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "e98a97ad",
+    "git-widget-placeholder": "8996b5b5",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "settings.editor.selected.configurable": "templates.modelproviders.configurable",
