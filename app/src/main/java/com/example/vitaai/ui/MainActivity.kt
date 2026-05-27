@@ -19,10 +19,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.vitaai.ui.screens.*
 import com.example.vitaai.ui.theme.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,6 +67,15 @@ fun VitaApp() {
             composable("profile") { ProfileScreen() }
             composable("session") { SessionScreen(navController = navController) }
             composable("history") { HistoryScreen(navController = navController) }
+            composable(
+                route = "metric/{metricRoute}",
+                arguments = listOf(navArgument("metricRoute") { type = NavType.StringType })
+            ) { backStackEntry ->
+                MetricDetailScreen(
+                    navController = navController,
+                    metricRoute = backStackEntry.arguments?.getString("metricRoute")
+                )
+            }
         }
     }
 }

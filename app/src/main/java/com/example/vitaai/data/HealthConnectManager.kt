@@ -6,14 +6,19 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.*
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
-import androidx.health.connect.client.units.Energy
 import androidx.health.connect.client.units.Volume
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Instant
-import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import javax.inject.Singleton
+
+data class NutritionTotals(
+    val calories: Double = 0.0,
+    val proteinGrams: Double = 0.0,
+    val carbsGrams: Double = 0.0,
+    val fatGrams: Double = 0.0
+)
 
 @Singleton
 class HealthConnectManager @Inject constructor(
@@ -21,22 +26,26 @@ class HealthConnectManager @Inject constructor(
 ) {
     private val healthConnectClient by lazy { HealthConnectClient.getOrCreate(context) }
 
-    val permissions = setOf(
+    val requiredPermissions = setOf(
         HealthPermission.getReadPermission(StepsRecord::class),
-        HealthPermission.getWritePermission(StepsRecord::class),
         HealthPermission.getReadPermission(HeartRateRecord::class),
-        HealthPermission.getReadPermission(SleepSessionRecord::class),
-        HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(SleepSessionRecord::class)
+    )
+
+    val permissions = requiredPermissions + setOf(
+        HealthPermission.getWritePermission(StepsRecord::class),
         HealthPermission.getWritePermission(ActiveCaloriesBurnedRecord::class),
-        HealthPermission.getReadPermission(HydrationRecord::class),
         HealthPermission.getWritePermission(HydrationRecord::class),
-        HealthPermission.getReadPermission(ExerciseSessionRecord::class),
-        HealthPermission.getReadPermission(DistanceRecord::class)
+        HealthPermission.getReadPermission(NutritionRecord::class)
     )
 
     suspend fun hasAllPermissions(): Boolean {
         val granted = healthConnectClient.permissionController.getGrantedPermissions()
-        return granted.containsAll(permissions)
+        return granted.containsAll(requiredPermissions)
+    }
+
+    suspend fun getGrantedPermissions(): Set<String> {
+        return healthConnectClient.permissionController.getGrantedPermissions()
     }
 
     suspend fun readDailySteps(startTime: Instant, endTime: Instant): Long {
@@ -113,11 +122,12 @@ class HealthConnectManager @Inject constructor(
 
     suspend fun writeHydration(liters: Double) {
         val now = Instant.now()
+        val zoneOffset = java.time.ZoneId.systemDefault().rules.getOffset(now)
         val record = HydrationRecord(
             startTime = now,
             endTime = now,
-            startZoneOffset = java.time.ZoneOffset.systemDefault().rules.getOffset(now),
-            endZoneOffset = java.time.ZoneOffset.systemDefault().rules.getOffset(now),
+            startZoneOffset = zoneOffset,
+            endZoneOffset = zoneOffset,
             volume = Volume.liters(liters)
         )
         healthConnectClient.insertRecords(listOf(record))
@@ -164,6 +174,51 @@ class HealthConnectManager @Inject constructor(
                 .mapValues { (_, records) -> records.sumOf { it.count } }
         } catch (e: Exception) {
             emptyMap()
+        }
+    }
+
+    suspend fun readHourlyHeartRate(startTime: Instant, endTime: Instant): Map<Instant, Double> {
+        return try {
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    HeartRateRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            response.records
+                .flatMap { record -> record.samples }
+                .groupBy { sample -> sample.time.truncatedTo(ChronoUnit.HOURS) }
+                .mapValues { (_, samples) -> samples.map { it.beatsPerMinute.toDouble() }.average() }
+        } catch (e: Exception) {
+            emptyMap()
+        }
+    }
+
+    suspend fun readDailyNutrition(startTime: Instant, endTime: Instant): NutritionTotals {
+        return try {
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    NutritionRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            response.records.fold(NutritionTotals()) { acc, record ->
+                NutritionTotals(
+                    calories = acc.calories + (record.energy?.inKilocalories ?: 0.0),
+                    proteinGrams = acc.proteinGrams + (record.protein?.inGrams ?: 0.0),
+                    carbsGrams = acc.carbsGrams + (record.totalCarbohydrate?.inGrams ?: 0.0),
+                    fatGrams = acc.fatGrams + (record.totalFat?.inGrams ?: 0.0)
+                )
+            }
+        } catch (e: Exception) {
+            NutritionTotals()
+        }
+    }
+
+    suspend fun readDailyExerciseMinutes(startTime: Instant, endTime: Instant): Double {
+        val sessions = readExerciseSessions(startTime, endTime)
+        return sessions.sumOf { session ->
+            java.time.Duration.between(session.startTime, session.endTime).toMinutes().toDouble()
         }
     }
 }

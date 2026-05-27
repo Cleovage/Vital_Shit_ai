@@ -1,35 +1,74 @@
 package com.example.vitaai.ui.screens
 
+import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.LocalDrink
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.PieChart
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material.icons.filled.Straighten
+import androidx.compose.material.icons.filled.Timeline
+import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.health.connect.client.PermissionController
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.health.connect.client.PermissionController
+import com.example.vitaai.data.HealthDataSource
+import com.example.vitaai.data.HealthMetricType
 import com.example.vitaai.data.HealthSnapshot
 import com.example.vitaai.data.MoodEntry
+import com.example.vitaai.data.PrimaryDashboardMetrics
 import com.example.vitaai.ui.components.ApexCard
 import com.example.vitaai.ui.components.AuraBackground
-import com.example.vitaai.ui.theme.*
+import com.example.vitaai.ui.theme.Error
+import com.example.vitaai.ui.theme.OnPrimary
+import com.example.vitaai.ui.theme.OnSurfaceVariant
+import com.example.vitaai.ui.theme.OutlineVariant
+import com.example.vitaai.ui.theme.Primary
+import com.example.vitaai.ui.theme.SurfaceContainerHigh
+import java.util.Locale
+import kotlin.math.roundToInt
 
 @Composable
 fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel = hiltViewModel()) {
@@ -44,10 +83,17 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
                 }
             }
             is DashboardUiState.PermissionsRequired -> {
-                PermissionsScreen(viewModel)
+                PermissionsScreen(viewModel = viewModel)
             }
             is DashboardUiState.Success -> {
-                DashboardContent(state.snapshot, state.insight, state.mood, liveSteps, viewModel, navController)
+                DashboardContent(
+                    snapshot = state.snapshot,
+                    insight = state.insight,
+                    mood = state.mood,
+                    liveSteps = liveSteps,
+                    viewModel = viewModel,
+                    navController = navController
+                )
             }
             is DashboardUiState.Error -> {
                 Box(modifier = Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
@@ -60,19 +106,16 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
 
 @Composable
 private fun PermissionsScreen(viewModel: DashboardViewModel) {
-    val healthConnectContract = PermissionController.createRequestPermissionResultContract()
-    
-    val launcher = rememberLauncherForActivityResult(contract = healthConnectContract) { granted ->
-        if (granted.containsAll(viewModel.getRequiredPermissions())) {
-            viewModel.loadData()
-        }
+    val healthConnectLauncher = rememberLauncherForActivityResult(
+        contract = PermissionController.createRequestPermissionResultContract()
+    ) { grantedPermissions ->
+        viewModel.onPermissionsResult(grantedPermissions)
     }
-    
-    val sensorLauncher = rememberLauncherForActivityResult(
-        contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+
+    val activityRecognitionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
     ) {
-        // Just launch health connect after asking for sensor
-        launcher.launch(viewModel.getRequiredPermissions())
+        healthConnectLauncher.launch(viewModel.getRequestedPermissions())
     }
 
     Column(
@@ -84,12 +127,14 @@ private fun PermissionsScreen(viewModel: DashboardViewModel) {
         Spacer(modifier = Modifier.height(24.dp))
         Text("Connect to Health Data", style = MaterialTheme.typography.headlineSmall, color = Primary)
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Apex Vitality needs access to your physical activity and health metrics to optimize your performance.", textAlign = androidx.compose.ui.text.style.TextAlign.Center, color = OnSurfaceVariant)
+        Text(
+            text = "VitaAI needs health permissions to sync your Samsung Health and Google/Fitbit connected data.",
+            textAlign = TextAlign.Center,
+            color = OnSurfaceVariant
+        )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
-            onClick = {
-                sensorLauncher.launch(android.Manifest.permission.ACTIVITY_RECOGNITION)
-            },
+            onClick = { activityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION) },
             colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = OnPrimary)
         ) {
             Text("GRANT ACCESS")
@@ -108,9 +153,8 @@ private fun DashboardContent(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().statusBarsPadding(),
-        contentPadding = PaddingValues(bottom = 24.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // ─── Header ────────────────────────────────────────────────────
         item {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp),
@@ -128,7 +172,7 @@ private fun DashboardContent(
                     )
                 }
                 Box(
-                    modifier = Modifier.size(32.dp).clip(CircleShape).background(SurfaceContainerHigh).border(1.dp, OutlineVariant, CircleShape),
+                    modifier = Modifier.size(32.dp).clip(MaterialTheme.shapes.small).background(SurfaceContainerHigh).border(1.dp, OutlineVariant, MaterialTheme.shapes.small),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(Icons.Default.Person, contentDescription = "Profile", tint = Primary)
@@ -137,33 +181,28 @@ private fun DashboardContent(
             HorizontalDivider(color = OutlineVariant.copy(alpha = 0.5f))
         }
 
-        // ─── Mood Tracker Section ──────────────────────────────────────
         item {
-            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp)) {
+            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("HOW ARE YOU FEELING?", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        for (i in 1..5) {
-                            val isSelected = mood?.score == i * 2
+                        val labels = listOf("1", "2", "3", "4", "5")
+                        labels.forEachIndexed { index, label ->
+                            val score = (index + 1) * 2
+                            val selected = mood?.score == score
                             Box(
                                 modifier = Modifier
                                     .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(if (isSelected) Primary else SurfaceContainerHigh)
-                                    .clickable { viewModel.recordMood(i * 2) },
+                                    .clip(MaterialTheme.shapes.small)
+                                    .background(if (selected) Primary else SurfaceContainerHigh)
+                                    .clickable { viewModel.recordMood(score) },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = when(i) {
-                                        1 -> "😫"
-                                        2 -> "😕"
-                                        3 -> "😐"
-                                        4 -> "🙂"
-                                        5 -> "🤩"
-                                        else -> ""
-                                    },
-                                    fontSize = 20.sp
+                                    text = label,
+                                    color = if (selected) OnPrimary else Primary,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
@@ -172,137 +211,81 @@ private fun DashboardContent(
             }
         }
 
-        // ─── Insight Context ───────────────────────────────────────────
         item {
-            Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
-                Text(text = "Today's Focus", style = MaterialTheme.typography.headlineLarge, color = Primary, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = insight, style = MaterialTheme.typography.bodyMedium, color = OnSurfaceVariant)
-            }
-        }
-
-        // ─── Hero Ring (Active Calories) ───────────────────────────────
-        item {
-            Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp), contentAlignment = Alignment.Center) {
-                ApexCard(modifier = Modifier.aspectRatio(1f).widthIn(max = 320.dp)) {
-                    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-                        Text(text = "ACTIVE CALORIES", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
-                        Box(modifier = Modifier.fillMaxSize().padding(top = 16.dp), contentAlignment = Alignment.Center) {
-                        val progress = (snapshot.calories / 1000.0).coerceIn(0.0, 1.0).toFloat()
-                            Canvas(modifier = Modifier.size(200.dp)) {
-                                val strokeWidth = 6.dp.toPx()
-                                drawArc(color = SurfaceContainerHighest, startAngle = 0f, sweepAngle = 360f, useCenter = false, style = Stroke(width = strokeWidth))
-                                drawArc(color = Primary, startAngle = -90f, sweepAngle = 360f * progress, useCenter = false, style = Stroke(width = strokeWidth, cap = StrokeCap.Square))
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(text = snapshot.calories.toInt().toString(), style = MaterialTheme.typography.displayLarge, color = Primary, fontWeight = FontWeight.Bold, letterSpacing = (-1).sp)
-                                Text(text = "KCAL", style = MaterialTheme.typography.labelMedium, color = Primary, letterSpacing = 1.sp)
-                            }
-                        }
-                    }
+            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("TODAY'S FOCUS", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = insight, style = MaterialTheme.typography.bodyMedium, color = Primary)
                 }
             }
         }
 
-        // ─── Bento Grid ────────────────────────────────────────────────
         item {
-            Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // Steps (Live + Health Connect)
-                    val displaySteps = if (liveSteps > snapshot.steps) liveSteps else snapshot.steps
-                    ApexCard(modifier = Modifier.weight(1f).aspectRatio(4f / 3f)) {
-                        Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.SpaceBetween) {
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(text = "STEPS", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
-                                Icon(Icons.Default.Person, contentDescription = null, tint = OnSurfaceVariant, modifier = Modifier.size(16.dp))
-                            }
-                            Column {
-                                Text(text = displaySteps.toString(), style = MaterialTheme.typography.headlineMedium, color = Primary, fontWeight = FontWeight.Bold)
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Box(modifier = Modifier.fillMaxWidth().height(2.dp).background(SurfaceContainerHighest)) {
-                                    Box(modifier = Modifier.fillMaxWidth((displaySteps / 10000f).coerceIn(0f, 1f)).height(2.dp).background(Primary))
-                                }
-                            }
-                        }
-                    }
+            Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)) {
+                Text(
+                    text = "SYNCED METRICS",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Primary,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Tap any tile to open complete charts, source coverage, and metric details.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = OnSurfaceVariant
+                )
+            }
+        }
 
-                    // Heart Rate
-                    ApexCard(modifier = Modifier.weight(1f).aspectRatio(4f / 3f)) {
-                        Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.SpaceBetween) {
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(text = "HEART RATE", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
-                                Icon(Icons.Default.Favorite, contentDescription = null, tint = Error, modifier = Modifier.size(16.dp))
-                            }
-                            Column {
-                                Row(verticalAlignment = Alignment.Bottom) {
-                                    Text(text = snapshot.avgHeartRate.toInt().toString(), style = MaterialTheme.typography.headlineMedium, color = Primary, fontWeight = FontWeight.Bold)
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(text = "BPM", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant, modifier = Modifier.padding(bottom = 2.dp))
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Sparkline(data = snapshot.hourlyHeartRate.map { it.toFloat() }, color = Primary)
-                            }
-                        }
+        PrimaryDashboardMetrics.chunked(2).forEach { rowMetrics ->
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    rowMetrics.forEach { metric ->
+                        MetricTile(
+                            metric = metric,
+                            snapshot = snapshot,
+                            liveSteps = liveSteps,
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("metric/${metric.route}") }
+                        )
                     }
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // Sleep
-                    ApexCard(modifier = Modifier.weight(1f).aspectRatio(4f / 3f)) {
-                        Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.SpaceBetween) {
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(text = "SLEEP", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
-                                Icon(Icons.Default.Star, contentDescription = null, tint = OnSurfaceVariant, modifier = Modifier.size(16.dp))
-                            }
-                            val hours = snapshot.sleepDurationHours.toInt()
-                            val minutes = ((snapshot.sleepDurationHours - hours) * 60).toInt()
-                            Text(text = "${hours}h ${minutes}m", style = MaterialTheme.typography.headlineMedium, color = Primary, fontWeight = FontWeight.Bold)
-                        }
+                    if (rowMetrics.size == 1) {
+                        Spacer(modifier = Modifier.weight(1f))
                     }
-
-                    // Distance
-                    ApexCard(modifier = Modifier.weight(1f).aspectRatio(4f / 3f)) {
-                        Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.SpaceBetween) {
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(text = "DISTANCE", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
-                                Icon(Icons.Default.LocationOn, contentDescription = null, tint = OnSurfaceVariant, modifier = Modifier.size(16.dp))
-                            }
-                            val kilometers = String.format("%.2f", snapshot.distanceMeters / 1000.0)
-                            Row(verticalAlignment = Alignment.Bottom) {
-                                Text(text = kilometers, style = MaterialTheme.typography.headlineMedium, color = Primary, fontWeight = FontWeight.Bold)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = "KM", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant, modifier = Modifier.padding(bottom = 2.dp))
-                            }
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // Hydration (Workable)
-                    ApexCard(modifier = Modifier.weight(1f).aspectRatio(4f / 3f).clickable { viewModel.logWater(8) }) {
-                        Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.SpaceBetween) {
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(text = "HYDRATION", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
-                                Icon(Icons.Default.Add, contentDescription = null, tint = Primary, modifier = Modifier.size(16.dp))
-                            }
-                            Column {
-                                Row(verticalAlignment = Alignment.Bottom) {
-                                    val oz = (snapshot.hydrationLiters * 33.814).toInt()
-                                    Text(text = oz.toString(), style = MaterialTheme.typography.headlineMedium, color = Primary, fontWeight = FontWeight.Bold)
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(text = "OZ", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant, modifier = Modifier.padding(bottom = 2.dp))
-                                }
-                                Text("+ LOG 8oz", style = MaterialTheme.typography.labelSmall, color = Primary.copy(alpha = 0.7f))
-                            }
-                        }
-                    }
-                    
-                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
 
-        // ─── Last Completed Session ──────────────────────────────────────────
+        item {
+            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 4.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("FULL TRACKABLE CATALOG", style = MaterialTheme.typography.titleMedium, color = Primary, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Samsung Health + Google Health/Fitbit + VitaAI coverage",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = OnSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Enable sync for Samsung Health and Fitbit inside Health Connect app permissions.",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = OnSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    HealthMetricType.entries.forEach { metric ->
+                        CatalogRow(
+                            metric = metric,
+                            onClick = { navController.navigate("metric/${metric.route}") }
+                        )
+                    }
+                }
+            }
+        }
+
         item {
             ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
                 Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
@@ -321,32 +304,130 @@ private fun DashboardContent(
                 }
             }
         }
+
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
+        }
     }
 }
 
 @Composable
-private fun Sparkline(data: List<Float>, color: Color) {
-    Canvas(modifier = Modifier.fillMaxWidth().height(24.dp)) {
-        val w = size.width
-        val h = size.height
+private fun MetricTile(
+    metric: HealthMetricType,
+    snapshot: HealthSnapshot,
+    liveSteps: Long,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val value = metricPrimaryValue(metric, snapshot, liveSteps)
+    val subValue = metricSecondaryValue(metric)
+    val icon = metricIcon(metric)
 
-        val path = androidx.compose.ui.graphics.Path().apply {
-            if (data.isEmpty()) {
-                moveTo(0f, h * 0.5f)
-                lineTo(w, h * 0.5f)
-            } else {
-                val max = data.maxOrNull() ?: 1f
-                val min = data.minOrNull() ?: 0f
-                val range = (max - min).coerceAtLeast(1f)
-                
-                val stepX = w / (data.size - 1).coerceAtLeast(1)
-                
-                moveTo(0f, h - ((data.first() - min) / range * h))
-                for (i in 1 until data.size) {
-                    lineTo(i * stepX, h - ((data[i] - min) / range * h))
+    ApexCard(
+        modifier = modifier
+            .aspectRatio(1.15f)
+            .clickable(onClick = onClick)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(14.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = metric.shortLabel.uppercase(Locale.US),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = OnSurfaceVariant
+                )
+                Icon(icon, contentDescription = metric.title, tint = Primary, modifier = Modifier.size(16.dp))
+            }
+            Column {
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Primary,
+                    fontWeight = FontWeight.Bold
+                )
+                if (subValue.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = subValue, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
                 }
             }
         }
-        drawPath(path = path, color = color, style = Stroke(width = 2.dp.toPx(), join = androidx.compose.ui.graphics.StrokeJoin.Round))
+    }
+}
+
+@Composable
+private fun CatalogRow(metric: HealthMetricType, onClick: () -> Unit) {
+    val sourceLabel = metric.sources.joinToString(" | ") { source ->
+        when (source) {
+            HealthDataSource.SAMSUNG_HEALTH -> "Samsung"
+            HealthDataSource.GOOGLE_HEALTH_FITBIT -> "Google/Fitbit"
+            HealthDataSource.VITA_AI -> "VitaAI"
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 8.dp)
+    ) {
+        Text(text = metric.title, style = MaterialTheme.typography.bodyMedium, color = Primary, fontWeight = FontWeight.SemiBold)
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(text = sourceLabel, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+    }
+}
+
+private fun metricPrimaryValue(metric: HealthMetricType, snapshot: HealthSnapshot, liveSteps: Long): String {
+    return when (metric) {
+        HealthMetricType.ACTIVE_CALORIES -> snapshot.calories.roundToInt().toString()
+        HealthMetricType.STEPS -> maxOf(snapshot.steps, liveSteps).toString()
+        HealthMetricType.HEART_RATE -> if (snapshot.avgHeartRate > 0) snapshot.avgHeartRate.roundToInt().toString() else "--"
+        HealthMetricType.SLEEP -> String.format(Locale.US, "%.1f", snapshot.sleepDurationHours)
+        HealthMetricType.DISTANCE -> String.format(Locale.US, "%.2f", snapshot.distanceMeters / 1000.0)
+        HealthMetricType.HYDRATION -> String.format(Locale.US, "%.2f", snapshot.hydrationLiters)
+        HealthMetricType.EXERCISE_MINUTES -> snapshot.exerciseMinutes.roundToInt().toString()
+        HealthMetricType.CALORIES_INTAKE -> snapshot.caloriesIntake.roundToInt().toString()
+        HealthMetricType.PROTEIN -> snapshot.proteinGrams.roundToInt().toString()
+        HealthMetricType.CARBOHYDRATE -> snapshot.carbsGrams.roundToInt().toString()
+        HealthMetricType.FAT -> snapshot.fatGrams.roundToInt().toString()
+        else -> "0"
+    }
+}
+
+private fun metricSecondaryValue(metric: HealthMetricType): String {
+    return when (metric) {
+        HealthMetricType.SLEEP -> "hours"
+        HealthMetricType.DISTANCE -> "km today"
+        HealthMetricType.HYDRATION -> "liters today"
+        HealthMetricType.HEART_RATE -> "avg bpm"
+        HealthMetricType.EXERCISE_MINUTES -> "minutes today"
+        HealthMetricType.CALORIES_INTAKE -> "kcal consumed"
+        HealthMetricType.PROTEIN, HealthMetricType.CARBOHYDRATE, HealthMetricType.FAT -> "grams today"
+        else -> "${metric.unit} today"
+    }
+}
+
+private fun metricIcon(metric: HealthMetricType): ImageVector {
+    return when (metric) {
+        HealthMetricType.ACTIVE_CALORIES -> Icons.Default.Bolt
+        HealthMetricType.STEPS -> Icons.Default.DirectionsRun
+        HealthMetricType.HEART_RATE -> Icons.Default.Favorite
+        HealthMetricType.SLEEP -> Icons.Default.Timeline
+        HealthMetricType.DISTANCE -> Icons.Default.LocationOn
+        HealthMetricType.HYDRATION -> Icons.Default.LocalDrink
+        HealthMetricType.EXERCISE_MINUTES -> Icons.Default.Timeline
+        HealthMetricType.CALORIES_INTAKE -> Icons.Default.Restaurant
+        HealthMetricType.PROTEIN -> Icons.Default.ShowChart
+        HealthMetricType.CARBOHYDRATE -> Icons.Default.PieChart
+        HealthMetricType.FAT -> Icons.Default.WaterDrop
+        HealthMetricType.RESTING_HEART_RATE -> Icons.Default.Favorite
+        HealthMetricType.HEART_RATE_VARIABILITY -> Icons.Default.ShowChart
+        HealthMetricType.BLOOD_OXYGEN -> Icons.Default.Favorite
+        HealthMetricType.RESPIRATORY_RATE -> Icons.Default.Timeline
+        HealthMetricType.SKIN_TEMPERATURE -> Icons.Default.Timeline
+        HealthMetricType.BODY_WEIGHT -> Icons.Default.Straighten
+        HealthMetricType.BODY_FAT -> Icons.Default.PieChart
+        HealthMetricType.BLOOD_GLUCOSE -> Icons.Default.ShowChart
     }
 }
