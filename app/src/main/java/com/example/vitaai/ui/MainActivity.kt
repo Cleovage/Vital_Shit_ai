@@ -58,11 +58,13 @@ fun VitaApp() {
             startDestination = "dashboard",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("dashboard") { DashboardScreen() }
-            composable("activity") { ActivityScreen() }
+            composable("dashboard") { DashboardScreen(navController = navController) }
+            composable("activity") { ActivityScreen(navController = navController) }
             composable("chat") { ChatScreen() }
             composable("analytics") { AnalyticsScreen() }
             composable("profile") { ProfileScreen() }
+            composable("session") { SessionScreen(navController = navController) }
+            composable("history") { HistoryScreen(navController = navController) }
         }
     }
 }

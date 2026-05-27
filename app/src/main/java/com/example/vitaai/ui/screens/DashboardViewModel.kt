@@ -45,6 +45,8 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    fun getRequiredPermissions() = healthConnectManager.permissions
+
     private fun observeLiveSensors() {
         sensorManager.getStepCountFlow()
             .onEach { steps -> _liveSteps.value = steps.toLong() }

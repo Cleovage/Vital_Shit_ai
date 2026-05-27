@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Apex Vitality - Workout Logger</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400..700;1,400..700&amp;family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#201f22",
+                        "surface-container-low": "#1c1b1d",
+                        "on-tertiary": "#303037",
+                        "background": "#131315",
+                        "tertiary-container": "#e3e1ea",
+                        "on-tertiary-container": "#64646b",
+                        "surface-bright": "#39393b",
+                        "on-tertiary-fixed-variant": "#46464d",
+                        "tertiary-fixed-dim": "#c7c5ce",
+                        "on-error": "#690005",
+                        "primary-fixed-dim": "#b0d500",
+                        "tertiary-fixed": "#e3e1ea",
+                        "surface-container-highest": "#353437",
+                        "on-surface-variant": "#c5c9ac",
+                        "inverse-on-surface": "#313032",
+                        "on-primary-container": "#596c00",
+                        "secondary-container": "#47464a",
+                        "secondary-fixed-dim": "#c8c6c9",
+                        "on-primary-fixed-variant": "#3e4c00",
+                        "surface-variant": "#353437",
+                        "error": "#ffb4ab",
+                        "surface-dim": "#131315",
+                        "on-secondary-fixed-variant": "#47464a",
+                        "inverse-primary": "#536600",
+                        "surface-container-lowest": "#0e0e10",
+                        "outline": "#8f9378",
+                        "inverse-surface": "#e5e1e4",
+                        "surface-tint": "#b0d500",
+                        "on-surface": "#e5e1e4",
+                        "error-container": "#93000a",
+                        "primary-container": "#caf300",
+                        "secondary": "#c8c6c9",
+                        "secondary-fixed": "#e4e1e5",
+                        "on-tertiary-fixed": "#1b1b21",
+                        "primary-fixed": "#caf300",
+                        "on-background": "#e5e1e4",
+                        "on-primary-fixed": "#171e00",
+                        "surface-container-high": "#2a2a2c",
+                        "on-secondary-container": "#b6b4b8",
+                        "outline-variant": "#444932",
+                        "surface": "#131315",
+                        "tertiary": "#ffffff",
+                        "on-error-container": "#ffdad6",
+                        "on-primary": "#2a3400",
+                        "on-secondary": "#303033",
+                        "primary": "#ffffff",
+                        "on-secondary-fixed": "#1b1b1e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit-4": "16px",
+                        "unit-1": "4px",
+                        "unit-6": "24px",
+                        "unit-2": "8px",
+                        "unit-8": "32px",
+                        "container-margin": "20px",
+                        "base": "4px",
+                        "gutter": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Archivo Narrow"],
+                        "label-md": ["Geist"],
+                        "body-md": ["Geist"],
+                        "display-lg": ["Archivo Narrow"],
+                        "headline-lg": ["Archivo Narrow"],
+                        "body-lg": ["Geist"],
+                        "display-sm": ["Archivo Narrow"],
+                        "display-lg-mobile": ["Archivo Narrow"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display-sm": ["36px", { "lineHeight": "1.1", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "1.1", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 2px;
+            background: #caf300;
+            cursor: pointer;
+            margin-top: -6px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #444932;
+            border-radius: 2px;
+        }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<header class="w-full top-0 sticky bg-background border-b border-outline-variant flex justify-between items-center px-container-margin py-unit-4 z-40">
+<div class="flex items-center gap-unit-2 text-primary hover:opacity-80 transition-opacity active:scale-95 duration-100 cursor-pointer">
+<span class="material-symbols-outlined font-display-sm text-display-sm">monitoring</span>
+<span class="font-display-sm text-display-sm uppercase tracking-tighter">APEX VITALITY</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant overflow-hidden cursor-pointer active:scale-95 transition-transform duration-100">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="A close up, high contrast profile portrait of a focused male athlete. The lighting is harsh and dramatic, highlighting sweat and determination against a stark, pure black background. The aesthetic matches a high-performance, intense fitness application interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGDX3LDAL3hvIyLpFOKwkZ_JLpJTDl89KaEF3gVBWHz7Uzks-XMXo95SdJ36GnQj-IHMwDNWhafSKJo0cpD_mvC-K_p_60ZjUnXU_oITRkvmjlZs9LKxBeuHmRrbprgpdnk6iRSZk7CalY9--Hkbx-PImM0AQCJSKWNiPCWvOZYPdBOUi2ONKFL00Dy6CDAnz3qu3NKbdzZpGCP8fVfDDWDjArwsJjrvcd7mSm7yo1W0RyGvKCGR6lAiUn553uW417p1XtCTSfAAWL"/>
+</div>
+</header>
+<main class="flex-1 flex flex-col pb-24 max-w-7xl mx-auto w-full">
+<section class="px-container-margin pt-unit-6 pb-unit-4">
+<button class="w-full bg-primary-container text-on-primary-container rounded-DEFAULT py-unit-4 flex items-center justify-center gap-unit-2 font-headline-md text-headline-md uppercase tracking-wide hover:opacity-90 active:scale-95 transition-all duration-150 border border-transparent focus:outline-none focus:ring-2 focus:ring-primary-fixed focus:ring-offset-2 focus:ring-offset-background rounded-none">
+<span class="material-symbols-outlined">timer</span>
+                INITIATE OPEN SESSION
+            </button>
+</section>
+<section class="px-container-margin py-unit-4">
+<div class="flex items-center justify-between mb-unit-4 border-b border-outline-variant pb-unit-2">
+<h2 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Pre-Workout Checklist [Ready Check]</h2>
+</div>
+<div class="grid grid-cols-3 gap-unit-2">
+<label class="flex flex-col gap-unit-2 bg-surface-container border border-outline-variant p-unit-2 cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-[10px] text-outline uppercase">Hydration</span>
+<input class="rounded-none border-outline bg-transparent text-primary-fixed focus:ring-0 focus:ring-offset-0 w-4 h-4" type="checkbox"/>
+</div>
+<span class="text-primary font-label-md uppercase text-[10px] tracking-tighter">Electrolyte Balance</span>
+</label>
+<label class="flex flex-col gap-unit-2 bg-surface-container border border-outline-variant p-unit-2 cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-[10px] text-outline uppercase">Sleep</span>
+<input class="rounded-none border-outline bg-transparent text-primary-fixed focus:ring-0 focus:ring-offset-0 w-4 h-4" type="checkbox"/>
+</div>
+<span class="text-primary font-label-md uppercase text-[10px] tracking-tighter">Recovery Depth</span>
+</label>
+<label class="flex flex-col gap-unit-2 bg-surface-container border border-outline-variant p-unit-2 cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-[10px] text-outline uppercase">Readiness</span>
+<input class="rounded-none border-outline bg-transparent text-primary-fixed focus:ring-0 focus:ring-offset-0 w-4 h-4" type="checkbox"/>
+</div>
+<span class="text-primary font-label-md uppercase text-[10px] tracking-tighter">CNS Activation</span>
+</label>
+</div>
+</section><section class="px-container-margin py-unit-4">
+<div class="flex items-center justify-between mb-unit-4 border-b border-outline-variant pb-unit-2">
+<h2 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Manual Session Protocol Input</h2>
+</div>
+<form class="bg-surface-container border border-outline-variant rounded-DEFAULT p-unit-4 flex flex-col gap-unit-6 shadow-sm rounded-none">
+<div class="grid grid-cols-2 gap-unit-4">
+<div class="flex flex-col gap-unit-2">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase" for="durationInput">Duration (MIN)</label>
+<input class="bg-surface border border-outline-variant text-primary font-headline-md text-headline-md p-unit-2 rounded-DEFAULT focus:border-primary-fixed focus:ring-1 focus:ring-primary-fixed outline-none w-full text-center placeholder:text-on-surface-variant/50 transition-colors font-mono rounded-none" id="durationInput" min="0" placeholder="00" type="number"/>
+</div>
+<div class="flex flex-col gap-unit-2">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase" for="activityType">Modality</label>
+<div class="relative w-full">
+<select class="appearance-none bg-surface border border-outline-variant text-primary font-headline-md text-headline-md p-unit-2 rounded-DEFAULT focus:border-primary-fixed focus:ring-1 focus:ring-primary-fixed outline-none w-full uppercase transition-colors pr-8 cursor-pointer rounded-none" id="activityType">
+<option value="run">RUN</option>
+<option value="cycle">CYCLE</option>
+<option value="strength">STRENGTH</option>
+<option value="hiit">HIIT</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-unit-2 pt-unit-2">
+<div class="flex justify-between items-baseline">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase">Target Intensity (RPE)</label>
+<div class="flex items-baseline gap-1">
+<span class="font-display-sm text-display-sm text-primary-fixed leading-none font-mono" id="intensityValue">7</span>
+<span class="font-label-md text-label-md text-on-surface-variant">/10</span>
+</div>
+</div>
+<input class="w-full appearance-none bg-transparent outline-none focus:ring-2 focus:ring-primary-fixed focus:ring-offset-2 focus:ring-offset-background rounded-sm mt-2" id="intensitySlider" max="10" min="1" type="range" value="7"/><div class="mt-unit-6 border-t border-outline-variant/30 pt-unit-4">
+<div class="flex justify-between items-center mb-unit-2">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Strain Forecast [Output Map]</span>
+</div>
+<div class="flex items-end gap-[2px] h-16 w-full">
+<div class="flex-1 bg-outline-variant/20 h-[20%] border-t border-outline-variant"></div>
+<div class="flex-1 bg-outline-variant/20 h-[35%] border-t border-outline-variant"></div>
+<div class="flex-1 bg-outline-variant/20 h-[45%] border-t border-outline-variant"></div>
+<div class="flex-1 bg-outline-variant/20 h-[60%] border-t border-outline-variant"></div>
+<div class="flex-1 bg-primary-fixed/30 h-[75%] border-t border-primary-fixed"></div>
+<div class="flex-1 bg-primary-fixed/30 h-[85%] border-t border-primary-fixed"></div>
+<div class="flex-1 bg-primary-fixed h-full border-t border-primary-fixed"></div>
+<div class="flex-1 bg-outline-variant/20 h-[60%] border-t border-outline-variant"></div>
+<div class="flex-1 bg-outline-variant/20 h-[40%] border-t border-outline-variant"></div>
+<div class="flex-1 bg-outline-variant/20 h-[25%] border-t border-outline-variant"></div>
+</div>
+<div class="flex justify-between mt-1">
+<span class="font-label-md text-[10px] text-outline uppercase font-mono">Baseline</span>
+<span class="font-label-md text-[10px] text-primary-fixed uppercase font-mono">Peak Protocol</span>
+<span class="font-label-md text-[10px] text-outline uppercase font-mono">Cool Down</span>
+</div>
+</div>
+<div class="flex justify-between font-label-md text-label-md text-outline mt-1">
+<span>RECOVERY</span>
+<span>MAX EFFORT</span>
+</div>
+</div>
+<div class="flex flex-col gap-unit-2 pt-unit-2 border-t border-outline-variant/30 mt-unit-2">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase" for="sessionNotes">Biometric &amp; Performance Notes</label>
+<textarea class="bg-surface border border-outline-variant text-on-background font-body-md text-body-md p-unit-2 rounded-DEFAULT focus:border-primary-fixed focus:ring-1 focus:ring-primary-fixed outline-none resize-none h-24 placeholder:text-on-surface-variant/50 transition-colors rounded-none" id="sessionNotes" placeholder="Record localized fatigue, pacing anomalies, or environmental factors..."></textarea>
+</div>
+<button class="w-full border border-outline-variant bg-surface-container-high text-primary rounded-DEFAULT py-unit-4 font-headline-md text-headline-md uppercase tracking-wide hover:bg-surface-container-highest hover:border-primary transition-all duration-150 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background mt-unit-2 rounded-none" type="button">
+                    COMMIT LOG ENTRY
+                </button>
+</form>
+</section>
+<section class="px-container-margin py-unit-4 flex-1">
+<div class="flex justify-between items-end mb-unit-4 border-b border-outline-variant pb-unit-2">
+<h2 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Manual Session Protocol Input</h2>
+<div class="flex flex-col items-end">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Current Cycle</span>
+<span class="font-headline-md text-headline-md text-primary-fixed leading-none">14.2 HRS</span>
+</div>
+</div>
+<div class="flex flex-col border border-outline-variant rounded-DEFAULT bg-surface-container overflow-hidden">
+<div class="flex items-center justify-between p-unit-4 border-b border-outline-variant/50 bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="flex items-center gap-unit-4">
+<div class="w-12 h-12 bg-surface border border-outline-variant rounded-DEFAULT flex items-center justify-center text-on-surface-variant group-hover:text-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-headline-lg">directions_run</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-primary uppercase leading-tight">Threshold Intervals</span>
+<span class="font-label-md text-label-md text-on-surface-variant mt-1">TODAY // 05:30</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-md text-headline-md text-primary-fixed leading-tight">45M</span>
+<span class="font-label-md text-label-md text-on-surface-variant mt-1 bg-surface border border-outline-variant px-1 rounded-sm">RPE 8</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-unit-4 border-b border-outline-variant/50 bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="flex items-center gap-unit-4">
+<div class="w-12 h-12 bg-surface border border-outline-variant rounded-DEFAULT flex items-center justify-center text-on-surface-variant group-hover:text-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-headline-lg">fitness_center</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-primary uppercase leading-tight">Hypertrophy Block A</span>
+<span class="font-label-md text-label-md text-on-surface-variant mt-1">YESTERDAY // 17:00</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-md text-headline-md text-primary-fixed leading-tight">65M</span>
+<span class="font-label-md text-label-md text-on-surface-variant mt-1 bg-surface border border-outline-variant px-1 rounded-sm">RPE 7</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-unit-4 bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="flex items-center gap-unit-4">
+<div class="w-12 h-12 bg-surface border border-outline-variant rounded-DEFAULT flex items-center justify-center text-on-surface-variant group-hover:text-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-headline-lg">pedal_bike</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-primary uppercase leading-tight">Z2 Aerobic Base</span>
+<span class="font-label-md text-label-md text-on-surface-variant mt-1">TUE // 06:15</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-md text-headline-md text-primary-fixed leading-tight">120M</span>
+<span class="font-label-md text-label-md text-on-surface-variant mt-1 bg-surface border border-outline-variant px-1 rounded-sm">RPE 3</span>
+</div>
+</div>
+</div>
+<div class="mt-unit-4 flex justify-center">
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-primary uppercase flex items-center gap-1 transition-colors">
+                    View Full Telemetry Log <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</section>
+</main>
+<nav class="fixed bottom-0 w-full z-50 border-t border-outline-variant bg-surface-container-lowest">
+<div class="flex justify-around items-center h-16 bg-surface-container-lowest w-full">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-90 duration-150 w-full h-full pt-1">
+<span class="material-symbols-outlined mb-1">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary-fixed font-bold hover:bg-surface-container-high transition-colors active:scale-90 duration-150 w-full h-full pt-1">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-label-md text-label-md">Workouts</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-90 duration-150 w-full h-full pt-1">
+<span class="material-symbols-outlined mb-1">leaderboard</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-90 duration-150 w-full h-full pt-1">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</button>
+</div>
+</nav>
+<script>
+        const slider = document.getElementById('intensitySlider');
+        const output = document.getElementById('intensityValue');
+        
+        slider.oninput = function() {
+            output.innerHTML = this.value;
+            if(this.value >= 8) {
+                output.classList.add('text-error');
+                output.classList.remove('text-primary-fixed');
+            } else {
+                output.classList.remove('text-error');
+                output.classList.add('text-primary-fixed');
+            }
+        }
+    </script>
+</body></html>

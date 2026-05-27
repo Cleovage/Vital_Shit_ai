@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Apex Vitality - Main Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400..700;1,400..700&amp;family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for an engineered look */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090B; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3F3F46; 
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container": "#201f22",
+                      "surface-container-low": "#1c1b1d",
+                      "on-tertiary": "#303037",
+                      "background": "#131315",
+                      "tertiary-container": "#e3e1ea",
+                      "on-tertiary-container": "#64646b",
+                      "surface-bright": "#39393b",
+                      "on-tertiary-fixed-variant": "#46464d",
+                      "tertiary-fixed-dim": "#c7c5ce",
+                      "on-error": "#690005",
+                      "primary-fixed-dim": "#b0d500",
+                      "tertiary-fixed": "#e3e1ea",
+                      "surface-container-highest": "#353437",
+                      "on-surface-variant": "#c5c9ac",
+                      "inverse-on-surface": "#313032",
+                      "on-primary-container": "#596c00",
+                      "secondary-container": "#47464a",
+                      "secondary-fixed-dim": "#c8c6c9",
+                      "on-primary-fixed-variant": "#3e4c00",
+                      "surface-variant": "#353437",
+                      "error": "#ffb4ab",
+                      "surface-dim": "#131315",
+                      "on-secondary-fixed-variant": "#47464a",
+                      "inverse-primary": "#536600",
+                      "surface-container-lowest": "#0e0e10",
+                      "outline": "#8f9378",
+                      "inverse-surface": "#e5e1e4",
+                      "surface-tint": "#b0d500",
+                      "on-surface": "#e5e1e4",
+                      "error-container": "#93000a",
+                      "primary-container": "#caf300",
+                      "secondary": "#c8c6c9",
+                      "secondary-fixed": "#e4e1e5",
+                      "on-tertiary-fixed": "#1b1b21",
+                      "primary-fixed": "#caf300",
+                      "on-background": "#e5e1e4",
+                      "on-primary-fixed": "#171e00",
+                      "surface-container-high": "#2a2a2c",
+                      "on-secondary-container": "#b6b4b8",
+                      "outline-variant": "#444932",
+                      "surface": "#131315",
+                      "tertiary": "#ffffff",
+                      "on-error-container": "#ffdad6",
+                      "on-primary": "#2a3400",
+                      "on-secondary": "#303033",
+                      "primary": "#ffffff",
+                      "on-secondary-fixed": "#1b1b1e"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit-4": "16px",
+                      "unit-1": "4px",
+                      "unit-6": "24px",
+                      "unit-2": "8px",
+                      "unit-8": "32px",
+                      "container-margin": "20px",
+                      "base": "4px",
+                      "gutter": "12px"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Archivo Narrow"
+                      ],
+                      "label-md": [
+                              "Geist"
+                      ],
+                      "body-md": [
+                              "Geist"
+                      ],
+                      "display-lg": [
+                              "Archivo Narrow"
+                      ],
+                      "headline-lg": [
+                              "Archivo Narrow"
+                      ],
+                      "body-lg": [
+                              "Geist"
+                      ],
+                      "display-sm": [
+                              "Archivo Narrow"
+                      ],
+                      "display-lg-mobile": [
+                              "Archivo Narrow"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-sm": [
+                              "36px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased min-h-screen flex flex-col pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-background border-b border-outline-variant flex justify-between items-center px-container-margin py-unit-4 z-40 transition-transform duration-100">
+<div class="flex items-center gap-unit-2">
+<span class="material-symbols-outlined text-primary" data-icon="monitoring">monitoring</span>
+<span class="font-display-sm text-display-sm uppercase tracking-tighter text-primary">APEX VITALITY</span>
+</div>
+<div class="h-8 w-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden flex items-center justify-center">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A close-up profile photo of a determined athlete with a focused expression. The lighting is dramatic and high-contrast, fitting a technical athletic brand aesthetic. The background is dark and nondescript, drawing full attention to the face. The mood is intense, disciplined, and performance-oriented." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4nHck3qkAlECgf4ND8mVT_EIPt0OrtSpdPul27nRtoKJhvq9z50Ph6Iv8Ec5xQGhHCAzTx5uGlJKldvgvd6iGelXKgzwBccpRhLkAeZw4NpWYKCbKs-ovfp955iaEu-cwB8LL5r9chj5U4Y9RmQoIGbgdziKOyGSPyKqFj81emOzks-rEseP5BOzwfBs9oPeV0fwpWEiVEKV97NFH4s14mszhzN1ovoxVpcR2AuHnahNa1kTKdDQFHBop70tqwI7rKYT_aO1vmGlD"/>
+</div>
+</header>
+<main class="flex-grow w-full max-w-[1280px] mx-auto px-container-margin py-unit-6 md:grid md:grid-cols-12 md:gap-gutter">
+<!-- Mobile Header Context -->
+<div class="md:col-span-12 mb-unit-6 md:hidden">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Today's Focus</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-unit-1">Optimal recovery recommended before next session.</p>
+</div>
+<!-- Desktop Header Context -->
+<div class="hidden md:block md:col-span-12 mb-unit-8">
+<h1 class="font-headline-lg text-headline-lg text-primary">Today's Focus</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-unit-1">Optimal recovery recommended before next session.</p>
+</div>
+<!-- Left Column: Primary Metric (Hero Ring) -->
+<section class="mb-unit-8 md:mb-0 md:col-span-5 lg:col-span-4 flex flex-col justify-center">
+<div class="bg-surface-container border border-outline-variant rounded-lg p-unit-6 flex flex-col items-center justify-center relative aspect-square w-full max-w-[320px] mx-auto">
+<h2 class="font-label-md text-label-md text-on-surface-variant absolute top-unit-6 left-unit-6 uppercase">Active Calories</h2>
+<!-- Progress Ring -->
+<div class="relative w-48 h-48 mt-unit-4">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<!-- Track -->
+<circle class="stroke-surface-container-high" cx="50" cy="50" fill="none" r="45" stroke-width="6"></circle>
+<!-- Progress -->
+<circle class="stroke-primary-fixed transition-all duration-1000 ease-out" cx="50" cy="50" fill="none" r="45" stroke-dasharray="283" stroke-dashoffset="70" stroke-linecap="square" stroke-width="6"></circle>
+</svg>
+<!-- Center Content -->
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary tracking-tighter">842</span>
+<span class="font-label-md text-label-md text-primary-fixed uppercase mt-1">Kcal</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Column: Bento Grid & Upcoming -->
+<section class="md:col-span-7 lg:col-span-8 flex flex-col gap-unit-4">
+<!-- Metrics Grid -->
+<div class="grid grid-cols-2 gap-unit-2 md:gap-unit-4">
+<!-- Steps Card -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-unit-4 flex flex-col justify-between aspect-[4/3]">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Steps</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]" data-icon="directions_walk">directions_walk</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-primary mb-unit-2">12,430</div>
+<div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary-fixed w-[80%] rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Heart Rate Card -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-unit-4 flex flex-col justify-between aspect-[4/3]">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Heart Rate</span>
+<span class="material-symbols-outlined text-error text-[16px]" data-icon="favorite">favorite</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-primary mb-unit-2">64 <span class="font-label-md text-label-md text-on-surface-variant">BPM</span></div>
+<!-- Simple Sparkline representation -->
+<svg class="w-full h-6" preserveaspectratio="none" viewbox="0 0 100 24">
+<polyline class="text-primary-fixed" fill="none" points="0,12 20,15 40,8 50,20 60,4 80,14 100,12" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></polyline>
+</svg>
+</div>
+</div>
+<!-- Sleep Card -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-unit-4 flex flex-col justify-between aspect-[4/3]">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Sleep</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]" data-icon="bedtime">bedtime</span>
+</div>
+<div class="font-headline-md text-headline-md text-primary">7h 24m</div>
+</div>
+<!-- Hydration Card -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-unit-4 flex flex-col justify-between aspect-[4/3]">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Hydration</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]" data-icon="water_drop">water_drop</span>
+</div>
+<div class="font-headline-md text-headline-md text-primary">64 <span class="font-label-md text-label-md text-on-surface-variant">OZ</span></div>
+</div>
+</div>
+<!-- Upcoming Workout -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-unit-4 flex flex-col md:flex-row md:items-center justify-between gap-unit-4 mt-unit-2 md:mt-0">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase mb-unit-1">Upcoming Session</span>
+<span class="font-headline-md text-headline-md text-primary">HIIT Intervals - 45m</span>
+</div>
+<button class="bg-primary-fixed text-on-primary-fixed font-label-md text-label-md uppercase px-unit-6 py-unit-2 rounded transition-colors hover:opacity-90 w-full md:w-auto">
+                    Start Protocol
+                </button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center h-16 bg-surface-container-lowest border-t border-outline-variant z-50">
+<!-- Active Tab: Dashboard -->
+<a class="flex flex-col items-center justify-center text-primary-fixed font-bold active:scale-90 transition-transform duration-150 w-full h-full" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-[10px] mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-90 duration-150 w-full h-full" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="font-label-md text-[10px] mt-1">Workouts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-90 duration-150 w-full h-full" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="font-label-md text-[10px] mt-1">Analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-90 duration-150 w-full h-full" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-[10px] mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple JS to trigger ring animation on load
+        document.addEventListener("DOMContentLoaded", () => {
+            const circle = document.querySelector('.stroke-primary-fixed');
+            if(circle) {
+                // Force a reflow
+                void circle.offsetWidth;
+                // Animate to desired offset (simulated value)
+                circle.style.strokeDashoffset = "70"; 
+            }
+        });
+    </script>
+</body></html>

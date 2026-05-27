@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nutrition &amp; Fueling - APEX VITALITY</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;600;700&amp;family=Geist:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#b0d500",
+                        "on-tertiary": "#303037",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#313032",
+                        "inverse-primary": "#536600",
+                        "on-secondary-container": "#b6b4b8",
+                        "surface-container-highest": "#353437",
+                        "on-tertiary-fixed": "#1b1b21",
+                        "on-primary": "#2a3400",
+                        "on-background": "#e5e1e4",
+                        "on-tertiary-fixed-variant": "#46464d",
+                        "primary-fixed-dim": "#b0d500",
+                        "background": "#131315",
+                        "on-surface-variant": "#c5c9ac",
+                        "on-primary-fixed-variant": "#3e4c00",
+                        "error-container": "#93000a",
+                        "surface-container-high": "#2a2a2c",
+                        "secondary": "#c8c6c9",
+                        "on-secondary": "#303033",
+                        "on-secondary-fixed-variant": "#47464a",
+                        "tertiary-container": "#e3e1ea",
+                        "on-surface": "#e5e1e4",
+                        "secondary-fixed": "#e4e1e5",
+                        "inverse-surface": "#e5e1e4",
+                        "tertiary-fixed": "#e3e1ea",
+                        "surface-container-low": "#1c1b1d",
+                        "tertiary-fixed-dim": "#c7c5ce",
+                        "surface": "#131315",
+                        "secondary-container": "#47464a",
+                        "on-secondary-fixed": "#1b1b1e",
+                        "primary-fixed": "#caf300",
+                        "primary-container": "#caf300",
+                        "outline-variant": "#444932",
+                        "secondary-fixed-dim": "#c8c6c9",
+                        "on-primary-container": "#596c00",
+                        "tertiary": "#ffffff",
+                        "surface-container-lowest": "#0e0e10",
+                        "surface-bright": "#39393b",
+                        "primary": "#ffffff",
+                        "surface-variant": "#353437",
+                        "surface-dim": "#131315",
+                        "outline": "#8f9378",
+                        "on-tertiary-container": "#64646b",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed": "#171e00",
+                        "on-error": "#690005",
+                        "surface-container": "#201f22"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit-1": "4px",
+                        "base": "4px",
+                        "unit-4": "16px",
+                        "gutter": "12px",
+                        "unit-8": "32px",
+                        "unit-6": "24px",
+                        "unit-2": "8px",
+                        "container-margin": "20px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Archivo Narrow"],
+                        "body-lg": ["Geist"],
+                        "headline-lg": ["Archivo Narrow"],
+                        "display-lg-mobile": ["Archivo Narrow"],
+                        "headline-md": ["Archivo Narrow"],
+                        "display-sm": ["Archivo Narrow"],
+                        "label-md": ["Geist"],
+                        "body-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "1.1", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "display-sm": ["36px", { "lineHeight": "1.1", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #09090B;
+            color: #e5e1e4;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md min-h-screen flex flex-col pb-20 md:pb-0">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-background dark:bg-background border-b border-outline-variant dark:border-outline-variant flex justify-between items-center px-container-margin py-unit-4 z-40">
+<div class="flex items-center gap-unit-2 hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-100 cursor-pointer text-primary dark:text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">monitoring</span>
+<span class="font-display-sm text-display-sm uppercase tracking-tighter text-primary dark:text-primary">APEX VITALITY</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden hover:opacity-80 transition-opacity cursor-pointer">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="A close up portrait of an athletic male user in a high contrast black and white lighting setup. The aesthetic is clean, technical, and modern, fitting an elite sports application. The background is a stark, absolute black. The overall mood is intense and focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApM7enqIQHXTM_snnhr2AK16SUHadpPVk9vu0BtQsHXVdj0Nx1R8UJp3XV7fqBHv_UCXWItxBpS-rim_XRTwsp4PnmSxNU7DTbJB0msoAYrKdGL3_Na48s8G8HmHw4TEACguXXFQe3ToGOdCGr217JlE5vmh36ZQ0YJ1sWfVZwzOVKKFdIhijVcgB6gK6_-a_fuvsaKsT9VVklAizSp_X-Gt3PyMhF9eecD4UnEPvB1_WQqxVzgredfWo6GzthSCWNf1fZ8X8ePCRD"/>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-grow w-full max-w-[1280px] mx-auto px-container-margin py-unit-6 md:py-unit-8 flex flex-col gap-unit-6">
+<header class="mb-unit-2">
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary uppercase">Nutrition &amp; Fueling</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-unit-1">Tactical intake breakdown. Optimize for upcoming load.</p>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-unit-4">
+<!-- Fuel Status Card (Hero) -->
+<div class="col-span-1 md:col-span-8 bg-surface-container-low border border-outline-variant p-unit-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-unit-6">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Current Fuel Status</span>
+<span class="font-label-md text-label-md bg-surface-container-high px-2 py-1 rounded text-primary-fixed uppercase tracking-wider">Optimal</span>
+</div>
+<div class="flex flex-col md:flex-row items-center gap-unit-8">
+<!-- Donut Chart representation -->
+<div class="relative w-48 h-48 flex-shrink-0">
+<svg class="w-full h-full" viewbox="0 0 100 100">
+<!-- Background Track -->
+<circle class="text-surface-container-high stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="8"></circle>
+<!-- Progress Track (Carbs) -->
+<circle class="text-primary-fixed stroke-current progress-ring__circle" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="251.2" stroke-dashoffset="62.8" stroke-linecap="butt" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-display-sm text-display-sm text-primary">2450</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Kcal Intake</span>
+</div>
+</div>
+<div class="flex-grow w-full flex flex-col gap-unit-4">
+<div class="flex justify-between items-end border-b border-surface-container-highest pb-unit-2">
+<div>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase block">Target Load (Upcoming)</span>
+<span class="font-headline-md text-headline-md text-primary">Heavy HT</span>
+</div>
+<div class="text-right">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase block">Rec. Kcal</span>
+<span class="font-headline-md text-headline-md text-primary">3200</span>
+</div>
+</div>
+<div class="text-sm text-on-surface-variant font-body-md">
+                            Delta: <span class="text-error">-750 kcal</span>. Prioritize complex carbohydrates in the next 2 hours to optimize glycogen stores for the upcoming hypertrophy session.
+                        </div>
+</div>
+</div>
+</div>
+<!-- Macros Split Card -->
+<div class="col-span-1 md:col-span-4 bg-surface-container-low border border-outline-variant p-unit-6 flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-unit-6">Macro Tactical Split</span>
+<div class="flex flex-col gap-unit-4 mt-auto">
+<!-- Protein -->
+<div>
+<div class="flex justify-between font-label-md text-label-md mb-unit-1 uppercase">
+<span class="text-primary">Protein</span>
+<span class="text-on-surface-variant">180g / 200g</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 overflow-hidden">
+<div class="bg-primary-fixed h-full" style="width: 90%"></div>
+</div>
+</div>
+<!-- Carbs -->
+<div>
+<div class="flex justify-between font-label-md text-label-md mb-unit-1 uppercase">
+<span class="text-primary">Carbohydrates</span>
+<span class="text-on-surface-variant">210g / 350g</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 overflow-hidden">
+<div class="bg-primary-fixed h-full" style="width: 60%"></div>
+</div>
+</div>
+<!-- Fats -->
+<div>
+<div class="flex justify-between font-label-md text-label-md mb-unit-1 uppercase">
+<span class="text-primary">Fats</span>
+<span class="text-on-surface-variant">65g / 80g</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 overflow-hidden">
+<div class="bg-primary-fixed h-full" style="width: 81%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Micronutrient Highlights Grid -->
+<div class="col-span-1 md:col-span-12 bg-surface-container-low border border-outline-variant p-unit-6">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-unit-4 block">Micronutrient Matrix</span>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-unit-4">
+<div class="border border-surface-container-highest p-unit-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Sodium</span>
+<span class="font-headline-md text-headline-md text-primary">2.4g</span>
+</div>
+<div class="border border-surface-container-highest p-unit-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Potassium</span>
+<span class="font-headline-md text-headline-md text-primary">3.1g</span>
+</div>
+<div class="border border-surface-container-highest p-unit-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Magnesium</span>
+<span class="font-headline-md text-headline-md text-primary">320mg</span>
+</div>
+<div class="border border-surface-container-highest p-unit-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Hydration</span>
+<span class="font-headline-md text-headline-md text-primary-fixed">2.8L</span>
+</div>
+</div>
+</div>
+<!-- Intake Logs -->
+<div class="col-span-1 md:col-span-12">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-unit-4 block mt-unit-4">Recent Intake Logs</span>
+<div class="flex flex-col border border-outline-variant bg-surface-container-low">
+<!-- Log Item -->
+<div class="flex items-center justify-between p-unit-4 border-b border-surface-container-highest last:border-b-0 hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-unit-4">
+<span class="material-symbols-outlined text-on-surface-variant">restaurant</span>
+<div>
+<span class="font-headline-md text-headline-md text-primary block text-base md:text-lg">Pre-Workout Stack</span>
+<span class="font-label-md text-label-md text-on-surface-variant">T-MINUS 00:45:00</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline-md text-headline-md text-primary block text-base md:text-lg">450 kcal</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">High Density</span>
+</div>
+</div>
+<!-- Log Item -->
+<div class="flex items-center justify-between p-unit-4 border-b border-surface-container-highest last:border-b-0 hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-unit-4">
+<span class="material-symbols-outlined text-on-surface-variant">local_cafe</span>
+<div>
+<span class="font-headline-md text-headline-md text-primary block text-base md:text-lg">Morning Fuel</span>
+<span class="font-label-md text-label-md text-on-surface-variant">08:00 AM</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline-md text-headline-md text-primary block text-base md:text-lg">850 kcal</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Med Density</span>
+</div>
+</div>
+<!-- Log Item -->
+<div class="flex items-center justify-between p-unit-4 border-b border-surface-container-highest last:border-b-0 hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-unit-4">
+<span class="material-symbols-outlined text-on-surface-variant">egg_alt</span>
+<div>
+<span class="font-headline-md text-headline-md text-primary block text-base md:text-lg">Recovery Protocol</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Yesterday 20:30</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline-md text-headline-md text-primary block text-base md:text-lg">1150 kcal</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">High Density</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex justify-end mt-unit-4">
+<button class="bg-primary-fixed text-on-primary-fixed font-label-md text-label-md uppercase tracking-wider px-unit-6 py-unit-2 hover:opacity-90 transition-opacity rounded">
+                + Add Fuel Log
+            </button>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center h-16 bg-surface-container-lowest border-t border-outline-variant z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-90 w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-90 w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">fitness_center</span>
+<span class="font-label-md text-label-md">Workouts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary-fixed font-bold hover:bg-surface-container-high transition-colors active:scale-90 w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">leaderboard</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-90 w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</nav>
+</body></html>

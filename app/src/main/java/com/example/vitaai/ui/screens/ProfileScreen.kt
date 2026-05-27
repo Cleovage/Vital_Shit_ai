@@ -10,6 +10,10 @@ import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,6 +30,8 @@ import com.example.vitaai.ui.theme.*
 
 @Composable
 fun ProfileScreen() {
+    var showEditDialog by remember { mutableStateOf(false) }
+
     AuraBackground {
         LazyColumn(
             modifier = Modifier
@@ -67,7 +73,7 @@ fun ProfileScreen() {
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
-                            onClick = { /* TODO */ },
+                            onClick = { showEditDialog = true },
                             modifier = Modifier.fillMaxWidth().height(40.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Primary,
@@ -124,7 +130,7 @@ fun ProfileScreen() {
                     }
                     ApexCard(modifier = Modifier.fillMaxWidth()) {
                         Column {
-                            DataSourceItem(Icons.Default.Favorite, "APPLE HEALTH", "SYNCED")
+                            DataSourceItem(Icons.Default.Favorite, "GOOGLE HEALTH CONNECT", "SYNCED")
                             HorizontalDivider(color = OutlineVariant.copy(alpha = 0.2f))
                             DataSourceItem(Icons.Default.Place, "GARMIN", "SYNCED")
                             HorizontalDivider(color = OutlineVariant.copy(alpha = 0.2f))
@@ -134,6 +140,37 @@ fun ProfileScreen() {
                 }
             }
         }
+    }
+
+    if (showEditDialog) {
+        AlertDialog(
+            onDismissRequest = { showEditDialog = false },
+            title = { Text("Edit Metrics") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = "175",
+                        onValueChange = {},
+                        label = { Text("Weight (lbs)") }
+                    )
+                    OutlinedTextField(
+                        value = "71",
+                        onValueChange = {},
+                        label = { Text("Height (in)") }
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showEditDialog = false }) {
+                    Text("SAVE")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showEditDialog = false }) {
+                    Text("CANCEL")
+                }
+            }
+        )
     }
 }
 

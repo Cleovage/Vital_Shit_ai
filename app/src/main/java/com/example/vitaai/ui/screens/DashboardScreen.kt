@@ -23,6 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.health.connect.client.PermissionController
 import com.example.vitaai.data.HealthSnapshot
 import com.example.vitaai.data.MoodEntry
 import com.example.vitaai.ui.components.ApexCard
@@ -30,7 +32,7 @@ import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.theme.*
 
 @Composable
-fun DashboardScreen(viewModel: DashboardViewModel = hiltViewModel()) {
+fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     val liveSteps by viewModel.liveSteps.collectAsState()
 
@@ -45,7 +47,7 @@ fun DashboardScreen(viewModel: DashboardViewModel = hiltViewModel()) {
                 PermissionsScreen(viewModel)
             }
             is DashboardUiState.Success -> {
-                DashboardContent(state.snapshot, state.insight, state.mood, liveSteps, viewModel)
+                DashboardContent(state.snapshot, state.insight, state.mood, liveSteps, viewModel, navController)
             }
             is DashboardUiState.Error -> {
                 Box(modifier = Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
@@ -58,8 +60,21 @@ fun DashboardScreen(viewModel: DashboardViewModel = hiltViewModel()) {
 
 @Composable
 private fun PermissionsScreen(viewModel: DashboardViewModel) {
-    // Note: In a real app, I'd use the Health Connect permissions launcher here.
-    // For this task, I'll provide a button to "Connect".
+    val healthConnectContract = PermissionController.createRequestPermissionResultContract()
+    
+    val launcher = rememberLauncherForActivityResult(contract = healthConnectContract) { granted ->
+        if (granted.containsAll(viewModel.getRequiredPermissions())) {
+            viewModel.loadData()
+        }
+    }
+    
+    val sensorLauncher = rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) {
+        // Just launch health connect after asking for sensor
+        launcher.launch(viewModel.getRequiredPermissions())
+    }
+
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,10 +84,12 @@ private fun PermissionsScreen(viewModel: DashboardViewModel) {
         Spacer(modifier = Modifier.height(24.dp))
         Text("Connect to Health Data", style = MaterialTheme.typography.headlineSmall, color = Primary)
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Apex Vitality needs access to your health metrics to optimize your performance.", textAlign = androidx.compose.ui.text.style.TextAlign.Center, color = OnSurfaceVariant)
+        Text("Apex Vitality needs access to your physical activity and health metrics to optimize your performance.", textAlign = androidx.compose.ui.text.style.TextAlign.Center, color = OnSurfaceVariant)
         Spacer(modifier = Modifier.height(32.dp))
         Button(
-            onClick = { viewModel.loadData() }, // Mocking permission grant
+            onClick = {
+                sensorLauncher.launch(android.Manifest.permission.ACTIVITY_RECOGNITION)
+            },
             colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = OnPrimary)
         ) {
             Text("GRANT ACCESS")
@@ -86,7 +103,8 @@ private fun DashboardContent(
     insight: String,
     mood: MoodEntry?,
     liveSteps: Long,
-    viewModel: DashboardViewModel
+    viewModel: DashboardViewModel,
+    navController: NavController
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().statusBarsPadding(),
@@ -273,7 +291,7 @@ private fun DashboardContent(
                     Text(text = "HIIT Intervals - 45m", style = MaterialTheme.typography.headlineMedium, color = Primary, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = { navController.navigate("session") },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = OnPrimary),
                         shape = MaterialTheme.shapes.small

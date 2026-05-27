@@ -20,15 +20,19 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import com.example.vitaai.ui.components.ApexCard
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.theme.*
+import androidx.navigation.NavController
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun ActivityScreen(viewModel: ActivityViewModel = hiltViewModel()) {
+fun ActivityScreen(navController: NavController, viewModel: ActivityViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    var showManualEntryDialog by remember { mutableStateOf(false) }
 
     AuraBackground {
-        LazyColumn(
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding(),
@@ -130,7 +134,7 @@ fun ActivityScreen(viewModel: ActivityViewModel = hiltViewModel()) {
                             }
 
                             Button(
-                                onClick = { /* TODO */ },
+                                onClick = { showManualEntryDialog = true },
                                 modifier = Modifier.fillMaxWidth().height(48.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = SurfaceContainerHigh,
@@ -186,18 +190,45 @@ fun ActivityScreen(viewModel: ActivityViewModel = hiltViewModel()) {
 
             item {
                 TextButton(
-                    onClick = { /* TODO */ },
+                    onClick = { navController.navigate("history") },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("VIEW FULL TELEMETRY LOG >", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
                 }
             }
         }
+        }
+        
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+
+    if (showManualEntryDialog) {
+        AlertDialog(
+            onDismissRequest = { showManualEntryDialog = false },
+            title = { Text("Log Manual Entry") },
+            text = { Text("Record a completed session to your Health Connect telemetry.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.logManualSession()
+                    showManualEntryDialog = false
+                }) {
+                    Text("SAVE")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showManualEntryDialog = false }) {
+                    Text("CANCEL")
+                }
+            }
+        )
     }
 }
 
 @Composable
-private fun ActivityVectorItem(
+fun ActivityVectorItem(
     icon: ImageVector,
     title: String,
     time: String,

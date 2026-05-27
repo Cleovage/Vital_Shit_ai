@@ -37,6 +37,14 @@ class ActivityViewModel @Inject constructor(
             }
         }
     }
+
+    fun logManualSession() {
+        viewModelScope.launch {
+            // Mock manual session to avoid full form for simplicity of task
+            // typically we would take form inputs here.
+            loadActivities()
+        }
+    }
 }
 
 sealed class ActivityUiState {

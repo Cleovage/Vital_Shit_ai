@@ -16,29 +16,32 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="Add Color import to AnalyticsScreen&#10;&#10;- Add `androidx.compose.ui.graphics.Color` import to `AnalyticsScreen.kt`.">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/MoodRepository.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/SensorManager.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/components/ApexCard.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityViewModel.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/AnalyticsViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/VitaAI.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/VitaAI.app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/planningMode.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/planningMode.xml" afterDir="false" />
+    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="Implement Apex Vitality design system and health data integration&#10;&#10;- Update color palette to &quot;Electric Lime&quot; and technical zinc tones, replacing the previous neon teal theme.&#10;- Replace glassmorphism components with a new &quot;Apex&quot; design language, including `ApexCard` and a technical `ApexNavigationBar`.&#10;- Integrate `HealthConnectManager` to support reading and writing steps, active calories, hydration, and exercise sessions.&#10;- Implement `LiveSensorManager` to provide real-time step count and heart rate data flows using Android hardware sensors.&#10;- Add `MoodRepository` for persisting daily user sentiment via `SharedPreferences`.&#10;- Refactor `DashboardScreen` with a bento-grid layout featuring a calorie progress ring, live metrics, and a mood tracker.&#10;- Update `ActivityScreen` to support manual telemetry input (RPE) and display recent exercise vectors.&#10;- Update `AnalyticsScreen` with daily step trends and muscle recovery metrics.&#10;- Refactor `ProfileScreen` to display body composition metrics and health data source status.&#10;- Simplify typography by transitioning to system font families and updating the `VitaTypography` scale.&#10;- Add required permissions for Health Connect and hardware sensors to `AndroidManifest.xml`.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/HealthConnectManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/HealthConnectManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/VitaRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/VitaRepository.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/components/AuraBackground.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/components/AuraBackground.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/components/GlassCard.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/components/GlassCard.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/AnalyticsScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/AnalyticsScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ProfileScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ProfileScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Color.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Color.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Shape.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Shape.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Typography.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Typography.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/hello_aligned.apk" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/hello_aligned.apk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/hello_signed.apk" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/hello_signed.apk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/hello_signed.apk.idsig" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/hello_signed.apk.idsig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/hello_unsigned.apk" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/hello_unsigned.apk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/MainActivity.class" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/MainActivity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/R$layout.class" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/R$layout.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/R$string.class" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/R$string.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/R.class" beforeDir="false" afterPath="$PROJECT_DIR$/no_gradle_app/build/obj/com/example/hello/R.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitaai/build/classes.dex" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/classes.dex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/R.class" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/R.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/data/HealthSnapshot.class" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/data/HealthSnapshot.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/ui/MainActivity$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/ui/MainActivity$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/ui/MainActivity$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/ui/MainActivity$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/ui/MainActivity.class" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/obj/com/example/vitaai/ui/MainActivity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitaai/build/vitaai_aligned.apk" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/vitaai_aligned.apk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitaai/build/vitaai_signed.apk" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/vitaai_signed.apk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitaai/build/vitaai_signed.apk.idsig" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/vitaai_signed.apk.idsig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitaai/build/vitaai_unsigned.apk" beforeDir="false" afterPath="$PROJECT_DIR$/vitaai/build/vitaai_unsigned.apk" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +78,8 @@
             <option name="id" value="81c3bafd-aea4-4bfb-8f9c-1ed22be36cb7" />
             <option name="modeId" value="Agent" />
             <option name="modelType" value="builtin_family" />
-            <option name="modelValue" value="gemini-3.1-pro-preview" />
+            <option name="modelValue" value="gemini-3-flash" />
+            <option name="status" value="Stopped" />
             <option name="targetType" value="LOCAL" />
           </session>
           <session>
@@ -106,8 +110,8 @@
   </component>
   <component name="CopilotUserSelectedModel">
     <selectedModels>
-      <entry key="agent-panel" value="Claude Haiku 4.5" />
-      <entry key="chat-panel" value="Claude Haiku 4.5" />
+      <entry key="agent-panel" value="Gemini 3.1 Pro" />
+      <entry key="chat-panel" value="Gemini 3.1 Pro" />
     </selectedModels>
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[PhysicalDevice::serial=9P85BMOJFM6LXWTK]" />
@@ -181,7 +185,7 @@
         <option name="model">
           <model>
             <option name="modelType" value="builtin_family" />
-            <option name="modelValue" value="claude-haiku-4.5" />
+            <option name="modelValue" value="gemini-3.1-pro-preview" />
           </model>
         </option>
         <option name="targetType" value="LOCAL" />
@@ -346,7 +350,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779880630506</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Implement Apex Vitality design system and health data integration&#10;&#10;- Update color palette to &quot;Electric Lime&quot; and technical zinc tones, replacing the previous neon teal theme.&#10;- Replace glassmorphism components with a new &quot;Apex&quot; design language, including `ApexCard` and a technical `ApexNavigationBar`.&#10;- Integrate `HealthConnectManager` to support reading and writing steps, active calories, hydration, and exercise sessions.&#10;- Implement `LiveSensorManager` to provide real-time step count and heart rate data flows using Android hardware sensors.&#10;- Add `MoodRepository` for persisting daily user sentiment via `SharedPreferences`.&#10;- Refactor `DashboardScreen` with a bento-grid layout featuring a calorie progress ring, live metrics, and a mood tracker.&#10;- Update `ActivityScreen` to support manual telemetry input (RPE) and display recent exercise vectors.&#10;- Update `AnalyticsScreen` with daily step trends and muscle recovery metrics.&#10;- Refactor `ProfileScreen` to display body composition metrics and health data source status.&#10;- Simplify typography by transitioning to system font families and updating the `VitaTypography` scale.&#10;- Add required permissions for Health Connect and hardware sensors to `AndroidManifest.xml`.">
+      <option name="closed" value="true" />
+      <created>1779885396151</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1779885396151</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -365,7 +377,8 @@
     <MESSAGE value="Base app" />
     <MESSAGE value="Implement Luminous Sanctuary design system and new feature screens&#10;&#10;- Add Activity, Analytics, and Profile screens with glassmorphism UI components.&#10;- Implement custom visual components including `ProgressRing`, `LuminousLineChart`, `LuminousBarChart`, `GlassCard`, and `AuraBackground`.&#10;- Integrate Google Fonts (Hanken Grotesk, Inter, Space Grotesk) and define a comprehensive typography scale.&#10;- Update the color palette with &quot;Deep Space&quot; backgrounds and neon accent tokens.&#10;- Refactor `DashboardScreen` and `ChatScreen` to follow the new design language.&#10;- Update `MainActivity` with a custom `GlassNavigationBar` and enable edge-to-edge display support.&#10;- Add dependencies for Google Fonts and extended Material icons." />
     <MESSAGE value="Add Color import to AnalyticsScreen&#10;&#10;- Add `androidx.compose.ui.graphics.Color` import to `AnalyticsScreen.kt`." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add Color import to AnalyticsScreen&#10;&#10;- Add `androidx.compose.ui.graphics.Color` import to `AnalyticsScreen.kt`." />
+    <MESSAGE value="Implement Apex Vitality design system and health data integration&#10;&#10;- Update color palette to &quot;Electric Lime&quot; and technical zinc tones, replacing the previous neon teal theme.&#10;- Replace glassmorphism components with a new &quot;Apex&quot; design language, including `ApexCard` and a technical `ApexNavigationBar`.&#10;- Integrate `HealthConnectManager` to support reading and writing steps, active calories, hydration, and exercise sessions.&#10;- Implement `LiveSensorManager` to provide real-time step count and heart rate data flows using Android hardware sensors.&#10;- Add `MoodRepository` for persisting daily user sentiment via `SharedPreferences`.&#10;- Refactor `DashboardScreen` with a bento-grid layout featuring a calorie progress ring, live metrics, and a mood tracker.&#10;- Update `ActivityScreen` to support manual telemetry input (RPE) and display recent exercise vectors.&#10;- Update `AnalyticsScreen` with daily step trends and muscle recovery metrics.&#10;- Refactor `ProfileScreen` to display body composition metrics and health data source status.&#10;- Simplify typography by transitioning to system font families and updating the `VitaTypography` scale.&#10;- Add required permissions for Health Connect and hardware sensors to `AndroidManifest.xml`." />
+    <option name="LAST_COMMIT_MESSAGE" value="Implement Apex Vitality design system and health data integration&#10;&#10;- Update color palette to &quot;Electric Lime&quot; and technical zinc tones, replacing the previous neon teal theme.&#10;- Replace glassmorphism components with a new &quot;Apex&quot; design language, including `ApexCard` and a technical `ApexNavigationBar`.&#10;- Integrate `HealthConnectManager` to support reading and writing steps, active calories, hydration, and exercise sessions.&#10;- Implement `LiveSensorManager` to provide real-time step count and heart rate data flows using Android hardware sensors.&#10;- Add `MoodRepository` for persisting daily user sentiment via `SharedPreferences`.&#10;- Refactor `DashboardScreen` with a bento-grid layout featuring a calorie progress ring, live metrics, and a mood tracker.&#10;- Update `ActivityScreen` to support manual telemetry input (RPE) and display recent exercise vectors.&#10;- Update `AnalyticsScreen` with daily step trends and muscle recovery metrics.&#10;- Refactor `ProfileScreen` to display body composition metrics and health data source status.&#10;- Simplify typography by transitioning to system font families and updating the `VitaTypography` scale.&#10;- Add required permissions for Health Connect and hardware sensors to `AndroidManifest.xml`." />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
