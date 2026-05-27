@@ -3,11 +3,11 @@ package com.example.vitaai.data
 import android.content.Context
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
-import androidx.health.connect.client.records.HeartRateRecord
-import androidx.health.connect.client.records.SleepSessionRecord
-import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.*
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.health.connect.client.units.Energy
+import androidx.health.connect.client.units.Volume
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -23,8 +23,14 @@ class HealthConnectManager @Inject constructor(
 
     val permissions = setOf(
         HealthPermission.getReadPermission(StepsRecord::class),
+        HealthPermission.getWritePermission(StepsRecord::class),
         HealthPermission.getReadPermission(HeartRateRecord::class),
-        HealthPermission.getReadPermission(SleepSessionRecord::class)
+        HealthPermission.getReadPermission(SleepSessionRecord::class),
+        HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getWritePermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(HydrationRecord::class),
+        HealthPermission.getWritePermission(HydrationRecord::class),
+        HealthPermission.getReadPermission(ExerciseSessionRecord::class)
     )
 
     suspend fun hasAllPermissions(): Boolean {
@@ -67,6 +73,60 @@ class HealthConnectManager @Inject constructor(
             val response = healthConnectClient.readRecords(
                 ReadRecordsRequest(
                     SleepSessionRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            response.records
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun readDailyCalories(startTime: Instant, endTime: Instant): Double {
+        return try {
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    ActiveCaloriesBurnedRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            response.records.sumOf { it.energy.inKilocalories }
+        } catch (e: Exception) {
+            0.0
+        }
+    }
+
+    suspend fun readDailyHydration(startTime: Instant, endTime: Instant): Double {
+        return try {
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    HydrationRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            response.records.sumOf { it.volume.inLiters }
+        } catch (e: Exception) {
+            0.0
+        }
+    }
+
+    suspend fun writeHydration(liters: Double) {
+        val now = Instant.now()
+        val record = HydrationRecord(
+            startTime = now,
+            endTime = now,
+            startZoneOffset = java.time.ZoneOffset.systemDefault().rules.getOffset(now),
+            endZoneOffset = java.time.ZoneOffset.systemDefault().rules.getOffset(now),
+            volume = Volume.liters(liters)
+        )
+        healthConnectClient.insertRecords(listOf(record))
+    }
+
+    suspend fun readExerciseSessions(startTime: Instant, endTime: Instant): List<ExerciseSessionRecord> {
+        return try {
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    ExerciseSessionRecord::class,
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
                 )
             )

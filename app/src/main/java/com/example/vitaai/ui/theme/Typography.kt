@@ -2,159 +2,131 @@ package com.example.vitaai.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.googlefonts.Font
-import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
-import com.example.vitaai.R
-
-// ─── Google Fonts Provider ──────────────────────────────────────────────────
-
-val provider = GoogleFont.Provider(
-    providerAuthority = "com.google.android.gms.fonts",
-    providerPackage = "com.google.android.gms",
-    certificates = R.array.com_google_android_gms_fonts_certs
-)
 
 // ─── Font Families ──────────────────────────────────────────────────────────
 
-private val hankenGroteskFont = GoogleFont("Hanken Grotesk")
-val HankenGroteskFamily = FontFamily(
-    Font(googleFont = hankenGroteskFont, fontProvider = provider, weight = FontWeight.SemiBold),
-    Font(googleFont = hankenGroteskFont, fontProvider = provider, weight = FontWeight.Bold),
-)
-
-private val interFont = GoogleFont("Inter")
-val InterFamily = FontFamily(
-    Font(googleFont = interFont, fontProvider = provider, weight = FontWeight.Normal),
-    Font(googleFont = interFont, fontProvider = provider, weight = FontWeight.Medium),
-    Font(googleFont = interFont, fontProvider = provider, weight = FontWeight.SemiBold),
-)
-
-// Geist is not on Google Fonts — use Space Grotesk as closest match
-private val geistSubstitute = GoogleFont("Space Grotesk")
-val GeistFamily = FontFamily(
-    Font(googleFont = geistSubstitute, fontProvider = provider, weight = FontWeight.Medium),
-)
+val DisplayFamily = FontFamily.Default
+val BodyFamily = FontFamily.Default
+val LabelFamily = FontFamily.Default
 
 // ─── Typography Scale ───────────────────────────────────────────────────────
 
 val VitaTypography = Typography(
-    // Display — Hanken Grotesk 48/56 Bold, -0.02em
+    // Display
     displayLarge = TextStyle(
-        fontFamily = HankenGroteskFamily,
+        fontFamily = DisplayFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 48.sp,
-        lineHeight = 56.sp,
-        letterSpacing = (-0.96).sp // -0.02em at 48sp
+        lineHeight = 52.8.sp,
+        letterSpacing = (-0.96).sp
     ),
     displayMedium = TextStyle(
-        fontFamily = HankenGroteskFamily,
+        fontFamily = DisplayFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 40.sp,
-        lineHeight = 48.sp,
-        letterSpacing = (-0.8).sp
+        lineHeight = 44.sp,
+        letterSpacing = (-0.4).sp
     ),
     displaySmall = TextStyle(
-        fontFamily = HankenGroteskFamily,
-        fontWeight = FontWeight.SemiBold,
+        fontFamily = DisplayFamily,
+        fontWeight = FontWeight.Bold,
         fontSize = 36.sp,
-        lineHeight = 44.sp,
+        lineHeight = 39.6.sp,
         letterSpacing = (-0.36).sp
     ),
 
-    // Headlines — Hanken Grotesk 32/40 SemiBold, -0.01em
+    // Headlines
     headlineLarge = TextStyle(
-        fontFamily = HankenGroteskFamily,
+        fontFamily = DisplayFamily,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
-        letterSpacing = (-0.32).sp // -0.01em at 32sp
+        fontSize = 24.sp,
+        lineHeight = 28.8.sp,
+        letterSpacing = 0.sp
     ),
-    // headline-lg-mobile: 28/36
     headlineMedium = TextStyle(
-        fontFamily = HankenGroteskFamily,
+        fontFamily = DisplayFamily,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 28.sp,
-        lineHeight = 36.sp,
+        fontSize = 20.sp,
+        lineHeight = 24.sp,
         letterSpacing = 0.sp
     ),
     headlineSmall = TextStyle(
-        fontFamily = HankenGroteskFamily,
+        fontFamily = DisplayFamily,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 24.sp,
-        lineHeight = 32.sp,
+        fontSize = 18.sp,
+        lineHeight = 21.6.sp,
         letterSpacing = 0.sp
     ),
 
-    // Title — Inter SemiBold
+    // Titles
     titleLarge = TextStyle(
-        fontFamily = InterFamily,
+        fontFamily = BodyFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 22.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
     titleMedium = TextStyle(
-        fontFamily = InterFamily,
-        fontWeight = FontWeight.SemiBold,
+        fontFamily = BodyFamily,
+        fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.15.sp
     ),
     titleSmall = TextStyle(
-        fontFamily = InterFamily,
+        fontFamily = BodyFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
 
-    // Body — Inter Regular 16/24 and 14/20
+    // Body
     bodyLarge = TextStyle(
-        fontFamily = InterFamily,
+        fontFamily = BodyFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.sp
     ),
     bodyMedium = TextStyle(
-        fontFamily = InterFamily,
+        fontFamily = BodyFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        lineHeight = 20.sp,
+        lineHeight = 21.sp,
         letterSpacing = 0.sp
     ),
     bodySmall = TextStyle(
-        fontFamily = InterFamily,
+        fontFamily = BodyFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
-        lineHeight = 16.sp,
+        lineHeight = 18.sp,
         letterSpacing = 0.sp
     ),
 
-    // Labels — Space Grotesk (Geist substitute) Medium 12/16, 0.05em
+    // Labels
     labelLarge = TextStyle(
-        fontFamily = GeistFamily,
+        fontFamily = LabelFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.7.sp // 0.05em at 14sp
+        lineHeight = 14.sp,
+        letterSpacing = 0.7.sp
     ),
     labelMedium = TextStyle(
-        fontFamily = GeistFamily,
+        fontFamily = LabelFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.6.sp // 0.05em at 12sp
+        lineHeight = 12.sp,
+        letterSpacing = 0.6.sp
     ),
     labelSmall = TextStyle(
-        fontFamily = GeistFamily,
+        fontFamily = LabelFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 10.sp,
-        lineHeight = 14.sp,
+        lineHeight = 10.sp,
         letterSpacing = 0.5.sp
     )
 )

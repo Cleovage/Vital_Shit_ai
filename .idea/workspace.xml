@@ -16,8 +16,29 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="Implement Luminous Sanctuary design system and new feature screens&#10;&#10;- Add Activity, Analytics, and Profile screens with glassmorphism UI components.&#10;- Implement custom visual components including `ProgressRing`, `LuminousLineChart`, `LuminousBarChart`, `GlassCard`, and `AuraBackground`.&#10;- Integrate Google Fonts (Hanken Grotesk, Inter, Space Grotesk) and define a comprehensive typography scale.&#10;- Update the color palette with &quot;Deep Space&quot; backgrounds and neon accent tokens.&#10;- Refactor `DashboardScreen` and `ChatScreen` to follow the new design language.&#10;- Update `MainActivity` with a custom `GlassNavigationBar` and enable edge-to-edge display support.&#10;- Add dependencies for Google Fonts and extended Material icons.">
+    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="Add Color import to AnalyticsScreen&#10;&#10;- Add `androidx.compose.ui.graphics.Color` import to `AnalyticsScreen.kt`.">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/MoodRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/SensorManager.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/components/ApexCard.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityViewModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/AnalyticsViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/VitaAI.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/VitaAI.app.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/planningMode.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/planningMode.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/HealthConnectManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/HealthConnectManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/VitaRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/VitaRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/components/AuraBackground.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/components/AuraBackground.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/components/GlassCard.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/components/GlassCard.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityScreen.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/AnalyticsScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/AnalyticsScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ProfileScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ProfileScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Color.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Color.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Shape.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Shape.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Typography.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Typography.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +51,7 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="81c3bafd-aea4-4bfb-8f9c-1ed22be36cb7" />
+        <option name="activeSessionId" value="5d597fe4-097d-42d9-8248-0abab22e9984" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
@@ -54,12 +75,20 @@
             <option name="id" value="81c3bafd-aea4-4bfb-8f9c-1ed22be36cb7" />
             <option name="modeId" value="Agent" />
             <option name="modelType" value="builtin_family" />
-            <option name="modelValue" value="claude-haiku-4.5" />
+            <option name="modelValue" value="gemini-3.1-pro-preview" />
             <option name="targetType" value="LOCAL" />
           </session>
           <session>
             <option name="chatType" value="PANEL" />
             <option name="id" value="81825349-7007-430d-b39a-e9333419eda6" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="claude-haiku-4.5" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="5d597fe4-097d-42d9-8248-0abab22e9984" />
             <option name="modeId" value="Agent" />
             <option name="modelType" value="builtin_family" />
             <option name="modelValue" value="claude-haiku-4.5" />
@@ -134,6 +163,9 @@
     <commands />
     <urls />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0,
   &quot;fromUser&quot;: true
@@ -180,12 +212,13 @@
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "settings.editor.selected.configurable": "templates.modelproviders.configurable",
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\rk107\StudioProjects\wellbeing" />
       <recent name="C:\Users\rk107\StudioProjects\wellbeing\Context And plan" />
     </key>
   </component>
@@ -305,7 +338,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779880347481</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Add Color import to AnalyticsScreen&#10;&#10;- Add `androidx.compose.ui.graphics.Color` import to `AnalyticsScreen.kt`.">
+      <option name="closed" value="true" />
+      <created>1779880630506</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1779880630506</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -323,7 +364,8 @@
     <MESSAGE value="Uploading Plan pdf" />
     <MESSAGE value="Base app" />
     <MESSAGE value="Implement Luminous Sanctuary design system and new feature screens&#10;&#10;- Add Activity, Analytics, and Profile screens with glassmorphism UI components.&#10;- Implement custom visual components including `ProgressRing`, `LuminousLineChart`, `LuminousBarChart`, `GlassCard`, and `AuraBackground`.&#10;- Integrate Google Fonts (Hanken Grotesk, Inter, Space Grotesk) and define a comprehensive typography scale.&#10;- Update the color palette with &quot;Deep Space&quot; backgrounds and neon accent tokens.&#10;- Refactor `DashboardScreen` and `ChatScreen` to follow the new design language.&#10;- Update `MainActivity` with a custom `GlassNavigationBar` and enable edge-to-edge display support.&#10;- Add dependencies for Google Fonts and extended Material icons." />
-    <option name="LAST_COMMIT_MESSAGE" value="Implement Luminous Sanctuary design system and new feature screens&#10;&#10;- Add Activity, Analytics, and Profile screens with glassmorphism UI components.&#10;- Implement custom visual components including `ProgressRing`, `LuminousLineChart`, `LuminousBarChart`, `GlassCard`, and `AuraBackground`.&#10;- Integrate Google Fonts (Hanken Grotesk, Inter, Space Grotesk) and define a comprehensive typography scale.&#10;- Update the color palette with &quot;Deep Space&quot; backgrounds and neon accent tokens.&#10;- Refactor `DashboardScreen` and `ChatScreen` to follow the new design language.&#10;- Update `MainActivity` with a custom `GlassNavigationBar` and enable edge-to-edge display support.&#10;- Add dependencies for Google Fonts and extended Material icons." />
+    <MESSAGE value="Add Color import to AnalyticsScreen&#10;&#10;- Add `androidx.compose.ui.graphics.Color` import to `AnalyticsScreen.kt`." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add Color import to AnalyticsScreen&#10;&#10;- Add `androidx.compose.ui.graphics.Color` import to `AnalyticsScreen.kt`." />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

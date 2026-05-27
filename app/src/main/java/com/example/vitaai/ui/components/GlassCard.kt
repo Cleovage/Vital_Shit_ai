@@ -57,7 +57,7 @@ fun GlassCard(
 @Composable
 fun GlassCardGlow(
     modifier: Modifier = Modifier,
-    glowColor: Color = LocalVitaColors.current.neonTeal,
+    glowColor: Color = Color.Transparent,
     cornerRadius: Dp = 16.dp,
     content: @Composable ColumnScope.() -> Unit
 ) {

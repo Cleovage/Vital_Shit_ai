@@ -1,175 +1,177 @@
 package com.example.vitaai.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.vitaai.ui.components.*
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.vitaai.ui.components.ApexCard
+import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.theme.*
+import java.time.Instant
 
 @Composable
-fun AnalyticsScreen() {
+fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
+    val uiState by viewModel.uiState.collectAsState()
+
     AuraBackground {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding(),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(32.dp)
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Title
+            // Header
             item {
                 Text(
-                    text = "Analytics",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = OnSurface,
-                    fontWeight = FontWeight.Bold
+                    text = "BIOMETRIC INTELLIGENCE",
+                    style = MaterialTheme.typography.displaySmall.copy(
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = (-1).sp
+                    ),
+                    color = Primary
                 )
+                Text(
+                    text = "Detailed breakdown of biometrics and load.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = OnSurfaceVariant
+                )
+                HorizontalDivider(modifier = Modifier.padding(top = 16.dp), color = OutlineVariant.copy(alpha = 0.5f))
             }
 
-            // Performance Score
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        ProgressRing(
-                            progress = 0.78f,
-                            size = 160.dp,
-                            strokeWidth = 12.dp,
-                            colors = listOf(PrimaryContainer, Primary),
-                            glowColor = GlowPrimary
-                        )
-                        Text(
-                            text = "78",
-                            style = MaterialTheme.typography.displayLarge,
-                            color = PrimaryContainer,
-                            fontWeight = FontWeight.Bold
-                        )
+            when (val state = uiState) {
+                is AnalyticsUiState.Loading -> {
+                    item { Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = Primary) } }
+                }
+                is AnalyticsUiState.Success -> {
+                    // Time Selector
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().height(40.dp).background(SurfaceContainerHigh),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            TimeSelectorItem("WEEK", true, Modifier.weight(1f))
+                            TimeSelectorItem("MONTH", false, Modifier.weight(1f))
+                            TimeSelectorItem("YEAR", false, Modifier.weight(1f))
+                        }
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Performance Score",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = OnSurfaceVariant
-                    )
+
+                    // Step Trends Card
+                    item {
+                        ApexCard(modifier = Modifier.fillMaxWidth()) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Column {
+                                        Text("ACTIVITY VOLUME", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                                        Text("Step Trends", style = MaterialTheme.typography.titleMedium, color = Primary)
+                                    }
+                                    val avgSteps = if (state.dailySteps.isNotEmpty()) state.dailySteps.values.average().toLong() else 0L
+                                    Column(horizontalAlignment = Alignment.End) {
+                                        Text("DAILY AVG", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                                        Text(avgSteps.toString(), style = MaterialTheme.typography.titleMedium, color = Primary)
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(24.dp))
+                                
+                                // Real data chart
+                                Row(modifier = Modifier.fillMaxWidth().height(120.dp), horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.Bottom) {
+                                    val maxSteps = (state.dailySteps.values.maxOrNull() ?: 1L).toFloat()
+                                    state.dailySteps.forEach { (_, steps) ->
+                                        BarItem(steps / maxSteps, Modifier.weight(1f), steps == (state.dailySteps.values.maxOrNull()))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                is AnalyticsUiState.Error -> {
+                    item { Text("Error: ${state.message}", color = Error) }
                 }
             }
 
-            // Weekly Stats Row
+            // HRV vs Training Load (Simplified static view as HRV data is often sparse)
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    MiniStatCard(label = "Avg Steps", value = "7,842", modifier = Modifier.weight(1f))
-                    MiniStatCard(label = "Avg Sleep", value = "7.2h", modifier = Modifier.weight(1f))
-                    MiniStatCard(label = "Avg HR", value = "71 bpm", modifier = Modifier.weight(1f))
-                }
-            }
-
-            // Weekly Trend Chart
-            item {
-                GlassCard(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = "Weekly Trend",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = OnSurface,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    LuminousLineChart(
-                        dataPoints = listOf(6500f, 8200f, 7100f, 9500f, 8800f, 7600f, 8234f),
-                        lineColor = PrimaryContainer,
-                        glowColor = GlowPrimary
-                    )
-                }
-            }
-
-            // Activity Distribution
-            item {
-                GlassCard(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = "Activity Distribution",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = OnSurface,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    LuminousBarChart(
-                        dataPoints = listOf(45f, 60f, 30f, 75f, 55f, 40f, 65f),
-                        barColor = Secondary,
-                        glowColor = GlowSecondary
-                    )
-                }
-            }
-
-            // Comparison
-            item {
-                GlassCardGlow(modifier = Modifier.fillMaxWidth(), glowColor = Secondary) {
-                    Text(
-                        text = "This Week vs Last",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = OnSurface,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        ComparisonItem(label = "Steps", value = "12%", isUp = true)
-                        ComparisonItem(label = "Sleep", value = "5%", isUp = true)
-                        ComparisonItem(label = "Heart Rate", value = "3%", isUp = false)
+                ApexCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("RECOVERY & STRESS", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                        Text("HRV vs Training Load", style = MaterialTheme.typography.titleMedium, color = Primary)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(modifier = Modifier.size(8.dp).background(Primary))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("HRV (MS)", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Box(modifier = Modifier.size(8.dp).background(Secondary))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("LOAD", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                        }
+                        Spacer(modifier = Modifier.height(48.dp))
+                        Text("Trend Analysis Optimal", color = OnSurfaceVariant, modifier = Modifier.fillMaxWidth(), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
                     }
                 }
             }
 
-            // Bottom Spacing
-            item { Spacer(modifier = Modifier.height(80.dp)) }
+            // Muscle Recovery
+            item {
+                ApexCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Person, contentDescription = null, tint = Primary, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("MUSCLE RECOVERY", style = MaterialTheme.typography.labelMedium, color = Primary)
+                            }
+                            Text("92% Fresh", style = MaterialTheme.typography.labelSmall, color = Primary)
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            RecoveryBar("QUADS", 0.8f)
+                            RecoveryBar("HAMSTRINGS", 0.7f)
+                            RecoveryBar("BACK", 0.4f, Error)
+                            RecoveryBar("CORE", 0.9f)
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun MiniStatCard(label: String, value: String, modifier: Modifier = Modifier) {
-    GlassCard(modifier = modifier, cornerRadius = 12.dp) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-            Text(text = label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = value, style = MaterialTheme.typography.titleMedium, color = PrimaryContainer)
-        }
+private fun TimeSelectorItem(label: String, selected: Boolean, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxHeight().background(if (selected) SurfaceContainerHighest else Color.Transparent),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(label, style = MaterialTheme.typography.labelSmall, color = if (selected) Primary else OnSurfaceVariant)
     }
 }
 
 @Composable
-private fun ComparisonItem(label: String, value: String, isUp: Boolean) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = label, style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant)
+private fun BarItem(height: Float, modifier: Modifier = Modifier, highlighted: Boolean = false) {
+    Box(
+        modifier = modifier.fillMaxHeight(height.coerceIn(0.1f, 1.0f)).background(if (highlighted) Primary else SurfaceContainerHighest)
+    )
+}
+
+@Composable
+private fun RecoveryBar(label: String, progress: Float, color: Color = Primary) {
+    Column {
+        Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
         Spacer(modifier = Modifier.height(4.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = if (isUp) Icons.Rounded.ArrowUpward else Icons.Rounded.ArrowDownward,
-                contentDescription = null,
-                tint = if (isUp) Color(0xFF22C55E) else Color(0xFFFF3366),
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                color = if (isUp) Color(0xFF22C55E) else Color(0xFFFF3366)
-            )
+        Box(modifier = Modifier.fillMaxWidth().height(4.dp).background(SurfaceContainerHigh)) {
+            Box(modifier = Modifier.fillMaxWidth(progress).height(4.dp).background(color))
         }
     }
 }

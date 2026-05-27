@@ -3,149 +3,220 @@ package com.example.vitaai.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.DirectionsRun
-import androidx.compose.material.icons.rounded.DirectionsWalk
-import androidx.compose.material.icons.rounded.FitnessCenter
-import androidx.compose.material.icons.rounded.SelfImprovement
+import androidx.compose.material.icons.automirrored.filled.*
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.health.connect.client.records.ExerciseSessionRecord
+import com.example.vitaai.ui.components.ApexCard
 import com.example.vitaai.ui.components.AuraBackground
-import com.example.vitaai.ui.components.GlassCard
-import com.example.vitaai.ui.components.GlowButton
-import com.example.vitaai.ui.components.StatChip
 import com.example.vitaai.ui.theme.*
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
-fun ActivityScreen() {
+fun ActivityScreen(viewModel: ActivityViewModel = hiltViewModel()) {
+    val uiState by viewModel.uiState.collectAsState()
+
     AuraBackground {
-        Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding(),
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
-                // Title
-                item {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding(),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            // Header
+            item {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "Activity",
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = OnSurface,
-                        fontWeight = FontWeight.Bold
+                        text = "monitoring",
+                        style = MaterialTheme.typography.displaySmall.copy(
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Normal,
+                            letterSpacing = (-1).sp
+                        ),
+                        color = Primary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "APEX VITALITY",
+                        style = MaterialTheme.typography.displaySmall.copy(
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-1).sp
+                        ),
+                        color = Primary
                     )
                 }
-
-                // Filter Chips
-                item {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        item { StatChip(label = "All", color = PrimaryContainer) }
-                        item { StatChip(label = "Cardio", color = OnSurfaceVariant.copy(alpha = 0.5f), textColor = OnSurface) }
-                        item { StatChip(label = "Strength", color = OnSurfaceVariant.copy(alpha = 0.5f), textColor = OnSurface) }
-                        item { StatChip(label = "Yoga", color = OnSurfaceVariant.copy(alpha = 0.5f), textColor = OnSurface) }
-                        item { StatChip(label = "Walking", color = OnSurfaceVariant.copy(alpha = 0.5f), textColor = OnSurface) }
-                    }
-                }
-
-                // Activity List
-                item {
-                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Text(
-                            text = "Today",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = OnSurfaceVariant
-                        )
-                        
-                        ActivityCard(
-                            icon = Icons.Rounded.DirectionsRun,
-                            title = "Morning Run",
-                            subtitle = "5.2 km • 32 min",
-                            calories = "320 cal",
-                            time = "8:00 AM",
-                            color = PrimaryContainer
-                        )
-                        ActivityCard(
-                            icon = Icons.Rounded.SelfImprovement,
-                            title = "Yoga Session",
-                            subtitle = "45 min",
-                            calories = "180 cal",
-                            time = "12:30 PM",
-                            color = Secondary
-                        )
-                        ActivityCard(
-                            icon = Icons.Rounded.FitnessCenter,
-                            title = "Weight Training",
-                            subtitle = "60 min",
-                            calories = "450 cal",
-                            time = "5:00 PM",
-                            color = TertiaryContainer
-                        )
-                        ActivityCard(
-                            icon = Icons.Rounded.DirectionsWalk,
-                            title = "Evening Walk",
-                            subtitle = "2.1 km • 25 min",
-                            calories = "150 cal",
-                            time = "8:15 PM",
-                            color = PrimaryContainer
-                        )
-                    }
-                }
-                
-                // Bottom Nav spacing
-                item { Spacer(modifier = Modifier.height(100.dp)) }
+                HorizontalDivider(modifier = Modifier.padding(top = 16.dp), color = OutlineVariant.copy(alpha = 0.5f))
             }
 
-            // Floating Action Button
-            GlowButton(
-                text = "+ Log Activity",
-                onClick = { /* TODO */ },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 100.dp)
-                    .fillMaxWidth(0.6f)
-            )
+            // Hero Action
+            item {
+                Button(
+                    onClick = { /* TODO: Start real session tracking */ },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Primary,
+                        contentColor = OnPrimary
+                    ),
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Person, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("INITIATE OPEN SESSION", fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                    }
+                }
+            }
+
+            // Manual Input Section
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        "MANUAL TELEMETRY INPUT",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = OnSurfaceVariant,
+                        letterSpacing = 1.sp
+                    )
+                    ApexCard(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text("DURATION (MIN)", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Box(modifier = Modifier.fillMaxWidth().background(SurfaceContainerHigh).padding(12.dp)) {
+                                        Text("00", color = Primary)
+                                    }
+                                }
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text("MODALITY", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Box(modifier = Modifier.fillMaxWidth().background(SurfaceContainerHigh).padding(12.dp)) {
+                                        Text("RUN", color = Primary, fontWeight = FontWeight.Bold)
+                                    }
+                                }
+                            }
+                            
+                            Column {
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Text("TARGET INTENSITY (RPE)", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                                    Text("7 /10", style = MaterialTheme.typography.headlineMedium, color = Primary)
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Slider(
+                                    value = 0.7f,
+                                    onValueChange = {},
+                                    colors = SliderDefaults.colors(
+                                        thumbColor = Primary,
+                                        activeTrackColor = Primary,
+                                        inactiveTrackColor = SurfaceContainerHigh
+                                    )
+                                )
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Text("RECOVERY", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                                    Text("MAX EFFORT", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                                }
+                            }
+
+                            Button(
+                                onClick = { /* TODO */ },
+                                modifier = Modifier.fillMaxWidth().height(48.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = SurfaceContainerHigh,
+                                    contentColor = Primary
+                                ),
+                                shape = MaterialTheme.shapes.small,
+                                border = androidx.compose.foundation.BorderStroke(1.dp, OutlineVariant)
+                            ) {
+                                Text("COMMIT LOG ENTRY", fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Recent Vector Section
+            item {
+                Text(
+                    "RECENT ACTIVITY VECTOR",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = OnSurfaceVariant,
+                    letterSpacing = 1.sp
+                )
+            }
+
+            when (val state = uiState) {
+                is ActivityUiState.Loading -> {
+                    item { CircularProgressIndicator(color = Primary) }
+                }
+                is ActivityUiState.Success -> {
+                    if (state.sessions.isEmpty()) {
+                        item { Text("No recent activities found.", color = OnSurfaceVariant) }
+                    } else {
+                        items(state.sessions) { session ->
+                            ApexCard(modifier = Modifier.fillMaxWidth()) {
+                                ActivityVectorItem(
+                                    icon = Icons.Default.Person,
+                                    title = session.title ?: "Exercise",
+                                    time = DateTimeFormatter.ofPattern("MMM dd // HH:mm")
+                                        .withZone(ZoneId.systemDefault())
+                                        .format(session.startTime),
+                                    duration = "${java.time.Duration.between(session.startTime, session.endTime).toMinutes()}M",
+                                    rpe = "RPE -" // RPE isn't a standard field in ExerciseSessionRecord
+                                )
+                            }
+                        }
+                    }
+                }
+                is ActivityUiState.Error -> {
+                    item { Text("Error: ${state.message}", color = Error) }
+                }
+            }
+
+            item {
+                TextButton(
+                    onClick = { /* TODO */ },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("VIEW FULL TELEMETRY LOG >", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun ActivityCard(icon: ImageVector, title: String, subtitle: String, calories: String, time: String, color: Color) {
-    GlassCard(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(color.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(imageVector = icon, contentDescription = null, tint = color)
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                    Text(text = title, style = MaterialTheme.typography.titleMedium, color = OnSurface)
-                    Text(text = subtitle, style = MaterialTheme.typography.bodyMedium, color = OnSurfaceVariant)
-                }
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                Text(text = calories, style = MaterialTheme.typography.titleMedium, color = color)
-                Text(text = time, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
-            }
+private fun ActivityVectorItem(
+    icon: ImageVector,
+    title: String,
+    time: String,
+    duration: String,
+    rpe: String
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(icon, contentDescription = null, tint = OnSurfaceVariant, modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.titleMedium.copy(fontSize = 14.sp), color = Primary, fontWeight = FontWeight.Bold)
+            Text(time, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+        }
+        Column(horizontalAlignment = Alignment.End) {
+            Text(duration, style = MaterialTheme.typography.labelMedium, color = Primary)
+            Text(rpe, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
         }
     }
 }
