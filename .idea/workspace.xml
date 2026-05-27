@@ -16,16 +16,8 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="Base app">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ChatScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ChatScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Color.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Color.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Theme.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Theme.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Typography.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/theme/Typography.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/themes.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/themes.xml" afterDir="false" />
+    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="Implement Luminous Sanctuary design system and new feature screens&#10;&#10;- Add Activity, Analytics, and Profile screens with glassmorphism UI components.&#10;- Implement custom visual components including `ProgressRing`, `LuminousLineChart`, `LuminousBarChart`, `GlassCard`, and `AuraBackground`.&#10;- Integrate Google Fonts (Hanken Grotesk, Inter, Space Grotesk) and define a comprehensive typography scale.&#10;- Update the color palette with &quot;Deep Space&quot; backgrounds and neon accent tokens.&#10;- Refactor `DashboardScreen` and `ChatScreen` to follow the new design language.&#10;- Update `MainActivity` with a custom `GlassNavigationBar` and enable edge-to-edge display support.&#10;- Add dependencies for Google Fonts and extended Material icons.">
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/AnalyticsScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/AnalyticsScreen.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -305,7 +297,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779688786812</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Implement Luminous Sanctuary design system and new feature screens&#10;&#10;- Add Activity, Analytics, and Profile screens with glassmorphism UI components.&#10;- Implement custom visual components including `ProgressRing`, `LuminousLineChart`, `LuminousBarChart`, `GlassCard`, and `AuraBackground`.&#10;- Integrate Google Fonts (Hanken Grotesk, Inter, Space Grotesk) and define a comprehensive typography scale.&#10;- Update the color palette with &quot;Deep Space&quot; backgrounds and neon accent tokens.&#10;- Refactor `DashboardScreen` and `ChatScreen` to follow the new design language.&#10;- Update `MainActivity` with a custom `GlassNavigationBar` and enable edge-to-edge display support.&#10;- Add dependencies for Google Fonts and extended Material icons.">
+      <option name="closed" value="true" />
+      <created>1779880347481</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1779880347481</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -322,7 +322,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Uploading Plan pdf" />
     <MESSAGE value="Base app" />
-    <option name="LAST_COMMIT_MESSAGE" value="Base app" />
+    <MESSAGE value="Implement Luminous Sanctuary design system and new feature screens&#10;&#10;- Add Activity, Analytics, and Profile screens with glassmorphism UI components.&#10;- Implement custom visual components including `ProgressRing`, `LuminousLineChart`, `LuminousBarChart`, `GlassCard`, and `AuraBackground`.&#10;- Integrate Google Fonts (Hanken Grotesk, Inter, Space Grotesk) and define a comprehensive typography scale.&#10;- Update the color palette with &quot;Deep Space&quot; backgrounds and neon accent tokens.&#10;- Refactor `DashboardScreen` and `ChatScreen` to follow the new design language.&#10;- Update `MainActivity` with a custom `GlassNavigationBar` and enable edge-to-edge display support.&#10;- Add dependencies for Google Fonts and extended Material icons." />
+    <option name="LAST_COMMIT_MESSAGE" value="Implement Luminous Sanctuary design system and new feature screens&#10;&#10;- Add Activity, Analytics, and Profile screens with glassmorphism UI components.&#10;- Implement custom visual components including `ProgressRing`, `LuminousLineChart`, `LuminousBarChart`, `GlassCard`, and `AuraBackground`.&#10;- Integrate Google Fonts (Hanken Grotesk, Inter, Space Grotesk) and define a comprehensive typography scale.&#10;- Update the color palette with &quot;Deep Space&quot; backgrounds and neon accent tokens.&#10;- Refactor `DashboardScreen` and `ChatScreen` to follow the new design language.&#10;- Update `MainActivity` with a custom `GlassNavigationBar` and enable edge-to-edge display support.&#10;- Add dependencies for Google Fonts and extended Material icons." />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
