@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Live Training HUD - APEX VITALITY</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400..700;1,400..700&amp;family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-tint": "#b0d500",
+                      "on-tertiary": "#303037",
+                      "error": "#ffb4ab",
+                      "inverse-on-surface": "#313032",
+                      "inverse-primary": "#536600",
+                      "on-secondary-container": "#b6b4b8",
+                      "surface-container-highest": "#353437",
+                      "on-tertiary-fixed": "#1b1b21",
+                      "on-primary": "#2a3400",
+                      "on-background": "#e5e1e4",
+                      "on-tertiary-fixed-variant": "#46464d",
+                      "primary-fixed-dim": "#b0d500",
+                      "background": "#131315",
+                      "on-surface-variant": "#c5c9ac",
+                      "on-primary-fixed-variant": "#3e4c00",
+                      "error-container": "#93000a",
+                      "surface-container-high": "#2a2a2c",
+                      "secondary": "#c8c6c9",
+                      "on-secondary": "#303033",
+                      "on-secondary-fixed-variant": "#47464a",
+                      "tertiary-container": "#e3e1ea",
+                      "on-surface": "#e5e1e4",
+                      "secondary-fixed": "#e4e1e5",
+                      "inverse-surface": "#e5e1e4",
+                      "tertiary-fixed": "#e3e1ea",
+                      "surface-container-low": "#1c1b1d",
+                      "tertiary-fixed-dim": "#c7c5ce",
+                      "surface": "#131315",
+                      "secondary-container": "#47464a",
+                      "on-secondary-fixed": "#1b1b1e",
+                      "primary-fixed": "#caf300",
+                      "primary-container": "#caf300",
+                      "outline-variant": "#444932",
+                      "secondary-fixed-dim": "#c8c6c9",
+                      "on-primary-container": "#596c00",
+                      "tertiary": "#ffffff",
+                      "surface-container-lowest": "#0e0e10",
+                      "surface-bright": "#39393b",
+                      "primary": "#ffffff",
+                      "surface-variant": "#353437",
+                      "surface-dim": "#131315",
+                      "outline": "#8f9378",
+                      "on-tertiary-container": "#64646b",
+                      "on-error-container": "#ffdad6",
+                      "on-primary-fixed": "#171e00",
+                      "on-error": "#690005",
+                      "surface-container": "#201f22"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit-1": "4px",
+                      "base": "4px",
+                      "unit-4": "16px",
+                      "gutter": "12px",
+                      "unit-8": "32px",
+                      "unit-6": "24px",
+                      "unit-2": "8px",
+                      "container-margin": "20px"
+              },
+              "fontFamily": {
+                      "display-lg": [
+                              "Archivo Narrow"
+                      ],
+                      "body-lg": [
+                              "Geist"
+                      ],
+                      "headline-lg": [
+                              "Archivo Narrow"
+                      ],
+                      "display-lg-mobile": [
+                              "Archivo Narrow"
+                      ],
+                      "headline-md": [
+                              "Archivo Narrow"
+                      ],
+                      "display-sm": [
+                              "Archivo Narrow"
+                      ],
+                      "label-md": [
+                              "Geist"
+                      ],
+                      "body-md": [
+                              "Geist"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-sm": [
+                              "36px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .hud-text-glow {
+            text-shadow: 0 0 10px rgba(176, 213, 0, 0.5), 0 0 20px rgba(176, 213, 0, 0.3);
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+      </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-hidden" style="background-image: linear-gradient(to bottom, rgba(19,19,21,0.85), rgba(19,19,21,0.95)), url('https://lh3.googleusercontent.com/aida/ADBb0ugK3ej3zgLoo-W9oqRgkWI6qT3an0DUMMZ94Cwpuf9e5SbIgzPZOwuIGYxSq7TCzolw9pFQWfQu8ObTxI7HLdXhvP_CBBEb_3ufwIK_Y9NaijRFq5dL64SJuNOo5U0L2hD6vbbopoAqbueHUZGBVtziWhy-AjLcSPGNcQ051mrrduMe_deghX_3510RfCPJpa7Yq5rW5Zu4NPBSQ9bz1iBji1zfVFnJskrZcYwFtvyFXYlDNrMDQoMU134'); background-size: cover; background-position: center;">
+<!-- Top Navigation (Task-focused/Destination check: Active training is task-focused, usually suppress nav, but we include TopAppBar per prompt for 'Live Training HUD for Apex Vitality') -->
+<header class="w-full top-0 sticky border-b border-outline-variant bg-surface-container-lowest/80 backdrop-blur-md z-40">
+<div class="flex justify-between items-center px-container-margin py-unit-4 w-full">
+<div class="flex items-center gap-unit-2">
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 duration-100 p-2">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="font-display-sm text-display-sm uppercase tracking-tighter text-primary">
+                APEX VITALITY
+            </div>
+<div class="flex items-center gap-unit-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="person">person</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col justify-between p-container-margin relative z-10 w-full max-w-[1280px] mx-auto pt-8">
+<!-- Status Bar -->
+<div class="flex justify-between items-center mb-6">
+<div class="bg-surface-container-high border border-outline-variant rounded px-3 py-1 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span class="font-label-md text-label-md uppercase text-on-surface">Live Training</span>
+</div>
+<div class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">
+                Zone 4: Threshold
+            </div>
+</div>
+<!-- Primary HUD Area -->
+<div class="flex-grow flex flex-col justify-center items-center gap-unit-8 mb-unit-8">
+<!-- Central Biometric Display -->
+<div class="relative w-72 h-72 flex items-center justify-center">
+<!-- SVG Progress Ring -->
+<svg class="absolute inset-0 w-full h-full drop-shadow-lg" height="288" viewbox="0 0 288 288" width="288">
+<!-- Background Track -->
+<circle cx="144" cy="144" fill="none" r="130" stroke="#2a2a2c" stroke-width="8"></circle>
+<!-- Foreground Target Zone Indicator -->
+<circle class="progress-ring__circle opacity-50" cx="144" cy="144" fill="none" r="130" stroke="#444932" stroke-dasharray="100 716" stroke-dashoffset="-500" stroke-width="12"></circle>
+<!-- Active Progress -->
+<circle class="progress-ring__circle" cx="144" cy="144" fill="none" r="130" stroke="#caf300" stroke-dasharray="816" stroke-dashoffset="150" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="text-center z-10 flex flex-col items-center">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase mb-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="favorite" data-weight="fill">favorite</span> Heart Rate
+                    </span>
+<div class="font-display-lg text-[96px] leading-[0.9] font-bold text-primary-container hud-text-glow tracking-tighter">
+                        174
+                    </div>
+<span class="font-headline-md text-headline-md text-on-surface mt-1">BPM</span>
+</div>
+</div>
+<!-- Secondary Metrics Row -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-unit-4 w-full">
+<!-- Duration -->
+<div class="bg-surface-container-high/60 backdrop-blur-sm border border-outline-variant p-4 rounded flex flex-col items-start justify-center h-28">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase mb-2">Duration</span>
+<div class="font-headline-lg text-headline-lg text-primary tracking-tighter">42:15.8</div>
+</div>
+<!-- Power -->
+<div class="bg-surface-container-high/60 backdrop-blur-sm border border-outline-variant p-4 rounded flex flex-col items-start justify-center h-28">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase mb-2">Power Output</span>
+<div class="font-headline-lg text-headline-lg text-primary tracking-tighter flex items-end gap-1">
+                        342 <span class="font-body-md text-on-surface-variant mb-1">W</span>
+</div>
+</div>
+<!-- Strain -->
+<div class="bg-surface-container-high/60 backdrop-blur-sm border border-outline-variant p-4 rounded flex flex-col items-start justify-center h-28">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase mb-2">Strain Score</span>
+<div class="font-headline-lg text-headline-lg text-primary tracking-tighter">18.4</div>
+</div>
+<!-- Calories -->
+<div class="bg-surface-container-high/60 backdrop-blur-sm border border-outline-variant p-4 rounded flex flex-col items-start justify-center h-28">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase mb-2">Energy</span>
+<div class="font-headline-lg text-headline-lg text-primary tracking-tighter flex items-end gap-1">
+                        640 <span class="font-body-md text-on-surface-variant mb-1">kcal</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Controls Area -->
+<div class="w-full flex justify-center gap-unit-4 pb-unit-8">
+<button class="bg-surface-container-high border border-outline-variant text-on-surface font-label-md text-label-md uppercase px-8 py-4 rounded hover:bg-surface-variant transition-colors active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="flag">flag</span> Lap
+            </button>
+<button class="bg-error border border-error-container text-on-error font-label-md text-label-md uppercase px-10 py-4 rounded hover:opacity-90 transition-opacity active:scale-95 flex items-center gap-2 font-bold">
+<span class="material-symbols-outlined" data-icon="stop">stop</span> End Workout
+            </button>
+</div>
+</main>
+<!-- BottomNavBar is suppressed due to being in a focused transactional/task state (Live Training) -->
+</body></html>

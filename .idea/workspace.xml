@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+    <layouts>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
+        <config>
+          <theme>@style/Theme.VitaAI</theme>
+        </config>
+      </layout>
+    </layouts>
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="feat: Overhaul UI design system and enhance sensor data processing&#10;&#10;- Redesign Dashboard, Activity, Nutrition, Profile, and Session screens with a technical &quot;Command Center&quot; aesthetic and improved layouts.&#10;- Integrate `AdvancedDataProcessor` into `LiveSensorManager` to provide filtered step counts and smoothed heart rate telemetry.&#10;- Implement `LuminousDonutChart` and add interactive touch support with tooltips to line and bar charts.&#10;- Update `ApexCard` with support for technical headers and `AuraBackground` with an optional grid overlay.&#10;- Categorize metrics in `AnalyticsScreen` into Activity, Vitals, and Nutrition sections for better data organization.&#10;- Refactor the active workout HUD in `SessionScreen` with a high-contrast timer and real-time biometric tiles.&#10;- Update project dependencies including Hilt, Kotlin, and Gradle plugin versions.&#10;- Clean up IDE configuration files and update workspace settings.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityScreen.kt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="CopilotChats">
+    <option name="panelChat">
+      <chat>
+        <option name="activeSessionId" value="d747075c-55bd-4de3-9abf-7170dc00f35c" />
+        <option name="sessions">
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="03376cb8-c655-439d-bba3-8ca1b6e63061" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="claude-haiku-4.5" />
+            <option name="status" value="Stopped" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="93cd8fe4-b70e-494a-8e60-a4c45169a4e7" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="81c3bafd-aea4-4bfb-8f9c-1ed22be36cb7" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="gemini-3-flash" />
+            <option name="status" value="Stopped" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="81825349-7007-430d-b39a-e9333419eda6" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="claude-haiku-4.5" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="5d597fe4-097d-42d9-8248-0abab22e9984" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="claude-haiku-4.5" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="d747075c-55bd-4de3-9abf-7170dc00f35c" />
+            <option name="modeId" value="Ask" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="b2e2d5fd-2bd7-4fe5-a062-ac82b0b56a50" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+        </option>
+        <option name="type" value="PANEL" />
+      </chat>
+    </option>
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_C:/Users/rk107/.codex/worktrees/67b4/wellbeing" value="3EJeBMYUMbjkAvbYDyNK0ugJpKG" />
+      <entry key="_C:/Users/rk107/StudioProjects/wellbeing" value="3ECblcX7SEZupZF83elVT7c5SNz" />
+    </persistenceIdMap>
+  </component>
+  <component name="CopilotUserSelectedModel">
+    <selectedModels>
+      <entry key="agent-panel" value="Gemini 3.1 Pro" />
+      <entry key="chat-panel" value="Gemini 3.1 Pro" />
+    </selectedModels>
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="138" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[PhysicalDevice::serial=9P85BMOJFM6LXWTK]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="VitaAI" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Cleovage&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Cleovage/Vital_Shit_ai.git&quot;,
+    &quot;accountId&quot;: &quot;af8135c0-608f-4eb8-85da-80ab2bae7b3f&quot;
+  }
+}</component>
+  <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="C:\Users\rk107\Downloads\gradle-9.5.1-all\gradle-9.5.1" javaHome="C:\Program Files\Android\Android Studio\jbr" gradleVersion="9.5.1">
+    <option name="jvmArguments">
+      <list>
+        <option value="-Didea.compose.hot-reload=true" />
+        <option value="-Didea.compose.hot-reload.version=2" />
+      </list>
+    </option>
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0,
+  &quot;fromUser&quot;: true
+}</component>
+  <component name="ProjectId" id="3ECblcX7SEZupZF83elVT7c5SNz" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectSessionTemplates">
+    <option name="panelTemplate">
+      <template>
+        <option name="modeId" value="Agent" />
+        <option name="model">
+          <model>
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="gemini-3.1-pro-preview" />
+          </model>
+        </option>
+        <option name="targetType" value="LOCAL" />
+      </template>
+    </option>
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Android App.app.executor": "Run",
+    "Gradle.Configure Daemon JVM Criteria.executor": "Run",
+    "GradleDaemonJvmCriteriaMigrationNotification.isNotificationDisabled": "true",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "com.google.services.firebase.aqiPopupShown": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\rk107\StudioProjects\wellbeing" />
+      <recent name="C:\Users\rk107\StudioProjects\wellbeing\Context And plan" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+      <module name="VitaAI.app" />
+      <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="ALLOW_ASSUME_VERIFIED" value="false" />
+      <option name="CLEAR_APP_STORAGE" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="RESTORE_ENABLED" value="false" />
+      <option name="RESTORE_FILE" value="" />
+      <option name="RESTORE_FRESH_INSTALL_ONLY" value="false" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="DEBUGGER_TYPE" value="Auto" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+      </Hybrid>
+      <Java>
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+      </Java>
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+      </Native>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Sample (legacy)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="" />
+      <created>1779685653980</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1779685653980</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Uploading Plan pdf">
+      <option name="closed" value="true" />
+      <created>1779687487512</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1779687487512</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Uploading Plan pdf">
+      <option name="closed" value="true" />
+      <created>1779687508710</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1779687508710</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Base app">
+      <option name="closed" value="true" />
+      <created>1779688774107</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1779688774107</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Base app">
+      <option name="closed" value="true" />
+      <created>1779688786812</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1779688786812</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Implement Luminous Sanctuary design system and new feature screens&#10;&#10;- Add Activity, Analytics, and Profile screens with glassmorphism UI components.&#10;- Implement custom visual components including `ProgressRing`, `LuminousLineChart`, `LuminousBarChart`, `GlassCard`, and `AuraBackground`.&#10;- Integrate Google Fonts (Hanken Grotesk, Inter, Space Grotesk) and define a comprehensive typography scale.&#10;- Update the color palette with &quot;Deep Space&quot; backgrounds and neon accent tokens.&#10;- Refactor `DashboardScreen` and `ChatScreen` to follow the new design language.&#10;- Update `MainActivity` with a custom `GlassNavigationBar` and enable edge-to-edge display support.&#10;- Add dependencies for Google Fonts and extended Material icons.">
+      <option name="closed" value="true" />
+      <created>1779880347481</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1779880347481</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Add Color import to AnalyticsScreen&#10;&#10;- Add `androidx.compose.ui.graphics.Color` import to `AnalyticsScreen.kt`.">
+      <option name="closed" value="true" />
+      <created>1779880630506</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1779880630506</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Implement Apex Vitality design system and health data integration&#10;&#10;- Update color palette to &quot;Electric Lime&quot; and technical zinc tones, replacing the previous neon teal theme.&#10;- Replace glassmorphism components with a new &quot;Apex&quot; design language, including `ApexCard` and a technical `ApexNavigationBar`.&#10;- Integrate `HealthConnectManager` to support reading and writing steps, active calories, hydration, and exercise sessions.&#10;- Implement `LiveSensorManager` to provide real-time step count and heart rate data flows using Android hardware sensors.&#10;- Add `MoodRepository` for persisting daily user sentiment via `SharedPreferences`.&#10;- Refactor `DashboardScreen` with a bento-grid layout featuring a calorie progress ring, live metrics, and a mood tracker.&#10;- Update `ActivityScreen` to support manual telemetry input (RPE) and display recent exercise vectors.&#10;- Update `AnalyticsScreen` with daily step trends and muscle recovery metrics.&#10;- Refactor `ProfileScreen` to display body composition metrics and health data source status.&#10;- Simplify typography by transitioning to system font families and updating the `VitaTypography` scale.&#10;- Add required permissions for Health Connect and hardware sensors to `AndroidManifest.xml`.">
+      <option name="closed" value="true" />
+      <created>1779885396151</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1779885396151</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Uploading Plan pdf" />
+    <MESSAGE value="Base app" />
+    <MESSAGE value="Implement Luminous Sanctuary design system and new feature screens&#10;&#10;- Add Activity, Analytics, and Profile screens with glassmorphism UI components.&#10;- Implement custom visual components including `ProgressRing`, `LuminousLineChart`, `LuminousBarChart`, `GlassCard`, and `AuraBackground`.&#10;- Integrate Google Fonts (Hanken Grotesk, Inter, Space Grotesk) and define a comprehensive typography scale.&#10;- Update the color palette with &quot;Deep Space&quot; backgrounds and neon accent tokens.&#10;- Refactor `DashboardScreen` and `ChatScreen` to follow the new design language.&#10;- Update `MainActivity` with a custom `GlassNavigationBar` and enable edge-to-edge display support.&#10;- Add dependencies for Google Fonts and extended Material icons." />
+    <MESSAGE value="Add Color import to AnalyticsScreen&#10;&#10;- Add `androidx.compose.ui.graphics.Color` import to `AnalyticsScreen.kt`." />
+    <MESSAGE value="Implement Apex Vitality design system and health data integration&#10;&#10;- Update color palette to &quot;Electric Lime&quot; and technical zinc tones, replacing the previous neon teal theme.&#10;- Replace glassmorphism components with a new &quot;Apex&quot; design language, including `ApexCard` and a technical `ApexNavigationBar`.&#10;- Integrate `HealthConnectManager` to support reading and writing steps, active calories, hydration, and exercise sessions.&#10;- Implement `LiveSensorManager` to provide real-time step count and heart rate data flows using Android hardware sensors.&#10;- Add `MoodRepository` for persisting daily user sentiment via `SharedPreferences`.&#10;- Refactor `DashboardScreen` with a bento-grid layout featuring a calorie progress ring, live metrics, and a mood tracker.&#10;- Update `ActivityScreen` to support manual telemetry input (RPE) and display recent exercise vectors.&#10;- Update `AnalyticsScreen` with daily step trends and muscle recovery metrics.&#10;- Refactor `ProfileScreen` to display body composition metrics and health data source status.&#10;- Simplify typography by transitioning to system font families and updating the `VitaTypography` scale.&#10;- Add required permissions for Health Connect and hardware sensors to `AndroidManifest.xml`." />
+    <MESSAGE value="feat: Overhaul UI design system and enhance sensor data processing&#10;&#10;- Redesign Dashboard, Activity, Nutrition, Profile, and Session screens with a technical &quot;Command Center&quot; aesthetic and improved layouts.&#10;- Integrate `AdvancedDataProcessor` into `LiveSensorManager` to provide filtered step counts and smoothed heart rate telemetry.&#10;- Implement `LuminousDonutChart` and add interactive touch support with tooltips to line and bar charts.&#10;- Update `ApexCard` with support for technical headers and `AuraBackground` with an optional grid overlay.&#10;- Categorize metrics in `AnalyticsScreen` into Activity, Vitals, and Nutrition sections for better data organization.&#10;- Refactor the active workout HUD in `SessionScreen` with a high-contrast timer and real-time biometric tiles.&#10;- Update project dependencies including Hilt, Kotlin, and Gradle plugin versions.&#10;- Clean up IDE configuration files and update workspace settings." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: Overhaul UI design system and enhance sensor data processing&#10;&#10;- Redesign Dashboard, Activity, Nutrition, Profile, and Session screens with a technical &quot;Command Center&quot; aesthetic and improved layouts.&#10;- Integrate `AdvancedDataProcessor` into `LiveSensorManager` to provide filtered step counts and smoothed heart rate telemetry.&#10;- Implement `LuminousDonutChart` and add interactive touch support with tooltips to line and bar charts.&#10;- Update `ApexCard` with support for technical headers and `AuraBackground` with an optional grid overlay.&#10;- Categorize metrics in `AnalyticsScreen` into Activity, Vitals, and Nutrition sections for better data organization.&#10;- Refactor the active workout HUD in `SessionScreen` with a high-contrast timer and real-time biometric tiles.&#10;- Update project dependencies including Hilt, Kotlin, and Gradle plugin versions.&#10;- Clean up IDE configuration files and update workspace settings." />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+  <component name="play_dynamic_filters_status">
+    <option name="appIdToCheckInfo">
+      <map>
+        <entry key="com.example.vitaai">
+          <value>
+            <CheckInfo lastCheckTimestamp="1779877695179" />
+          </value>
+        </entry>
+        <entry key="com.example.vitaai.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1779877695161" />
+          </value>
+        </entry>
+        <entry key="com.vitaai.wellbeing">
+          <value>
+            <CheckInfo lastCheckTimestamp="1779698436915" />
+          </value>
+        </entry>
+        <entry key="com.vitaai.wellbeing.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1779698436915" />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
