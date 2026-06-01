@@ -42,28 +42,19 @@ class VitaRepository @Inject constructor(
         val startOfDay = startOfLocalDay(now)
         
         val steps = healthConnectManager.readDailySteps(startOfDay, now)
-        val hrSamples = healthConnectManager.readHeartRate(startOfDay, now)
+        val avgHr = healthConnectManager.readAvgHeartRate(startOfDay, now)
         val hourlyHeartRate = healthConnectManager.readHourlyHeartRate(startOfDay, now)
-        val sleepSessions = healthConnectManager.readSleepSessions(
+        val sleepDuration = healthConnectManager.readSleepDuration(
             now.minus(24, ChronoUnit.HOURS),
             now
         )
-        var calories = healthConnectManager.readDailyCalories(startOfDay, now)
+        val calories = healthConnectManager.readDailyCalories(startOfDay, now)
         val hydration = healthConnectManager.readDailyHydration(startOfDay, now)
         val hourlySteps = healthConnectManager.readHourlySteps(startOfDay, now)
         val distance = healthConnectManager.readDistance(startOfDay, now)
         val exerciseMinutes = healthConnectManager.readDailyExerciseMinutes(startOfDay, now)
         val nutrition = healthConnectManager.readDailyNutrition(startOfDay, now)
         
-        val avgHr = if (hrSamples.isNotEmpty()) hrSamples.average() else 0.0
-        val sleepDuration = sleepSessions.sumOf { 
-            java.time.Duration.between(it.startTime, it.endTime).toMinutes() 
-        } / 60.0
-
-        // if (calories == 0.0 && steps > 0) {
-        //    calories = advancedDataProcessor.estimateCaloriesFromSteps(steps)
-        // }
-
         return HealthSnapshot(
             steps = steps,
             avgHeartRate = avgHr,

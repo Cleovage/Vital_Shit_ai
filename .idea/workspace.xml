@@ -16,9 +16,25 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="feat: Overhaul UI design system and enhance sensor data processing&#10;&#10;- Redesign Dashboard, Activity, Nutrition, Profile, and Session screens with a technical &quot;Command Center&quot; aesthetic and improved layouts.&#10;- Integrate `AdvancedDataProcessor` into `LiveSensorManager` to provide filtered step counts and smoothed heart rate telemetry.&#10;- Implement `LuminousDonutChart` and add interactive touch support with tooltips to line and bar charts.&#10;- Update `ApexCard` with support for technical headers and `AuraBackground` with an optional grid overlay.&#10;- Categorize metrics in `AnalyticsScreen` into Activity, Vitals, and Nutrition sections for better data organization.&#10;- Refactor the active workout HUD in `SessionScreen` with a high-contrast timer and real-time biometric tiles.&#10;- Update project dependencies including Hilt, Kotlin, and Gradle plugin versions.&#10;- Clean up IDE configuration files and update workspace settings.">
+    <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/planningMode.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/planningMode.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/data/HealthConnectManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/data/HealthConnectManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/ActivityScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/ActivityScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/ActivityViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/ActivityViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/AnalyticsScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/AnalyticsScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/AnalyticsViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/AnalyticsViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/DashboardScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/DashboardScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/DashboardViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/DashboardViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/MetricDetailScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/MetricDetailScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/MetricDetailViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/MetricDetailViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/SessionScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/bin/main/com/example/vitaai/ui/screens/SessionScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/AdvancedDataProcessor.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/AdvancedDataProcessor.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/HealthConnectManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/HealthConnectManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/NutritionRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/NutritionRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/VitaRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/VitaRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/WorkoutRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/WorkoutRepository.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +47,7 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="d747075c-55bd-4de3-9abf-7170dc00f35c" />
+        <option name="activeSessionId" value="ea23d6c0-bffb-42cb-aae0-2dba677e9c9f" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
@@ -91,6 +107,14 @@
             <option name="modelValue" value="auto" />
             <option name="targetType" value="LOCAL" />
           </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="ea23d6c0-bffb-42cb-aae0-2dba677e9c9f" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
         </option>
         <option name="type" value="PANEL" />
       </chat>
@@ -100,6 +124,7 @@
     <persistenceIdMap>
       <entry key="_C:/Users/rk107/.codex/worktrees/67b4/wellbeing" value="3EJeBMYUMbjkAvbYDyNK0ugJpKG" />
       <entry key="_C:/Users/rk107/StudioProjects/wellbeing" value="3ECblcX7SEZupZF83elVT7c5SNz" />
+      <entry key="_C:/Users/rk107/wellbeing_fresh" value="3ERNRf0I4ljGZD4tMzNxl2avmbY" />
     </persistenceIdMap>
   </component>
   <component name="CopilotUserSelectedModel">
@@ -109,9 +134,9 @@
     </selectedModels>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="138" />
+    <option name="cachedIndexableFilesCount" value="5" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[PhysicalDevice::serial=9P85BMOJFM6LXWTK]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -210,9 +235,10 @@
     "cidr.known.project.marker": "true",
     "com.google.services.firebase.aqiPopupShown": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/rk107/wellbeing_fresh",
     "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
     "show.migrate.to.gradle.popup": "false"
   }

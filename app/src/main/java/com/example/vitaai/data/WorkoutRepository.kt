@@ -6,7 +6,9 @@ import com.example.vitaai.data.local.RoutePointEntity
 import com.example.vitaai.data.local.VitaDao
 import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.data.local.WorkoutTemplateEntity
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.time.Instant
 import java.time.ZoneId
 import javax.inject.Inject
@@ -41,7 +43,36 @@ class WorkoutRepository @Inject constructor(
 ) {
     fun observeTemplates(): Flow<List<WorkoutTemplateEntity>> = dao.observeWorkoutTemplates()
 
-    fun observeRecentSessions(limit: Int = 8): Flow<List<WorkoutSessionEntity>> = dao.observeRecentWorkoutSessions(limit)
+    fun observeRecentSessions(limit: Int = 8): Flow<List<WorkoutSessionEntity>> = flow {
+        while (true) {
+            val now = Instant.now()
+            val thirtyDaysAgo = now.minus(java.time.Duration.ofDays(30))
+            
+            val sessions = healthConnectManager.readExerciseSessions(thirtyDaysAgo, now)
+                .sortedByDescending { it.startTime }
+                .take(limit)
+                .map { record ->
+                    WorkoutSessionEntity(
+                        id = 0L, 
+                        templateId = "",
+                        title = record.title ?: "Workout",
+                        category = "HC",
+                        startTimeMillis = record.startTime.toEpochMilli(),
+                        endTimeMillis = record.endTime.toEpochMilli(),
+                        durationSeconds = java.time.Duration.between(record.startTime, record.endTime).seconds,
+                        totalSets = 0,
+                        totalReps = 0,
+                        calories = 0.0,
+                        avgHeartRate = 0.0,
+                        distanceMeters = 0.0,
+                        notes = record.notes ?: "",
+                        completed = true
+                    )
+                }
+            emit(sessions)
+            delay(30000)
+        }
+    }
 
     suspend fun getTemplate(id: String): WorkoutTemplateEntity? {
         seedDefaultTemplatesIfNeeded()

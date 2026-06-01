@@ -5,6 +5,8 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.*
 import androidx.health.connect.client.records.metadata.Metadata
+import androidx.health.connect.client.request.AggregateGroupByDurationRequest
+import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.health.connect.client.units.Energy
@@ -62,19 +64,23 @@ class HealthConnectManager @Inject constructor(
 
     suspend fun readDailySteps(startTime: Instant, endTime: Instant): Long {
         return try {
-            val response = healthConnectClient.readRecords(
-                ReadRecordsRequest(
-                    StepsRecord::class,
+            val response = healthConnectClient.aggregate(
+                AggregateRequest(
+                    metrics = setOf(StepsRecord.COUNT_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
                 )
             )
-            response.records.sumOf { it.count }
+            response[StepsRecord.COUNT_TOTAL] ?: 0L
         } catch (e: Exception) {
             0L
         }
     }
 
     suspend fun readHeartRate(startTime: Instant, endTime: Instant): List<Long> {
+        // Since we want to let HC do calculations, we can still read raw for specific lists,
+        // but for snapshot we'll use an aggregate BPM_AVG if needed.
+        // Keeping this for now as it's used for averaging in Repository, 
+        // but adding an aggregate method too.
         return try {
             val response = healthConnectClient.readRecords(
                 ReadRecordsRequest(
@@ -87,6 +93,35 @@ class HealthConnectManager @Inject constructor(
             }
         } catch (e: Exception) {
             emptyList()
+        }
+    }
+
+    suspend fun readAvgHeartRate(startTime: Instant, endTime: Instant): Double {
+        return try {
+            val response = healthConnectClient.aggregate(
+                AggregateRequest(
+                    metrics = setOf(HeartRateRecord.BPM_AVG),
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            response[HeartRateRecord.BPM_AVG]?.toDouble() ?: 0.0
+        } catch (e: Exception) {
+            0.0
+        }
+    }
+
+    suspend fun readSleepDuration(startTime: Instant, endTime: Instant): Double {
+        return try {
+            val response = healthConnectClient.aggregate(
+                AggregateRequest(
+                    metrics = setOf(SleepSessionRecord.SLEEP_DURATION_TOTAL),
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            val duration = response[SleepSessionRecord.SLEEP_DURATION_TOTAL]
+            duration?.toMinutes()?.toDouble()?.div(60.0) ?: 0.0
+        } catch (e: Exception) {
+            0.0
         }
     }
 
@@ -106,13 +141,13 @@ class HealthConnectManager @Inject constructor(
 
     suspend fun readDailyCalories(startTime: Instant, endTime: Instant): Double {
         return try {
-            val response = healthConnectClient.readRecords(
-                ReadRecordsRequest(
-                    ActiveCaloriesBurnedRecord::class,
+            val response = healthConnectClient.aggregate(
+                AggregateRequest(
+                    metrics = setOf(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
                 )
             )
-            response.records.sumOf { it.energy.inKilocalories }
+            response[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories ?: 0.0
         } catch (e: Exception) {
             0.0
         }
@@ -120,13 +155,13 @@ class HealthConnectManager @Inject constructor(
 
     suspend fun readDailyHydration(startTime: Instant, endTime: Instant): Double {
         return try {
-            val response = healthConnectClient.readRecords(
-                ReadRecordsRequest(
-                    HydrationRecord::class,
+            val response = healthConnectClient.aggregate(
+                AggregateRequest(
+                    metrics = setOf(HydrationRecord.VOLUME_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
                 )
             )
-            response.records.sumOf { it.volume.inLiters }
+            response[HydrationRecord.VOLUME_TOTAL]?.inLiters ?: 0.0
         } catch (e: Exception) {
             0.0
         }
@@ -238,13 +273,13 @@ class HealthConnectManager @Inject constructor(
 
     suspend fun readDistance(startTime: Instant, endTime: Instant): Double {
         return try {
-            val response = healthConnectClient.readRecords(
-                ReadRecordsRequest(
-                    DistanceRecord::class,
+            val response = healthConnectClient.aggregate(
+                AggregateRequest(
+                    metrics = setOf(DistanceRecord.DISTANCE_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
                 )
             )
-            response.records.sumOf { it.distance.inMeters }
+            response[DistanceRecord.DISTANCE_TOTAL]?.inMeters ?: 0.0
         } catch (e: Exception) {
             0.0
         }
@@ -252,15 +287,16 @@ class HealthConnectManager @Inject constructor(
 
     suspend fun readHourlySteps(startTime: Instant, endTime: Instant): Map<Instant, Long> {
         return try {
-            val response = healthConnectClient.readRecords(
-                ReadRecordsRequest(
-                    StepsRecord::class,
-                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+            val response = healthConnectClient.aggregateGroupByDuration(
+                AggregateGroupByDurationRequest(
+                    metrics = setOf(StepsRecord.COUNT_TOTAL),
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
+                    timeRangeSlicer = Duration.ofHours(1)
                 )
             )
-            response.records
-                .groupBy { it.startTime.truncatedTo(ChronoUnit.HOURS) }
-                .mapValues { (_, records) -> records.sumOf { it.count } }
+            response.associate { bucket ->
+                bucket.startTime to (bucket.result[StepsRecord.COUNT_TOTAL] ?: 0L)
+            }
         } catch (e: Exception) {
             emptyMap()
         }
@@ -268,16 +304,16 @@ class HealthConnectManager @Inject constructor(
 
     suspend fun readHourlyHeartRate(startTime: Instant, endTime: Instant): Map<Instant, Double> {
         return try {
-            val response = healthConnectClient.readRecords(
-                ReadRecordsRequest(
-                    HeartRateRecord::class,
-                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+            val response = healthConnectClient.aggregateGroupByDuration(
+                AggregateGroupByDurationRequest(
+                    metrics = setOf(HeartRateRecord.BPM_AVG),
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
+                    timeRangeSlicer = Duration.ofHours(1)
                 )
             )
-            response.records
-                .flatMap { record -> record.samples }
-                .groupBy { sample -> sample.time.truncatedTo(ChronoUnit.HOURS) }
-                .mapValues { (_, samples) -> samples.map { it.beatsPerMinute.toDouble() }.average() }
+            response.associate { bucket ->
+                bucket.startTime to (bucket.result[HeartRateRecord.BPM_AVG]?.toDouble() ?: 0.0)
+            }
         } catch (e: Exception) {
             emptyMap()
         }
@@ -285,29 +321,39 @@ class HealthConnectManager @Inject constructor(
 
     suspend fun readDailyNutrition(startTime: Instant, endTime: Instant): NutritionTotals {
         return try {
-            val response = healthConnectClient.readRecords(
-                ReadRecordsRequest(
-                    NutritionRecord::class,
+            val response = healthConnectClient.aggregate(
+                AggregateRequest(
+                    metrics = setOf(
+                        NutritionRecord.ENERGY_TOTAL,
+                        NutritionRecord.PROTEIN_TOTAL,
+                        NutritionRecord.TOTAL_CARBOHYDRATE_TOTAL,
+                        NutritionRecord.TOTAL_FAT_TOTAL
+                    ),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
                 )
             )
-            response.records.fold(NutritionTotals()) { acc, record ->
-                NutritionTotals(
-                    calories = acc.calories + (record.energy?.inKilocalories ?: 0.0),
-                    proteinGrams = acc.proteinGrams + (record.protein?.inGrams ?: 0.0),
-                    carbsGrams = acc.carbsGrams + (record.totalCarbohydrate?.inGrams ?: 0.0),
-                    fatGrams = acc.fatGrams + (record.totalFat?.inGrams ?: 0.0)
-                )
-            }
+            NutritionTotals(
+                calories = response[NutritionRecord.ENERGY_TOTAL]?.inKilocalories ?: 0.0,
+                proteinGrams = response[NutritionRecord.PROTEIN_TOTAL]?.inGrams ?: 0.0,
+                carbsGrams = response[NutritionRecord.TOTAL_CARBOHYDRATE_TOTAL]?.inGrams ?: 0.0,
+                fatGrams = response[NutritionRecord.TOTAL_FAT_TOTAL]?.inGrams ?: 0.0
+            )
         } catch (e: Exception) {
             NutritionTotals()
         }
     }
 
     suspend fun readDailyExerciseMinutes(startTime: Instant, endTime: Instant): Double {
-        val sessions = readExerciseSessions(startTime, endTime)
-        return sessions.sumOf { session ->
-            Duration.between(session.startTime, session.endTime).toMinutes().toDouble()
+        return try {
+            val response = healthConnectClient.aggregate(
+                AggregateRequest(
+                    metrics = setOf(ExerciseSessionRecord.EXERCISE_DURATION_TOTAL),
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            response[ExerciseSessionRecord.EXERCISE_DURATION_TOTAL]?.toMinutes()?.toDouble() ?: 0.0
+        } catch (e: Exception) {
+            0.0
         }
     }
 }
