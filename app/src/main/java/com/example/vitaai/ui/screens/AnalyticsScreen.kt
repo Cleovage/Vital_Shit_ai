@@ -33,12 +33,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vitaai.ui.components.ApexCard
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.components.LuminousBarChart
 import com.example.vitaai.ui.components.LuminousDonutChart
 import com.example.vitaai.ui.components.LuminousLineChart
+import com.example.vitaai.ui.components.LuminousStackedBarChart
 import com.example.vitaai.ui.theme.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -85,6 +87,33 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                     val activityCards = state.cards.filter { it.title in listOf("Steps", "Distance", "Calories Burned", "Workouts", "Exercise Minutes") }
                     val vitalsCards = state.cards.filter { it.title in listOf("Heart Rate", "Sleep") }
                     val nutritionCards = state.cards.filter { it.title in listOf("Calories In", "Hydration", "Macro Balance", "Protein") }
+
+                    item {
+                        ApexCard(
+                            modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 8.dp),
+                            title = "Tactical Analysis",
+                            containerColor = Primary.copy(alpha = 0.05f)
+                        ) {
+                            Row(
+                                Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Box(
+                                    Modifier
+                                        .size(4.dp, 40.dp)
+                                        .background(Primary, MaterialTheme.shapes.extraSmall)
+                                )
+                                Text(
+                                    text = state.aiInsight.uppercase(),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = OnBackground,
+                                    fontWeight = FontWeight.Medium,
+                                    lineHeight = 18.sp
+                                )
+                            }
+                        }
+                    }
 
                     if (activityCards.isNotEmpty()) {
                         item {
@@ -162,7 +191,17 @@ private fun AnalyticsCard(card: AnalyticsMetricCard, timeframe: Int) {
                         glowColor = metricColor.copy(alpha = 0.35f),
                         xAxisLabels = axisLabels,
                         yAxisLabelFormatter = { value -> formatAxisValue(value, card.unit) },
+                        showGrid = false,
                         modifier = Modifier.fillMaxWidth().height(130.dp)
+                    )
+                }
+                card.stackedValues != null -> {
+                    LuminousStackedBarChart(
+                        dataPoints = card.stackedValues,
+                        xAxisLabels = axisLabels,
+                        yAxisLabelFormatter = { value -> formatAxisValue(value, card.unit) },
+                        showGrid = false,
+                        modifier = Modifier.fillMaxWidth().height(140.dp)
                     )
                 }
                 else -> {
@@ -172,6 +211,7 @@ private fun AnalyticsCard(card: AnalyticsMetricCard, timeframe: Int) {
                         glowColor = metricColor.copy(alpha = 0.3f),
                         xAxisLabels = axisLabels,
                         yAxisLabelFormatter = { value -> formatAxisValue(value, card.unit) },
+                        showGrid = false,
                         modifier = Modifier.fillMaxWidth().height(120.dp)
                     )
                 }

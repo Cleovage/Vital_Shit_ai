@@ -873,6 +873,373 @@ fun LuminousDonutChart(
     }
 }
 
+/**
+ * Luminous stacked bar chart with vertical linear gradients for two-part data.
+ */
+@Composable
+fun LuminousStackedBarChart(
+    dataPoints: List<Pair<Float, Float>>, // Pair(BottomValue, TopValue)
+    modifier: Modifier = Modifier,
+    height: Dp = 180.dp,
+    bottomColor: Color = Color(0xFF448AFF), // Idle (Blue)
+    topColor: Color = Color(0xFFFFAB40),   // Active (Orange)
+    barSpacing: Float = 0.3f,
+    xAxisLabels: List<String> = emptyList(),
+    yAxisTicks: Int = 5,
+    yAxisLabelFormatter: (Float) -> String = { value -> formatAxisValue(value) },
+    showGrid: Boolean = true,
+    showAxes: Boolean = true,
+    axisColor: Color = OutlineVariant,
+    labelColor: Color = OnSurfaceVariant,
+    labelTextSize: TextUnit = 10.sp
+) {
+    if (dataPoints.isEmpty()) return
+    
+    var selectedIndex by remember { mutableStateOf<Int?>(null) }
+
+    Canvas(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(height)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .pointerInput(dataPoints) {
+                detectDragGestures(
+                    onDragStart = { },
+                    onDragEnd = { selectedIndex = null },
+                    onDragCancel = { selectedIndex = null },
+                    onDrag = { change, _ ->
+                        val w = size.width
+                        val labelTextSizePx = labelTextSize.toPx()
+                        val axisTickLength = 4.dp.toPx()
+                        val labelPadding = 6.dp.toPx()
+                        val rightPadding = 8.dp.toPx()
+                        
+                        val maxVal = dataPoints.maxOfOrNull { it.first + it.second } ?: 0f
+                        val axisMax = if (maxVal <= 0f) 1f else maxVal
+                        val axisMin = 0f
+                        
+                        val tickCount = yAxisTicks.coerceAtLeast(2)
+                        val range = (axisMax - axisMin).coerceAtLeast(1f)
+                        val yTickValues = (0 until tickCount).map { index ->
+                            axisMin + (range * (index / (tickCount - 1f)))
+                        }
+                        val yLabels = yTickValues.map(yAxisLabelFormatter)
+                        val textPaint = Paint().apply {
+                            isAntiAlias = true
+                            color = labelColor.toArgb()
+                            textSize = labelTextSizePx
+                        }
+                        val maxLabelWidth = if (yLabels.isNotEmpty()) yLabels.maxOf { textPaint.measureText(it) } else 0f
+                        val leftPadding = if (showAxes || yLabels.isNotEmpty()) {
+                            kotlin.math.max(28.dp.toPx(), maxLabelWidth + labelPadding + axisTickLength)
+                        } else {
+                            8.dp.toPx()
+                        }
+                        
+                        val chartLeft = leftPadding
+                        val chartRight = w - rightPadding
+                        val chartWidth = (chartRight - chartLeft).coerceAtLeast(1f)
+                        val totalBarWidth = chartWidth / dataPoints.size
+                        
+                        val touchX = change.position.x
+                        if (touchX in chartLeft..chartRight) {
+                            selectedIndex = ((touchX - chartLeft) / totalBarWidth).toInt().coerceIn(0, dataPoints.lastIndex)
+                        } else {
+                            selectedIndex = null
+                        }
+                    }
+                )
+            }
+            .pointerInput(dataPoints) {
+                detectTapGestures(
+                    onPress = { offset ->
+                        val w = size.width
+                        val labelTextSizePx = labelTextSize.toPx()
+                        val axisTickLength = 4.dp.toPx()
+                        val labelPadding = 6.dp.toPx()
+                        val rightPadding = 8.dp.toPx()
+                        
+                        val maxVal = dataPoints.maxOfOrNull { it.first + it.second } ?: 0f
+                        val axisMax = if (maxVal <= 0f) 1f else maxVal
+                        val axisMin = 0f
+                        
+                        val tickCount = yAxisTicks.coerceAtLeast(2)
+                        val range = (axisMax - axisMin).coerceAtLeast(1f)
+                        val yTickValues = (0 until tickCount).map { index ->
+                            axisMin + (range * (index / (tickCount - 1f)))
+                        }
+                        val yLabels = yTickValues.map(yAxisLabelFormatter)
+                        val textPaint = Paint().apply {
+                            isAntiAlias = true
+                            color = labelColor.toArgb()
+                            textSize = labelTextSizePx
+                        }
+                        val maxLabelWidth = if (yLabels.isNotEmpty()) yLabels.maxOf { textPaint.measureText(it) } else 0f
+                        val leftPadding = if (showAxes || yLabels.isNotEmpty()) {
+                            kotlin.math.max(28.dp.toPx(), maxLabelWidth + labelPadding + axisTickLength)
+                        } else {
+                            8.dp.toPx()
+                        }
+                        
+                        val chartLeft = leftPadding
+                        val chartRight = w - rightPadding
+                        val chartWidth = (chartRight - chartLeft).coerceAtLeast(1f)
+                        val totalBarWidth = chartWidth / dataPoints.size
+                        
+                        val touchX = offset.x
+                        if (touchX in chartLeft..chartRight) {
+                            selectedIndex = ((touchX - chartLeft) / totalBarWidth).toInt().coerceIn(0, dataPoints.lastIndex)
+                        }
+                        
+                        tryAwaitRelease()
+                        selectedIndex = null
+                    }
+                )
+            }
+    ) {
+        val w = size.width
+        val h = size.height
+        val labelTextSizePx = labelTextSize.toPx()
+        val axisStroke = 1.dp.toPx()
+        val axisTickLength = 4.dp.toPx()
+        val labelPadding = 6.dp.toPx()
+        val rightPadding = 8.dp.toPx()
+        val topPadding = 8.dp.toPx()
+        val bottomPadding = if (xAxisLabels.isNotEmpty()) kotlin.math.max(20.dp.toPx(), labelTextSizePx * 2.2f) else 8.dp.toPx()
+
+        val maxVal = dataPoints.maxOfOrNull { it.first + it.second } ?: 0f
+        val axisMax = if (maxVal <= 0f) 1f else maxVal
+        val axisMin = 0f
+        val range = (axisMax - axisMin).coerceAtLeast(1f)
+        val tickCount = yAxisTicks.coerceAtLeast(2)
+        val yTickValues = (0 until tickCount).map { index ->
+            axisMin + (range * (index / (tickCount - 1f)))
+        }
+        val yLabels = yTickValues.map(yAxisLabelFormatter)
+        val textPaint = Paint().apply {
+            isAntiAlias = true
+            color = labelColor.toArgb()
+            textSize = labelTextSizePx
+        }
+        val maxLabelWidth = if (yLabels.isNotEmpty()) yLabels.maxOf { textPaint.measureText(it) } else 0f
+        val leftPadding = if (showAxes || yLabels.isNotEmpty()) {
+            kotlin.math.max(28.dp.toPx(), maxLabelWidth + labelPadding + axisTickLength)
+        } else {
+            8.dp.toPx()
+        }
+
+        val chartLeft = leftPadding
+        val chartTop = topPadding
+        val chartRight = w - rightPadding
+        val chartBottom = h - bottomPadding
+        val chartWidth = (chartRight - chartLeft).coerceAtLeast(1f)
+        val chartHeight = (chartBottom - chartTop).coerceAtLeast(1f)
+
+        val totalBarWidth = chartWidth / dataPoints.size
+        val gap = totalBarWidth * barSpacing
+        val barWidth = totalBarWidth - gap
+
+        val gridColor = axisColor.copy(alpha = 0.2f)
+        if (showGrid) {
+            yTickValues.forEach { value ->
+                val y = chartBottom - ((value - axisMin) / range) * chartHeight
+                drawLine(
+                    color = gridColor,
+                    start = Offset(chartLeft, y),
+                    end = Offset(chartRight, y),
+                    strokeWidth = axisStroke
+                )
+            }
+
+            if (xAxisLabels.size > 1) {
+                val xStep = if (xAxisLabels.size == dataPoints.size) totalBarWidth else chartWidth / (xAxisLabels.size - 1)
+                xAxisLabels.forEachIndexed { index, _ ->
+                    val x = if (xAxisLabels.size == dataPoints.size) {
+                        chartLeft + index * totalBarWidth + gap / 2 + barWidth / 2
+                    } else {
+                        chartLeft + index * xStep
+                    }
+                    drawLine(
+                        color = gridColor,
+                        start = Offset(x, chartTop),
+                        end = Offset(x, chartBottom),
+                        strokeWidth = axisStroke
+                    )
+                }
+            }
+        }
+
+        dataPoints.forEachIndexed { i, valuePair ->
+            val bottomVal = valuePair.first
+            val topVal = valuePair.second
+            
+            val bottomHeight = (bottomVal / axisMax) * chartHeight
+            val topHeight = (topVal / axisMax) * chartHeight
+            
+            val x = chartLeft + i * totalBarWidth + gap / 2
+            
+            val isSelected = selectedIndex == i
+            val currentBottomColor = bottomColor.copy(alpha = if (isSelected) 1f else 0.7f)
+            val currentTopColor = topColor.copy(alpha = if (isSelected) 1f else 0.7f)
+
+            // Draw Bottom Bar
+            val bottomY = chartBottom - bottomHeight
+            if (bottomHeight > 0) {
+                drawRoundRect(
+                    color = currentBottomColor,
+                    topLeft = Offset(x, bottomY),
+                    size = Size(barWidth, bottomHeight),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(if (topHeight <= 0) barWidth / 3 else 0f)
+                )
+            }
+            
+            // Draw Top Bar
+            if (topHeight > 0) {
+                val topY = bottomY - topHeight
+                drawRoundRect(
+                    color = currentTopColor,
+                    topLeft = Offset(x, topY),
+                    size = Size(barWidth, topHeight),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(barWidth / 3, barWidth / 3)
+                )
+            }
+        }
+
+        if (showAxes) {
+            drawLine(
+                color = axisColor,
+                start = Offset(chartLeft, chartTop),
+                end = Offset(chartLeft, chartBottom),
+                strokeWidth = axisStroke
+            )
+            drawLine(
+                color = axisColor,
+                start = Offset(chartLeft, chartBottom),
+                end = Offset(chartRight, chartBottom),
+                strokeWidth = axisStroke
+            )
+        }
+        
+        // Draw interactive tooltip for bars
+        selectedIndex?.let { index ->
+            val valuePair = dataPoints[index]
+            val totalVal = valuePair.first + valuePair.second
+            
+            val totalHeight = (totalVal / axisMax) * chartHeight
+            val x = chartLeft + index * totalBarWidth + gap / 2 + barWidth / 2
+            val y = chartBottom - totalHeight
+            
+            val valueStr = yAxisLabelFormatter(totalVal)
+            val bStr = yAxisLabelFormatter(valuePair.first)
+            val tStr = yAxisLabelFormatter(valuePair.second)
+            val labelStr = if (index < xAxisLabels.size) xAxisLabels[index] else ""
+            
+            drawIntoCanvas { canvas ->
+                val tooltipTextPaint = Paint().apply {
+                    color = Color.White.toArgb()
+                    textSize = labelTextSizePx * 1.2f
+                    isAntiAlias = true
+                    textAlign = Paint.Align.CENTER
+                }
+                val detailTextPaint = Paint().apply {
+                    color = Color.LightGray.toArgb()
+                    textSize = labelTextSizePx * 0.9f
+                    isAntiAlias = true
+                    textAlign = Paint.Align.CENTER
+                }
+                
+                val tooltipBgPaint = Paint().apply {
+                    color = Color.DarkGray.toArgb()
+                    alpha = 220
+                    isAntiAlias = true
+                }
+                
+                val textToDraw = "$valueStr ${if (labelStr.isNotEmpty()) "($labelStr)" else ""}"
+                val detailStr = "Idle: $bStr | Act: $tStr"
+                
+                val textWidth = kotlin.math.max(tooltipTextPaint.measureText(textToDraw), detailTextPaint.measureText(detailStr))
+                val padding = 16f
+                
+                var tooltipX = x
+                if (tooltipX - textWidth / 2 - padding < chartLeft) {
+                    tooltipX = chartLeft + textWidth / 2 + padding
+                } else if (tooltipX + textWidth / 2 + padding > chartRight) {
+                    tooltipX = chartRight - textWidth / 2 - padding
+                }
+                
+                val tooltipY = y - 40f
+                val bgRect = android.graphics.RectF(
+                    tooltipX - textWidth / 2 - padding,
+                    tooltipY - tooltipTextPaint.textSize - padding,
+                    tooltipX + textWidth / 2 + padding,
+                    tooltipY + detailTextPaint.textSize + padding
+                )
+                
+                canvas.nativeCanvas.drawRoundRect(bgRect, 8f, 8f, tooltipBgPaint)
+                canvas.nativeCanvas.drawText(textToDraw, tooltipX, tooltipY, tooltipTextPaint)
+                canvas.nativeCanvas.drawText(detailStr, tooltipX, tooltipY + detailTextPaint.textSize + 4f, detailTextPaint)
+            }
+        }
+
+        drawIntoCanvas { canvas ->
+            val tickPaint = Paint().apply {
+                color = axisColor.toArgb()
+                strokeWidth = axisStroke
+                isAntiAlias = true
+                style = Paint.Style.STROKE
+            }
+
+            if (yLabels.isNotEmpty()) {
+                val yPaint = Paint(textPaint).apply { textAlign = Paint.Align.RIGHT }
+                yLabels.forEachIndexed { index, label ->
+                    val value = yTickValues[index]
+                    val y = chartBottom - ((value - axisMin) / range) * chartHeight
+                    canvas.nativeCanvas.drawText(label, chartLeft - labelPadding, y + labelTextSizePx * 0.35f, yPaint)
+                    if (showAxes) {
+                        canvas.nativeCanvas.drawLine(
+                            chartLeft - axisTickLength,
+                            y,
+                            chartLeft,
+                            y,
+                            tickPaint
+                        )
+                    }
+                }
+            }
+
+            if (xAxisLabels.isNotEmpty()) {
+                val xPaint = Paint(textPaint).apply { textAlign = Paint.Align.CENTER }
+                val xStep = if (xAxisLabels.size == dataPoints.size) totalBarWidth else chartWidth / (xAxisLabels.size - 1).coerceAtLeast(1)
+                val minSpacing = labelTextSizePx * 3.2f
+                var lastX = -Float.MAX_VALUE
+
+                xAxisLabels.forEachIndexed { index, label ->
+                    val x = if (xAxisLabels.size == dataPoints.size) {
+                        chartLeft + index * totalBarWidth + gap / 2 + barWidth / 2
+                    } else {
+                        chartLeft + index * xStep
+                    }
+                    val labelWidth = xPaint.measureText(label)
+                    val desiredSpacing = kotlin.math.max(minSpacing, labelWidth * 0.75f)
+                    val isEdge = index == 0 || index == xAxisLabels.lastIndex
+                    if (!isEdge && x - lastX < desiredSpacing) return@forEachIndexed
+                    lastX = x
+                    canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xPaint)
+                    if (showAxes) {
+                        canvas.nativeCanvas.drawLine(
+                            x,
+                            chartBottom,
+                            x,
+                            chartBottom + axisTickLength,
+                            tickPaint
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 private fun formatAxisValue(value: Float): String {
     val absValue = abs(value)
     return when {

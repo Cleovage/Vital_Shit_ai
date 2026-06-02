@@ -58,6 +58,7 @@ import com.example.vitaai.data.NutritionSummary
 import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.ui.components.ApexCard
 import com.example.vitaai.ui.components.AuraBackground
+import com.example.vitaai.data.GoalProgress
 import com.example.vitaai.ui.theme.Error
 import com.example.vitaai.ui.theme.OnBackground
 import com.example.vitaai.ui.theme.OnPrimary
@@ -84,6 +85,8 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
                 mood = state.mood,
                 nutrition = state.nutrition,
                 recentWorkouts = state.recentWorkouts,
+                goalProgress = state.goalProgress,
+                streakDays = state.streakDays,
                 viewModel = viewModel,
                 navController = navController
             )
@@ -131,6 +134,8 @@ private fun DashboardContent(
     mood: MoodEntry?,
     nutrition: NutritionSummary,
     recentWorkouts: List<WorkoutSessionEntity>,
+    goalProgress: GoalProgress,
+    streakDays: Int,
     viewModel: DashboardViewModel,
     navController: NavController
 ) {
@@ -163,6 +168,15 @@ private fun DashboardContent(
                             color = OnBackground,
                             fontWeight = FontWeight.Bold
                         )
+                        if (streakDays > 0) {
+                            Text(
+                                text = "$streakDays DAY STREAK \uD83D\uDD25",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color(0xFFFF9800),
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
                     }
                     Button(
                         onClick = { navController.navigate("activity") },
@@ -211,6 +225,31 @@ private fun DashboardContent(
                         icon = Icons.Default.Whatshot,
                         modifier = Modifier.weight(1f)
                     )
+                }
+            }
+        }
+
+        // --- 2.5. DAILY DIRECTIVES (Gamification Goals) ---
+        item {
+            ApexCard(
+                modifier = Modifier.fillMaxWidth(),
+                title = "Daily Directives"
+            ) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    GoalProgressBar(label = "STEPS", progress = goalProgress.stepsProgress, color = Primary)
+                    GoalProgressBar(label = "HYDRATION", progress = goalProgress.hydrationProgress, color = Color(0xFF00B0FF))
+                    GoalProgressBar(label = "EXERCISE", progress = goalProgress.exerciseProgress, color = Color(0xFF4CAF50))
+                    GoalProgressBar(label = "BURN", progress = goalProgress.caloriesBurnProgress, color = Color(0xFFFF5722))
+                    
+                    if (goalProgress.allGoalsMet) {
+                        Text(
+                            text = "ALL DIRECTIVES COMPLETED",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color(0xFF4CAF50),
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    }
                 }
             }
         }
@@ -439,5 +478,19 @@ private fun MacroBar(nutrition: NutritionSummary) {
         Box(Modifier.weight((nutrition.proteinGrams / total).toFloat().coerceAtLeast(0.05f)).fillMaxSize().background(Primary, MaterialTheme.shapes.small))
         Box(Modifier.weight((nutrition.carbsGrams / total).toFloat().coerceAtLeast(0.05f)).fillMaxSize().background(Primary.copy(alpha = 0.55f)))
         Box(Modifier.weight((nutrition.fatGrams / total).toFloat().coerceAtLeast(0.05f)).fillMaxSize().background(Primary.copy(alpha = 0.28f)))
+    }
+}
+
+@Composable
+private fun GoalProgressBar(label: String, progress: Float, color: Color) {
+    Column {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+            Text("${(progress * 100).toInt()}%", style = MaterialTheme.typography.labelSmall, color = color, fontWeight = FontWeight.Bold)
+        }
+        Spacer(Modifier.height(4.dp))
+        Box(Modifier.fillMaxWidth().height(4.dp).background(OutlineVariant.copy(alpha = 0.2f), MaterialTheme.shapes.small)) {
+            Box(Modifier.fillMaxWidth(progress).fillMaxHeight().background(color, MaterialTheme.shapes.small))
+        }
     }
 }

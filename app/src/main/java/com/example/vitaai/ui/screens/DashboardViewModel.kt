@@ -15,7 +15,8 @@ class DashboardViewModel @Inject constructor(
     private val moodRepository: MoodRepository,
     private val healthConnectManager: HealthConnectManager,
     private val nutritionRepository: NutritionRepository,
-    private val workoutRepository: WorkoutRepository
+    private val workoutRepository: WorkoutRepository,
+    private val goalsRepository: GoalsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
@@ -40,16 +41,26 @@ class DashboardViewModel @Inject constructor(
                 repository.healthSnapshotFlow
                     .combine(moodRepository.currentMood) { snapshot, mood -> snapshot to mood }
                     .combine(nutritionRepository.observeTodaySummary()) { snapshotAndMood, nutrition ->
-                        Triple(snapshotAndMood.first, snapshotAndMood.second, nutrition)
+                        val (snapshot, mood) = snapshotAndMood
+                        Triple(snapshot, mood, nutrition)
                     }
-                    .combine(workoutRepository.observeRecentSessions(limit = 1)) { values, workouts ->
-                        val insight = repository.getAiInsight(values.first)
+                    .combine(workoutRepository.observeRecentSessions(limit = 1)) { triple, workouts ->
+                        val (snapshot, mood, nutrition) = triple
+                        snapshot to Triple(mood, nutrition, workouts)
+                    }
+                    .combine(goalsRepository.observeGoalProgress(repository.healthSnapshotFlow)) { snapshotAndOthers, goalsProgress ->
+                        val (snapshot, others) = snapshotAndOthers
+                        val (mood, nutrition, workouts) = others
+                        
+                        val insight = repository.getAiInsight(snapshot)
                         DashboardUiState.Success(
-                            snapshot = values.first,
+                            snapshot = snapshot,
                             insight = insight,
-                            mood = values.second,
-                            nutrition = values.third,
-                            recentWorkouts = workouts
+                            mood = mood,
+                            nutrition = nutrition,
+                            recentWorkouts = workouts,
+                            goalProgress = goalsProgress,
+                            streakDays = goalsRepository.streakDays.value
                         ) as DashboardUiState
                     }
                     .catch { e ->
@@ -93,7 +104,9 @@ sealed class DashboardUiState {
         val insight: String,
         val mood: MoodEntry?,
         val nutrition: NutritionSummary,
-        val recentWorkouts: List<com.example.vitaai.data.local.WorkoutSessionEntity>
+        val recentWorkouts: List<com.example.vitaai.data.local.WorkoutSessionEntity>,
+        val goalProgress: GoalProgress,
+        val streakDays: Int
     ) : DashboardUiState()
     data class Error(val message: String) : DashboardUiState()
 }

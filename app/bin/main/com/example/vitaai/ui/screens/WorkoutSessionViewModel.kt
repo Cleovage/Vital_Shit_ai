@@ -3,7 +3,6 @@ package com.example.vitaai.ui.screens
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.vitaai.data.LiveSensorManager
 import com.example.vitaai.data.RoutePointDraft
 import com.example.vitaai.data.TRACKING_CARDIO
 import com.example.vitaai.data.WorkoutRepository
@@ -40,7 +39,6 @@ data class WorkoutSessionUiState(
 class WorkoutSessionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val workoutRepository: WorkoutRepository,
-    private val sensorManager: LiveSensorManager,
     private val locationTracker: LocationTracker
 ) : ViewModel() {
     private val templateId: String = savedStateHandle["templateId"] ?: "walking"
@@ -145,14 +143,7 @@ class WorkoutSessionViewModel @Inject constructor(
     }
 
     private fun startHeartRate() {
-        if (heartRateJob?.isActive == true) return
-        heartRateJob = viewModelScope.launch {
-            sensorManager.getHeartRateFlow().collect { hr ->
-                val value = hr.roundToInt()
-                heartRates += value
-                _uiState.value = _uiState.value.copy(liveHeartRate = value)
-            }
-        }
+        // No local heart rate measurement
     }
 
     private fun startLocation() {

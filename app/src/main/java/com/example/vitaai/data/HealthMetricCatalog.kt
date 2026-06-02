@@ -22,6 +22,14 @@ enum class HealthMetricType(
         description = "Calories burned through movement and exercise.",
         sources = setOf(HealthDataSource.SAMSUNG_HEALTH, HealthDataSource.GOOGLE_HEALTH_FITBIT, HealthDataSource.VITA_AI)
     ),
+    BASAL_CALORIES(
+        route = "basal_calories",
+        title = "Idle Calories",
+        shortLabel = "Idle",
+        unit = "kcal",
+        description = "Calories burned while resting (BMR).",
+        sources = setOf(HealthDataSource.SAMSUNG_HEALTH, HealthDataSource.GOOGLE_HEALTH_FITBIT, HealthDataSource.VITA_AI)
+    ),
     STEPS(
         route = "steps",
         title = "Steps",

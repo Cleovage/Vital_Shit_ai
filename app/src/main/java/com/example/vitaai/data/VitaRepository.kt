@@ -131,6 +131,15 @@ class VitaRepository @Inject constructor(
     private suspend fun readMetricValue(metric: HealthMetricType, start: Instant, end: Instant): Double {
         return when (metric) {
             HealthMetricType.ACTIVE_CALORIES -> healthConnectManager.readDailyCalories(start, end)
+            HealthMetricType.BASAL_CALORIES -> {
+                var basal = healthConnectManager.readDailyBasalCalories(start, end)
+                if (basal == 0.0) {
+                    val weight = healthConnectManager.readLatestWeight() ?: 75.0
+                    val dailyBmr = weight * 24.0
+                    basal = dailyBmr // approximate
+                }
+                basal
+            }
             HealthMetricType.STEPS -> healthConnectManager.readDailySteps(start, end).toDouble()
             HealthMetricType.HEART_RATE -> {
                 val samples = healthConnectManager.readHeartRate(start, end)

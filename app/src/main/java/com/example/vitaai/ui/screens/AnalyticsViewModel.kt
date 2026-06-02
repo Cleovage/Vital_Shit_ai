@@ -9,6 +9,7 @@ import com.example.vitaai.data.WorkoutRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
@@ -21,12 +22,13 @@ data class AnalyticsMetricCard(
     val value: String,
     val unit: String,
     val values: List<Float>,
-    val detail: String
+    val detail: String,
+    val stackedValues: List<Pair<Float, Float>>? = null
 )
 
 sealed class AnalyticsUiState {
     object Loading : AnalyticsUiState()
-    data class Success(val cards: List<AnalyticsMetricCard>) : AnalyticsUiState()
+    data class Success(val cards: List<AnalyticsMetricCard>, val aiInsight: String) : AnalyticsUiState()
     data class Error(val message: String) : AnalyticsUiState()
 }
 
@@ -43,7 +45,11 @@ class AnalyticsViewModel @Inject constructor(
     val timeframe: StateFlow<Int> = _timeframe
 
     init {
-        loadTrends()
+        viewModelScope.launch {
+            repository.healthSnapshotFlow.collect {
+                loadTrends()
+            }
+        }
     }
 
     fun setTimeframe(days: Int) {
@@ -58,6 +64,7 @@ class AnalyticsViewModel @Inject constructor(
                 val days = _timeframe.value
                 val steps = repository.getMetricTrend(HealthMetricType.STEPS, days)
                 val caloriesBurned = repository.getMetricTrend(HealthMetricType.ACTIVE_CALORIES, days)
+                val basalCalories = repository.getMetricTrend(HealthMetricType.BASAL_CALORIES, days)
                 val heartRate = repository.getMetricTrend(HealthMetricType.HEART_RATE, days)
                 val sleep = repository.getMetricTrend(HealthMetricType.SLEEP, days)
                 val distance = repository.getMetricTrend(HealthMetricType.DISTANCE, days)
@@ -66,10 +73,20 @@ class AnalyticsViewModel @Inject constructor(
                 val localNutrition = localNutritionTrend(days)
                 val localWorkouts = localWorkoutTrend(days)
 
+                val snapshot = repository.healthSnapshotFlow.first()
+                val aiInsight = repository.getAiInsight(snapshot)
+                
                 _uiState.value = AnalyticsUiState.Success(
-                    listOf(
+                    cards = listOf(
                         card("Steps", steps, "steps", "Movement volume from Health Connect"),
-                        card("Calories Burned", caloriesBurned, "kcal", "Active calories from workouts and movement"),
+                        card("Calories Burned", caloriesBurned, "kcal", "Active vs Idle calories").copy(
+                            stackedValues = caloriesBurned.keys.map { date ->
+                                val idle = basalCalories[date]?.toFloat() ?: 0f
+                                val active = caloriesBurned[date]?.toFloat() ?: 0f
+                                idle to active
+                            }.ifEmpty { listOf(0f to 0f, 0f to 0f) },
+                            value = String.format(Locale.US, "%.0f", (caloriesBurned.values.lastOrNull() ?: 0.0) + (basalCalories.values.lastOrNull() ?: 0.0))
+                        ),
                         card("Calories In", localNutrition.mapValues { it.value.calories }, "kcal", "Food logged in VitaAI"),
                         card("Protein", localNutrition.mapValues { it.value.proteinGrams }, "g", "Protein intake distribution"),
                         card("Macro Balance", localNutrition.mapValues { it.value.carbsGrams + it.value.fatGrams + it.value.proteinGrams }, "g", "Total macro grams logged"),
@@ -79,7 +96,8 @@ class AnalyticsViewModel @Inject constructor(
                         card("Heart Rate", heartRate, "bpm", "Average heart-rate trend"),
                         card("Sleep", sleep, "h", "Sleep duration trend"),
                         card("Exercise Minutes", exerciseMinutes, "min", "Recorded training time")
-                    )
+                    ),
+                    aiInsight = aiInsight
                 )
             } catch (e: Exception) {
                 _uiState.value = AnalyticsUiState.Error(e.message ?: "Unable to load analytics")
