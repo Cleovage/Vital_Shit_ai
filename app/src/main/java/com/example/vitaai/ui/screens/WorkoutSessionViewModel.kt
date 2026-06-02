@@ -30,6 +30,7 @@ data class WorkoutSessionUiState(
     val liveHeartRate: Int = 0,
     val distanceMeters: Double = 0.0,
     val routePointCount: Int = 0,
+    val calories: Double = 0.0,
     val saving: Boolean = false,
     val savedSessionId: Long? = null,
     val error: String? = null
@@ -136,7 +137,17 @@ class WorkoutSessionViewModel @Inject constructor(
             while (true) {
                 delay(1000)
                 if (_uiState.value.running) {
-                    _uiState.value = _uiState.value.copy(elapsedSeconds = _uiState.value.elapsedSeconds + 1)
+                    val nextElapsed = _uiState.value.elapsedSeconds + 1
+                    val template = _uiState.value.template
+                    val avgHr = if (heartRates.isEmpty()) 0.0 else heartRates.average()
+                    val nextCalories = if (template != null) {
+                        estimateCalories(template.trackingMode, nextElapsed, avgHr)
+                    } else 0.0
+                    
+                    _uiState.value = _uiState.value.copy(
+                        elapsedSeconds = nextElapsed,
+                        calories = nextCalories
+                    )
                 }
             }
         }

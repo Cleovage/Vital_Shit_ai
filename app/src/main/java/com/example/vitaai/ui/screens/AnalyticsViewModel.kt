@@ -47,19 +47,21 @@ class AnalyticsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             repository.healthSnapshotFlow.collect {
-                loadTrends()
+                loadTrends(showLoading = false)
             }
         }
     }
 
     fun setTimeframe(days: Int) {
         _timeframe.value = days
-        loadTrends()
+        loadTrends(showLoading = true)
     }
 
-    fun loadTrends() {
+    fun loadTrends(showLoading: Boolean = true) {
         viewModelScope.launch {
-            _uiState.value = AnalyticsUiState.Loading
+            if (showLoading && _uiState.value !is AnalyticsUiState.Success) {
+                _uiState.value = AnalyticsUiState.Loading
+            }
             try {
                 val days = _timeframe.value
                 val steps = repository.getMetricTrend(HealthMetricType.STEPS, days)

@@ -12,7 +12,6 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val repository: VitaRepository,
-    private val moodRepository: MoodRepository,
     private val healthConnectManager: HealthConnectManager,
     private val nutritionRepository: NutritionRepository,
     private val workoutRepository: WorkoutRepository,
@@ -39,24 +38,20 @@ class DashboardViewModel @Inject constructor(
 
             snapshotJob = launch {
                 repository.healthSnapshotFlow
-                    .combine(moodRepository.currentMood) { snapshot, mood -> snapshot to mood }
-                    .combine(nutritionRepository.observeTodaySummary()) { snapshotAndMood, nutrition ->
-                        val (snapshot, mood) = snapshotAndMood
-                        Triple(snapshot, mood, nutrition)
+                    .combine(nutritionRepository.observeTodaySummary()) { snapshot, nutrition ->
+                        snapshot to nutrition
                     }
-                    .combine(workoutRepository.observeRecentSessions(limit = 1)) { triple, workouts ->
-                        val (snapshot, mood, nutrition) = triple
-                        snapshot to Triple(mood, nutrition, workouts)
+                    .combine(workoutRepository.observeRecentSessions(limit = 1)) { pair, workouts ->
+                        val (snapshot, nutrition) = pair
+                        Triple(snapshot, nutrition, workouts)
                     }
-                    .combine(goalsRepository.observeGoalProgress(repository.healthSnapshotFlow)) { snapshotAndOthers, goalsProgress ->
-                        val (snapshot, others) = snapshotAndOthers
-                        val (mood, nutrition, workouts) = others
+                    .combine(goalsRepository.observeGoalProgress(repository.healthSnapshotFlow)) { triple, goalsProgress ->
+                        val (snapshot, nutrition, workouts) = triple
                         
                         val insight = repository.getAiInsight(snapshot)
                         DashboardUiState.Success(
                             snapshot = snapshot,
                             insight = insight,
-                            mood = mood,
                             nutrition = nutrition,
                             recentWorkouts = workouts,
                             goalProgress = goalsProgress,
@@ -91,9 +86,7 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun recordMood(score: Int) {
-        moodRepository.recordMood(score)
-    }
+
 }
 
 sealed class DashboardUiState {
@@ -102,7 +95,6 @@ sealed class DashboardUiState {
     data class Success(
         val snapshot: HealthSnapshot, 
         val insight: String,
-        val mood: MoodEntry?,
         val nutrition: NutritionSummary,
         val recentWorkouts: List<com.example.vitaai.data.local.WorkoutSessionEntity>,
         val goalProgress: GoalProgress,

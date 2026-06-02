@@ -171,7 +171,7 @@ fun SessionScreen(
                 }
                 HUDStatTile(
                     label = "CALORIES",
-                    value = "242", // Mocked logic
+                    value = state.calories.toInt().toString(),
                     unit = "KCAL",
                     modifier = Modifier.weight(1f),
                     icon = Icons.Default.Bolt

@@ -50,15 +50,7 @@ class VitaRepository @Inject constructor(
             now
         )
         val calories = healthConnectManager.readDailyCalories(startOfDay, now)
-        var basalCalories = healthConnectManager.readDailyBasalCalories(startOfDay, now)
-        
-        // Fallback estimation for Idle Burn if no data from Health Connect
-        if (basalCalories == 0.0) {
-            val weight = healthConnectManager.readLatestWeight() ?: 75.0
-            val dailyBmr = weight * 24.0 // Rough estimate: 1 kcal/kg/hour
-            val dayProgress = java.time.Duration.between(startOfDay, now).toMinutes() / 1440.0
-            basalCalories = dailyBmr * dayProgress
-        }
+        val basalCalories = healthConnectManager.readDailyBasalCalories(startOfDay, now)
 
         val hydration = healthConnectManager.readDailyHydration(startOfDay, now)
         val hourlySteps = healthConnectManager.readHourlySteps(startOfDay, now)
@@ -131,15 +123,7 @@ class VitaRepository @Inject constructor(
     private suspend fun readMetricValue(metric: HealthMetricType, start: Instant, end: Instant): Double {
         return when (metric) {
             HealthMetricType.ACTIVE_CALORIES -> healthConnectManager.readDailyCalories(start, end)
-            HealthMetricType.BASAL_CALORIES -> {
-                var basal = healthConnectManager.readDailyBasalCalories(start, end)
-                if (basal == 0.0) {
-                    val weight = healthConnectManager.readLatestWeight() ?: 75.0
-                    val dailyBmr = weight * 24.0
-                    basal = dailyBmr // approximate
-                }
-                basal
-            }
+            HealthMetricType.BASAL_CALORIES -> healthConnectManager.readDailyBasalCalories(start, end)
             HealthMetricType.STEPS -> healthConnectManager.readDailySteps(start, end).toDouble()
             HealthMetricType.HEART_RATE -> {
                 val samples = healthConnectManager.readHeartRate(start, end)

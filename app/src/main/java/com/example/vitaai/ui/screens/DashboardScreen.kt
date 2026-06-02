@@ -53,7 +53,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.vitaai.data.HealthMetricType
 import com.example.vitaai.data.HealthSnapshot
-import com.example.vitaai.data.MoodEntry
 import com.example.vitaai.data.NutritionSummary
 import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.ui.components.ApexCard
@@ -82,7 +81,6 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
             is DashboardUiState.Success -> DashboardContent(
                 snapshot = state.snapshot,
                 insight = state.insight,
-                mood = state.mood,
                 nutrition = state.nutrition,
                 recentWorkouts = state.recentWorkouts,
                 goalProgress = state.goalProgress,
@@ -131,7 +129,6 @@ private fun PermissionsScreen(viewModel: DashboardViewModel) {
 private fun DashboardContent(
     snapshot: HealthSnapshot,
     insight: String,
-    mood: MoodEntry?,
     nutrition: NutritionSummary,
     recentWorkouts: List<WorkoutSessionEntity>,
     goalProgress: GoalProgress,
@@ -369,49 +366,7 @@ private fun DashboardContent(
             }
         }
 
-        // --- 6. MOOD LOG ---
-        item {
-            ApexCard(
-                modifier = Modifier.fillMaxWidth(),
-                title = "Condition Check"
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        (1..5).forEach { index ->
-                            val score = index * 2
-                            val selected = mood?.score == score
-                            val backgroundColor by animateColorAsState(
-                                targetValue = if (selected) Primary else SurfaceContainerHigh,
-                                label = "moodBackground$score"
-                            )
-                            val textColor by animateColorAsState(
-                                targetValue = if (selected) OnPrimary else Primary,
-                                label = "moodText$score"
-                            )
-                            val scale by animateFloatAsState(
-                                targetValue = if (selected) 1f else 0.94f,
-                                label = "moodScale$score"
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .size(42.dp)
-                                    .graphicsLayer(scaleX = scale, scaleY = scale)
-                                    .background(backgroundColor, MaterialTheme.shapes.extraSmall)
-                                    .border(
-                                        width = 1.dp,
-                                        color = if (selected) Primary else OutlineVariant.copy(alpha = 0.2f),
-                                        shape = MaterialTheme.shapes.extraSmall
-                                    )
-                                    .clickable { viewModel.recordMood(score) },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(index.toString(), color = textColor, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
-                }
-            }
-        }
+
         
         item { Spacer(Modifier.height(24.dp)) }
     }

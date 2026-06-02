@@ -235,8 +235,26 @@ private fun WorkoutSessionRow(session: WorkoutSessionEntity) {
                     color = Primary,
                     fontWeight = FontWeight.Bold
                 )
+                val detailText = if (session.totalSets > 0 || session.totalReps > 0) {
+                    "${session.totalSets} SETS | ${session.totalReps} REPS"
+                } else {
+                    val distanceKm = session.distanceMeters / 1000.0
+                    val caloriesKcal = session.calories
+                    when {
+                        distanceKm > 0.0 && caloriesKcal > 0.0 -> {
+                            String.format(Locale.US, "%.1f KM | %.0f KCAL", distanceKm, caloriesKcal)
+                        }
+                        distanceKm > 0.0 -> {
+                            String.format(Locale.US, "%.1f KM", distanceKm)
+                        }
+                        caloriesKcal > 0.0 -> {
+                            String.format(Locale.US, "%.0f KCAL", caloriesKcal)
+                        }
+                        else -> "COMPLETED SESSION"
+                    }
+                }
                 Text(
-                    text = "${session.totalSets} SETS | ${session.totalReps} REPS",
+                    text = detailText,
                     style = androidx.compose.ui.text.TextStyle(fontSize = 9.sp, color = OnSurfaceVariant)
                 )
             }

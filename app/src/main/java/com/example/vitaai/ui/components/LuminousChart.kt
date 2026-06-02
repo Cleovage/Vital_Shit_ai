@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
@@ -218,7 +219,7 @@ fun LuminousLineChart(
             )
         }
 
-        val gridColor = axisColor.copy(alpha = 0.2f)
+        val gridColor = axisColor.copy(alpha = 0.12f)
         if (showGrid) {
             yTickValues.forEach { value ->
                 val y = chartBottom - ((value - axisMin) / range) * chartHeight
@@ -226,7 +227,8 @@ fun LuminousLineChart(
                     color = gridColor,
                     start = Offset(chartLeft, y),
                     end = Offset(chartRight, y),
-                    strokeWidth = axisStroke
+                    strokeWidth = axisStroke,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
                 )
             }
 
@@ -242,7 +244,8 @@ fun LuminousLineChart(
                         color = gridColor,
                         start = Offset(x, chartTop),
                         end = Offset(x, chartBottom),
-                        strokeWidth = axisStroke
+                        strokeWidth = axisStroke,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
                     )
                 }
             }
@@ -315,13 +318,7 @@ fun LuminousLineChart(
 
         if (showAxes) {
             drawLine(
-                color = axisColor,
-                start = Offset(chartLeft, chartTop),
-                end = Offset(chartLeft, chartBottom),
-                strokeWidth = axisStroke
-            )
-            drawLine(
-                color = axisColor,
+                color = axisColor.copy(alpha = 0.4f),
                 start = Offset(chartLeft, chartBottom),
                 end = Offset(chartRight, chartBottom),
                 strokeWidth = axisStroke
@@ -385,36 +382,24 @@ fun LuminousLineChart(
         }
 
         drawIntoCanvas { canvas ->
-            val tickPaint = Paint().apply {
-                color = axisColor.toArgb()
-                strokeWidth = axisStroke
-                isAntiAlias = true
-                style = Paint.Style.STROKE
-            }
-
             if (yLabels.isNotEmpty()) {
                 val yPaint = Paint(textPaint).apply { textAlign = Paint.Align.RIGHT }
                 yLabels.forEachIndexed { index, label ->
                     val value = yTickValues[index]
                     val y = chartBottom - ((value - axisMin) / range) * chartHeight
                     canvas.nativeCanvas.drawText(label, chartLeft - labelPadding, y + labelTextSizePx * 0.35f, yPaint)
-                    if (showAxes) {
-                        canvas.nativeCanvas.drawLine(
-                            chartLeft - axisTickLength,
-                            y,
-                            chartLeft,
-                            y,
-                            tickPaint
-                        )
-                    }
                 }
             }
 
             if (xAxisLabels.isNotEmpty()) {
                 val xPaint = Paint(textPaint).apply { textAlign = Paint.Align.CENTER }
                 val xStep = if (xAxisLabels.size == dataPoints.size) stepX else chartWidth / (xAxisLabels.size - 1).coerceAtLeast(1)
-                val minSpacing = labelTextSizePx * 3.2f
-                var lastX = -Float.MAX_VALUE
+                val xLabelStep = when {
+                    xAxisLabels.size <= 7 -> 1
+                    xAxisLabels.size <= 14 -> 2
+                    xAxisLabels.size <= 31 -> 6
+                    else -> (xAxisLabels.size / 5).coerceAtLeast(1)
+                }
 
                 xAxisLabels.forEachIndexed { index, label ->
                     val x = if (xAxisLabels.size == dataPoints.size) {
@@ -422,21 +407,10 @@ fun LuminousLineChart(
                     } else {
                         chartLeft + index * xStep
                     }
-                    val labelWidth = xPaint.measureText(label)
-                    val desiredSpacing = max(minSpacing, labelWidth * 0.75f)
                     val isEdge = index == 0 || index == xAxisLabels.lastIndex
-                    if (!isEdge && x - lastX < desiredSpacing) return@forEachIndexed
-                    lastX = x
+                    if (!isEdge && index % xLabelStep != 0) return@forEachIndexed
+                    
                     canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xPaint)
-                    if (showAxes) {
-                        canvas.nativeCanvas.drawLine(
-                            x,
-                            chartBottom,
-                            x,
-                            chartBottom + axisTickLength,
-                            tickPaint
-                        )
-                    }
                 }
             }
         }
@@ -607,7 +581,7 @@ fun LuminousBarChart(
         val gap = totalBarWidth * barSpacing
         val barWidth = totalBarWidth - gap
 
-        val gridColor = axisColor.copy(alpha = 0.2f)
+        val gridColor = axisColor.copy(alpha = 0.12f)
         if (showGrid) {
             yTickValues.forEach { value ->
                 val y = chartBottom - ((value - axisMin) / range) * chartHeight
@@ -615,7 +589,8 @@ fun LuminousBarChart(
                     color = gridColor,
                     start = Offset(chartLeft, y),
                     end = Offset(chartRight, y),
-                    strokeWidth = axisStroke
+                    strokeWidth = axisStroke,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
                 )
             }
 
@@ -631,7 +606,8 @@ fun LuminousBarChart(
                         color = gridColor,
                         start = Offset(x, chartTop),
                         end = Offset(x, chartBottom),
-                        strokeWidth = axisStroke
+                        strokeWidth = axisStroke,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
                     )
                 }
             }
@@ -662,13 +638,7 @@ fun LuminousBarChart(
 
         if (showAxes) {
             drawLine(
-                color = axisColor,
-                start = Offset(chartLeft, chartTop),
-                end = Offset(chartLeft, chartBottom),
-                strokeWidth = axisStroke
-            )
-            drawLine(
-                color = axisColor,
+                color = axisColor.copy(alpha = 0.4f),
                 start = Offset(chartLeft, chartBottom),
                 end = Offset(chartRight, chartBottom),
                 strokeWidth = axisStroke
@@ -722,36 +692,24 @@ fun LuminousBarChart(
         }
 
         drawIntoCanvas { canvas ->
-            val tickPaint = Paint().apply {
-                color = axisColor.toArgb()
-                strokeWidth = axisStroke
-                isAntiAlias = true
-                style = Paint.Style.STROKE
-            }
-
             if (yLabels.isNotEmpty()) {
                 val yPaint = Paint(textPaint).apply { textAlign = Paint.Align.RIGHT }
                 yLabels.forEachIndexed { index, label ->
                     val value = yTickValues[index]
                     val y = chartBottom - ((value - axisMin) / range) * chartHeight
                     canvas.nativeCanvas.drawText(label, chartLeft - labelPadding, y + labelTextSizePx * 0.35f, yPaint)
-                    if (showAxes) {
-                        canvas.nativeCanvas.drawLine(
-                            chartLeft - axisTickLength,
-                            y,
-                            chartLeft,
-                            y,
-                            tickPaint
-                        )
-                    }
                 }
             }
 
             if (xAxisLabels.isNotEmpty()) {
                 val xPaint = Paint(textPaint).apply { textAlign = Paint.Align.CENTER }
                 val xStep = if (xAxisLabels.size == dataPoints.size) totalBarWidth else chartWidth / (xAxisLabels.size - 1).coerceAtLeast(1)
-                val minSpacing = labelTextSizePx * 3.2f
-                var lastX = -Float.MAX_VALUE
+                val xLabelStep = when {
+                    xAxisLabels.size <= 7 -> 1
+                    xAxisLabels.size <= 14 -> 2
+                    xAxisLabels.size <= 31 -> 6
+                    else -> (xAxisLabels.size / 5).coerceAtLeast(1)
+                }
 
                 xAxisLabels.forEachIndexed { index, label ->
                     val x = if (xAxisLabels.size == dataPoints.size) {
@@ -759,21 +717,10 @@ fun LuminousBarChart(
                     } else {
                         chartLeft + index * xStep
                     }
-                    val labelWidth = xPaint.measureText(label)
-                    val desiredSpacing = max(minSpacing, labelWidth * 0.75f)
                     val isEdge = index == 0 || index == xAxisLabels.lastIndex
-                    if (!isEdge && x - lastX < desiredSpacing) return@forEachIndexed
-                    lastX = x
+                    if (!isEdge && index % xLabelStep != 0) return@forEachIndexed
+                    
                     canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xPaint)
-                    if (showAxes) {
-                        canvas.nativeCanvas.drawLine(
-                            x,
-                            chartBottom,
-                            x,
-                            chartBottom + axisTickLength,
-                            tickPaint
-                        )
-                    }
                 }
             }
         }
@@ -1039,7 +986,7 @@ fun LuminousStackedBarChart(
         val gap = totalBarWidth * barSpacing
         val barWidth = totalBarWidth - gap
 
-        val gridColor = axisColor.copy(alpha = 0.2f)
+        val gridColor = axisColor.copy(alpha = 0.12f)
         if (showGrid) {
             yTickValues.forEach { value ->
                 val y = chartBottom - ((value - axisMin) / range) * chartHeight
@@ -1047,7 +994,8 @@ fun LuminousStackedBarChart(
                     color = gridColor,
                     start = Offset(chartLeft, y),
                     end = Offset(chartRight, y),
-                    strokeWidth = axisStroke
+                    strokeWidth = axisStroke,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
                 )
             }
 
@@ -1063,7 +1011,8 @@ fun LuminousStackedBarChart(
                         color = gridColor,
                         start = Offset(x, chartTop),
                         end = Offset(x, chartBottom),
-                        strokeWidth = axisStroke
+                        strokeWidth = axisStroke,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
                     )
                 }
             }
@@ -1107,13 +1056,7 @@ fun LuminousStackedBarChart(
 
         if (showAxes) {
             drawLine(
-                color = axisColor,
-                start = Offset(chartLeft, chartTop),
-                end = Offset(chartLeft, chartBottom),
-                strokeWidth = axisStroke
-            )
-            drawLine(
-                color = axisColor,
+                color = axisColor.copy(alpha = 0.4f),
                 start = Offset(chartLeft, chartBottom),
                 end = Offset(chartRight, chartBottom),
                 strokeWidth = axisStroke
@@ -1182,36 +1125,24 @@ fun LuminousStackedBarChart(
         }
 
         drawIntoCanvas { canvas ->
-            val tickPaint = Paint().apply {
-                color = axisColor.toArgb()
-                strokeWidth = axisStroke
-                isAntiAlias = true
-                style = Paint.Style.STROKE
-            }
-
             if (yLabels.isNotEmpty()) {
                 val yPaint = Paint(textPaint).apply { textAlign = Paint.Align.RIGHT }
                 yLabels.forEachIndexed { index, label ->
                     val value = yTickValues[index]
                     val y = chartBottom - ((value - axisMin) / range) * chartHeight
                     canvas.nativeCanvas.drawText(label, chartLeft - labelPadding, y + labelTextSizePx * 0.35f, yPaint)
-                    if (showAxes) {
-                        canvas.nativeCanvas.drawLine(
-                            chartLeft - axisTickLength,
-                            y,
-                            chartLeft,
-                            y,
-                            tickPaint
-                        )
-                    }
                 }
             }
 
             if (xAxisLabels.isNotEmpty()) {
                 val xPaint = Paint(textPaint).apply { textAlign = Paint.Align.CENTER }
                 val xStep = if (xAxisLabels.size == dataPoints.size) totalBarWidth else chartWidth / (xAxisLabels.size - 1).coerceAtLeast(1)
-                val minSpacing = labelTextSizePx * 3.2f
-                var lastX = -Float.MAX_VALUE
+                val xLabelStep = when {
+                    xAxisLabels.size <= 7 -> 1
+                    xAxisLabels.size <= 14 -> 2
+                    xAxisLabels.size <= 31 -> 6
+                    else -> (xAxisLabels.size / 5).coerceAtLeast(1)
+                }
 
                 xAxisLabels.forEachIndexed { index, label ->
                     val x = if (xAxisLabels.size == dataPoints.size) {
@@ -1219,21 +1150,10 @@ fun LuminousStackedBarChart(
                     } else {
                         chartLeft + index * xStep
                     }
-                    val labelWidth = xPaint.measureText(label)
-                    val desiredSpacing = kotlin.math.max(minSpacing, labelWidth * 0.75f)
                     val isEdge = index == 0 || index == xAxisLabels.lastIndex
-                    if (!isEdge && x - lastX < desiredSpacing) return@forEachIndexed
-                    lastX = x
+                    if (!isEdge && index % xLabelStep != 0) return@forEachIndexed
+                    
                     canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xPaint)
-                    if (showAxes) {
-                        canvas.nativeCanvas.drawLine(
-                            x,
-                            chartBottom,
-                            x,
-                            chartBottom + axisTickLength,
-                            tickPaint
-                        )
-                    }
                 }
             }
         }

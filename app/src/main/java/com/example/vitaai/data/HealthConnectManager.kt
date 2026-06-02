@@ -12,6 +12,7 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.health.connect.client.units.Energy
 import androidx.health.connect.client.units.Mass
 import androidx.health.connect.client.units.Volume
+import androidx.health.connect.client.units.Length
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Duration
 import java.time.Instant
@@ -45,7 +46,9 @@ class HealthConnectManager @Inject constructor(
         HealthPermission.getWritePermission(ActiveCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(BasalMetabolicRateRecord::class),
         HealthPermission.getReadPermission(WeightRecord::class),
+        HealthPermission.getWritePermission(WeightRecord::class),
         HealthPermission.getReadPermission(HeightRecord::class),
+        HealthPermission.getWritePermission(HeightRecord::class),
         HealthPermission.getReadPermission(HydrationRecord::class),
         HealthPermission.getWritePermission(HydrationRecord::class),
         HealthPermission.getReadPermission(ExerciseSessionRecord::class),
@@ -200,6 +203,30 @@ class HealthConnectManager @Inject constructor(
         } catch (e: Exception) {
             null
         }
+    }
+
+    suspend fun writeWeight(weightKg: Double) {
+        val now = Instant.now()
+        val zoneOffset = ZoneId.systemDefault().rules.getOffset(now)
+        val record = WeightRecord(
+            time = now,
+            zoneOffset = zoneOffset,
+            weight = Mass.kilograms(weightKg),
+            metadata = Metadata.manualEntry()
+        )
+        healthConnectClient.insertRecords(listOf(record))
+    }
+
+    suspend fun writeHeight(heightMeters: Double) {
+        val now = Instant.now()
+        val zoneOffset = ZoneId.systemDefault().rules.getOffset(now)
+        val record = HeightRecord(
+            time = now,
+            zoneOffset = zoneOffset,
+            height = Length.meters(heightMeters),
+            metadata = Metadata.manualEntry()
+        )
+        healthConnectClient.insertRecords(listOf(record))
     }
 
     suspend fun readDailyHydration(startTime: Instant, endTime: Instant): Double {
