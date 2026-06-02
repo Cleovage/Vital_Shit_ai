@@ -12,7 +12,6 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val repository: VitaRepository,
-    private val sensorManager: LiveSensorManager,
     private val moodRepository: MoodRepository,
     private val healthConnectManager: HealthConnectManager,
     private val nutritionRepository: NutritionRepository,
@@ -22,14 +21,9 @@ class DashboardViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
     val uiState: StateFlow<DashboardUiState> = _uiState
 
-    private val _liveSteps = MutableStateFlow(0L)
-    val liveSteps: StateFlow<Long> = _liveSteps
-
     private var snapshotJob: Job? = null
-    private var stepBaseline: Float? = null
 
     init {
-        observeLiveSensorSteps()
         viewModelScope.launch { workoutRepository.seedDefaultTemplatesIfNeeded() }
         loadData()
     }
@@ -88,18 +82,6 @@ class DashboardViewModel @Inject constructor(
 
     fun recordMood(score: Int) {
         moodRepository.recordMood(score)
-    }
-
-    private fun observeLiveSensorSteps() {
-        viewModelScope.launch {
-            sensorManager.getStepCountFlow().collect { rawValue ->
-                if (stepBaseline == null) {
-                    stepBaseline = rawValue
-                }
-                val normalizedSteps = (rawValue - (stepBaseline ?: rawValue)).coerceAtLeast(0f).toLong()
-                _liveSteps.value = normalizedSteps
-            }
-        }
     }
 }
 

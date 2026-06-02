@@ -43,6 +43,9 @@ class HealthConnectManager @Inject constructor(
         HealthPermission.getWritePermission(StepsRecord::class),
         HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
         HealthPermission.getWritePermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(BasalMetabolicRateRecord::class),
+        HealthPermission.getReadPermission(WeightRecord::class),
+        HealthPermission.getReadPermission(HeightRecord::class),
         HealthPermission.getReadPermission(HydrationRecord::class),
         HealthPermission.getWritePermission(HydrationRecord::class),
         HealthPermission.getReadPermission(ExerciseSessionRecord::class),
@@ -150,6 +153,52 @@ class HealthConnectManager @Inject constructor(
             response[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories ?: 0.0
         } catch (e: Exception) {
             0.0
+        }
+    }
+
+    suspend fun readDailyBasalCalories(startTime: Instant, endTime: Instant): Double {
+        return try {
+            val response = healthConnectClient.aggregate(
+                AggregateRequest(
+                    metrics = setOf(BasalMetabolicRateRecord.BASAL_CALORIES_TOTAL),
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            response[BasalMetabolicRateRecord.BASAL_CALORIES_TOTAL]?.inKilocalories ?: 0.0
+        } catch (e: Exception) {
+            0.0
+        }
+    }
+
+    suspend fun readLatestWeight(): Double? {
+        return try {
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    WeightRecord::class,
+                    timeRangeFilter = TimeRangeFilter.before(Instant.now()),
+                    ascendingOrder = false,
+                    pageSize = 1
+                )
+            )
+            response.records.firstOrNull()?.weight?.inKilograms
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    suspend fun readLatestHeight(): Double? {
+        return try {
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    HeightRecord::class,
+                    timeRangeFilter = TimeRangeFilter.before(Instant.now()),
+                    ascendingOrder = false,
+                    pageSize = 1
+                )
+            )
+            response.records.firstOrNull()?.height?.inMeters
+        } catch (e: Exception) {
+            null
         }
     }
 

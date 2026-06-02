@@ -71,7 +71,6 @@ import kotlin.math.roundToInt
 @Composable
 fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
-    val liveSteps by viewModel.liveSteps.collectAsState()
 
     AuraBackground {
         when (val state = uiState) {
@@ -85,7 +84,6 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
                 mood = state.mood,
                 nutrition = state.nutrition,
                 recentWorkouts = state.recentWorkouts,
-                liveSteps = liveSteps,
                 viewModel = viewModel,
                 navController = navController
             )
@@ -101,10 +99,6 @@ private fun PermissionsScreen(viewModel: DashboardViewModel) {
     val healthConnectLauncher = rememberLauncherForActivityResult(
         contract = PermissionController.createRequestPermissionResultContract()
     ) { grantedPermissions -> viewModel.onPermissionsResult(grantedPermissions) }
-
-    val activityRecognitionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { healthConnectLauncher.launch(viewModel.getRequestedPermissions()) }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -122,7 +116,7 @@ private fun PermissionsScreen(viewModel: DashboardViewModel) {
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
-            onClick = { activityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION) },
+            onClick = { healthConnectLauncher.launch(viewModel.getRequestedPermissions()) },
             colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = OnPrimary)
         ) {
             Text("Grant Access")
@@ -137,7 +131,6 @@ private fun DashboardContent(
     mood: MoodEntry?,
     nutrition: NutritionSummary,
     recentWorkouts: List<WorkoutSessionEntity>,
-    liveSteps: Long,
     viewModel: DashboardViewModel,
     navController: NavController
 ) {
@@ -212,10 +205,10 @@ private fun DashboardContent(
                     )
                     VerticalDivider(color = OutlineVariant.copy(alpha = 0.2f), modifier = Modifier.height(48.dp))
                     VitalItem(
-                        label = "RECOVERY",
-                        value = "84", // Mocked for now
-                        unit = "%",
-                        icon = Icons.Default.Favorite, // Replace with Bolt/Energy if available
+                        label = "IDLE",
+                        value = snapshot.basalCalories.roundToInt().toString(),
+                        unit = "KCAL",
+                        icon = Icons.Default.Whatshot,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -236,7 +229,7 @@ private fun DashboardContent(
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 DashboardMetricTile(
                     label = "STEPS",
-                    value = maxOf(snapshot.steps, liveSteps).toString(),
+                    value = snapshot.steps.toString(),
                     unit = "TOTAL",
                     icon = Icons.Default.DirectionsRun,
                     modifier = Modifier.weight(1f),
@@ -245,9 +238,9 @@ private fun DashboardContent(
                     navController.navigate("metric/${HealthMetricType.STEPS.route}")
                 }
                 DashboardMetricTile(
-                    label = "ENERGY",
-                    value = snapshot.calories.roundToInt().toString(),
-                    unit = "KCAL EXPENDED",
+                    label = "TOTAL BURN",
+                    value = (snapshot.calories + snapshot.basalCalories).roundToInt().toString(),
+                    unit = "KCAL",
                     icon = Icons.Default.Whatshot,
                     modifier = Modifier.weight(1f),
                     color = Color(0xFFFF5722) // High contrast orange
