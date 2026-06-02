@@ -37,33 +37,29 @@ class DashboardViewModel @Inject constructor(
             }
 
             snapshotJob = launch {
-                repository.healthSnapshotFlow
-                    .combine(nutritionRepository.observeTodaySummary()) { snapshot, nutrition ->
-                        snapshot to nutrition
-                    }
-                    .combine(workoutRepository.observeRecentSessions(limit = 1)) { pair, workouts ->
-                        val (snapshot, nutrition) = pair
-                        Triple(snapshot, nutrition, workouts)
-                    }
-                    .combine(goalsRepository.observeGoalProgress(repository.healthSnapshotFlow)) { triple, goalsProgress ->
-                        val (snapshot, nutrition, workouts) = triple
-                        
-                        val insight = repository.getAiInsight(snapshot)
-                        DashboardUiState.Success(
-                            snapshot = snapshot,
-                            insight = insight,
-                            nutrition = nutrition,
-                            recentWorkouts = workouts,
-                            goalProgress = goalsProgress,
-                            streakDays = goalsRepository.streakDays.value
-                        ) as DashboardUiState
-                    }
-                    .catch { e ->
-                        _uiState.value = DashboardUiState.Error(e.message ?: "Unknown error")
-                    }
-                    .collect { state ->
-                        _uiState.value = state
-                    }
+                combine(
+                    repository.healthSnapshotFlow,
+                    nutritionRepository.observeTodaySummary(),
+                    workoutRepository.observeRecentSessions(limit = 3),
+                    goalsRepository.observeGoalProgress(repository.healthSnapshotFlow),
+                    goalsRepository.streakDays
+                ) { snapshot, nutrition, workouts, goalsProgress, streakDays ->
+                    val insight = repository.getAiInsight(snapshot)
+                    DashboardUiState.Success(
+                        snapshot = snapshot,
+                        insight = insight,
+                        nutrition = nutrition,
+                        recentWorkouts = workouts,
+                        goalProgress = goalsProgress,
+                        streakDays = streakDays
+                    ) as DashboardUiState
+                }
+                .catch { e ->
+                    _uiState.value = DashboardUiState.Error(e.message ?: "Unknown error")
+                }
+                .collect { state ->
+                    _uiState.value = state
+                }
             }
         }
     }
@@ -82,7 +78,10 @@ class DashboardViewModel @Inject constructor(
 
     fun logWater(oz: Int) {
         viewModelScope.launch {
-            repository.logWater(oz * 0.0295735) // convert oz to liters
+            val ml = oz * 29.5735
+            val waterItem = nutritionRepository.drinkCatalog.firstOrNull { it.name == "Water" }
+                ?: DrinkCatalogItem("Water", "Water", 250.0, 1.0, 0.0, 0.0, 0.0, "Direct hydration with no calories.")
+            nutritionRepository.addDrink(waterItem, ml)
         }
     }
 

@@ -29,7 +29,8 @@ data class HealthSnapshot(
 
 @Singleton
 class VitaRepository @Inject constructor(
-    private val healthConnectManager: HealthConnectManager
+    private val healthConnectManager: HealthConnectManager,
+    private val dao: com.example.vitaai.data.local.VitaDao
 ) {
     private val systemZone = ZoneId.systemDefault()
 
@@ -49,10 +50,20 @@ class VitaRepository @Inject constructor(
             now.minus(24, ChronoUnit.HOURS),
             now
         )
-        val calories = healthConnectManager.readDailyCalories(startOfDay, now)
+        // Sum active calories of local workouts logged today
+        val startMillis = startOfDay.toEpochMilli()
+        val endMillis = now.toEpochMilli()
+        val localWorkouts = dao.getWorkoutSessions(startMillis, endMillis)
+        val localWorkoutsCalories = localWorkouts.sumOf { it.calories }
+
+        val calories = maxOf(healthConnectManager.readDailyCalories(startOfDay, now), localWorkoutsCalories)
         val basalCalories = healthConnectManager.readDailyBasalCalories(startOfDay, now)
 
-        val hydration = healthConnectManager.readDailyHydration(startOfDay, now)
+        // Sum local drink entries logged today (hydrationMl / 1000 to convert to Liters)
+        val localDrinks = dao.getDrinkEntries(startMillis, endMillis)
+        val localHydrationLiters = localDrinks.sumOf { it.hydrationMl } / 1000.0
+        val hydration = maxOf(healthConnectManager.readDailyHydration(startOfDay, now), localHydrationLiters)
+
         val hourlySteps = healthConnectManager.readHourlySteps(startOfDay, now)
         val distance = healthConnectManager.readDistance(startOfDay, now)
         val exerciseMinutes = healthConnectManager.readDailyExerciseMinutes(startOfDay, now)
@@ -122,7 +133,12 @@ class VitaRepository @Inject constructor(
 
     private suspend fun readMetricValue(metric: HealthMetricType, start: Instant, end: Instant): Double {
         return when (metric) {
-            HealthMetricType.ACTIVE_CALORIES -> healthConnectManager.readDailyCalories(start, end)
+            HealthMetricType.ACTIVE_CALORIES -> {
+                val hcCalories = healthConnectManager.readDailyCalories(start, end)
+                val localWorkouts = dao.getWorkoutSessions(start.toEpochMilli(), end.toEpochMilli())
+                val localWorkoutsCalories = localWorkouts.sumOf { it.calories }
+                maxOf(hcCalories, localWorkoutsCalories)
+            }
             HealthMetricType.BASAL_CALORIES -> healthConnectManager.readDailyBasalCalories(start, end)
             HealthMetricType.STEPS -> healthConnectManager.readDailySteps(start, end).toDouble()
             HealthMetricType.HEART_RATE -> {
@@ -134,7 +150,12 @@ class VitaRepository @Inject constructor(
                 sessions.sumOf { session -> java.time.Duration.between(session.startTime, session.endTime).toMinutes() } / 60.0
             }
             HealthMetricType.DISTANCE -> healthConnectManager.readDistance(start, end) / 1000.0
-            HealthMetricType.HYDRATION -> healthConnectManager.readDailyHydration(start, end)
+            HealthMetricType.HYDRATION -> {
+                val hcHydration = healthConnectManager.readDailyHydration(start, end)
+                val localDrinks = dao.getDrinkEntries(start.toEpochMilli(), end.toEpochMilli())
+                val localHydrationLiters = localDrinks.sumOf { it.hydrationMl } / 1000.0
+                maxOf(hcHydration, localHydrationLiters)
+            }
             HealthMetricType.EXERCISE_MINUTES -> healthConnectManager.readDailyExerciseMinutes(start, end)
             HealthMetricType.CALORIES_INTAKE -> healthConnectManager.readDailyNutrition(start, end).calories
             HealthMetricType.PROTEIN -> healthConnectManager.readDailyNutrition(start, end).proteinGrams

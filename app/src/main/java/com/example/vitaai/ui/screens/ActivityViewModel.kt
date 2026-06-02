@@ -2,6 +2,7 @@ package com.example.vitaai.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.vitaai.data.CalorieCalculator
 import com.example.vitaai.data.WorkoutRepository
 import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.data.local.WorkoutTemplateEntity
@@ -64,7 +65,25 @@ class ActivityViewModel @Inject constructor(
                 )
             }
             
-            // Mock route points for distance if needed (just start/end to get the distance logged if we handled that manually, but WorkoutRepository relies on distance being calculated from RoutePoints if we don't change it. Wait, WorkoutRepository calculates distance from route. I should change WorkoutRepository to accept distance directly or I can pass an empty route and modify WorkoutRepository slightly. Let's pass empty route and modify WorkoutRepository later if needed, or just let distance be 0 for manual right now, but manual distance is good for cardio.)
+            val userWeight = workoutRepository.getUserWeight() ?: 75.0
+            val computedCalories = if (calories > 0.0) calories else {
+                if (template.trackingMode == com.example.vitaai.data.TRACKING_CARDIO) {
+                    CalorieCalculator.estimateCardioCalories(
+                        templateId = template.id,
+                        durationSeconds = durationMinutes * 60L,
+                        distanceMeters = distanceMeters,
+                        weightKg = userWeight
+                    )
+                } else {
+                    CalorieCalculator.estimateStrengthCalories(
+                        templateId = template.id,
+                        durationSeconds = durationMinutes * 60L,
+                        completedSets = sets,
+                        totalReps = reps,
+                        weightKg = userWeight
+                    )
+                }
+            }
             
             workoutRepository.saveWorkoutSession(
                 template = template,
@@ -72,9 +91,9 @@ class ActivityViewModel @Inject constructor(
                 endTime = endTime,
                 totalReps = reps,
                 sets = mockSets,
-                route = emptyList(), // Route will be empty, meaning 0 calculated distance. I will need to update WorkoutRepository to allow overriding distance.
+                route = emptyList(),
                 avgHeartRate = 0.0,
-                calories = calories,
+                calories = computedCalories,
                 notes = "Manual Entry",
                 manualDistanceMeters = distanceMeters
             )

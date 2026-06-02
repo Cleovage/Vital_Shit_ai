@@ -224,4 +224,6 @@ class WorkoutRepository @Inject constructor(
         val start = Instant.now().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()
         return start.toEpochMilli() to Instant.now().toEpochMilli()
     }
+
+    suspend fun getUserWeight(): Double? = healthConnectManager.readLatestWeight()
 }

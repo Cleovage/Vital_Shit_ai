@@ -11,17 +11,11 @@
   <component name="ChangeListManager">
     <list default="true" id="2aba4abf-8e98-43ed-abc9-dd7cbd0eba2f" name="Changes" comment="refactor: Remove live sensor tracking in favor of Health Connect and add basal calorie support&#10;&#10;- Removed `AdvancedDataProcessor` and `LiveSensorManager` to eliminate direct hardware sensor dependencies and custom smoothing logic.&#10;- Updated `HealthConnectManager` to support reading `BasalMetabolicRateRecord`, `WeightRecord`, and `HeightRecord`.&#10;- Enhanced `VitaRepository` and `HealthSnapshot` to include basal calories with a fallback BMR estimation logic.&#10;- Refactored `DashboardViewModel` and `WorkoutSessionViewModel` to remove live step and heart rate tracking.&#10;- Updated `DashboardScreen` UI to display &quot;IDLE&quot; calories and &quot;TOTAL BURN&quot; metrics.&#10;- Simplified permission handling by removing standalone activity recognition requests in favor of Health Connect permissions.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/HealthConnectManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/HealthConnectManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/MoodRepository.kt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/VitaRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/VitaRepository.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/WorkoutRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/data/WorkoutRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/components/LuminousChart.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/components/LuminousChart.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/AnalyticsViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/AnalyticsViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ActivityViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardScreen.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/DashboardViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ProfileScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/ProfileScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/SessionScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/SessionScreen.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/WorkoutSessionViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/vitaai/ui/screens/WorkoutSessionViewModel.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -385,7 +379,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780387188628</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="refactor: Remove live sensor tracking in favor of Health Connect and add basal calorie support&#10;&#10;- Removed `AdvancedDataProcessor` and `LiveSensorManager` to eliminate direct hardware sensor dependencies and custom smoothing logic.&#10;- Updated `HealthConnectManager` to support reading `BasalMetabolicRateRecord`, `WeightRecord`, and `HeightRecord`.&#10;- Enhanced `VitaRepository` and `HealthSnapshot` to include basal calories with a fallback BMR estimation logic.&#10;- Refactored `DashboardViewModel` and `WorkoutSessionViewModel` to remove live step and heart rate tracking.&#10;- Updated `DashboardScreen` UI to display &quot;IDLE&quot; calories and &quot;TOTAL BURN&quot; metrics.&#10;- Simplified permission handling by removing standalone activity recognition requests in favor of Health Connect permissions.">
+      <option name="closed" value="true" />
+      <created>1780388211752</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1780388211752</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
