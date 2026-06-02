@@ -35,7 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.vitaai.ui.components.ApexCard
+import com.example.vitaai.ui.components.GlassCard
+import com.example.vitaai.ui.components.GlassCardGlow
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.components.LuminousBarChart
 import com.example.vitaai.ui.components.LuminousDonutChart
@@ -59,9 +60,10 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                Text("Analytics", style = MaterialTheme.typography.headlineMedium, color = Primary, fontWeight = FontWeight.Bold)
-                Text("Synced trends across training, nutrition, hydration, sleep, and heart data", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
-                HorizontalDivider(modifier = Modifier.padding(top = 14.dp), color = OutlineVariant.copy(alpha = 0.5f))
+                Text("ANALYTICS ENGINE", style = MaterialTheme.typography.labelSmall, color = Primary, letterSpacing = 1.5.sp, fontWeight = FontWeight.Bold)
+                Text("HISTORICAL INTEL", style = MaterialTheme.typography.headlineMedium, color = Color.White, fontWeight = FontWeight.Black)
+                Text("Synced trends across training, nutrition, hydration, sleep, and heart data", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant.copy(alpha = 0.8f))
+                HorizontalDivider(modifier = Modifier.padding(top = 14.dp), color = OutlineVariant.copy(alpha = 0.2f))
             }
 
             item {
@@ -89,13 +91,25 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                     val nutritionCards = state.cards.filter { it.title in listOf("Calories In", "Hydration", "Macro Balance", "Protein") }
 
                     item {
-                        ApexCard(
+                        GlassCardGlow(
                             modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 8.dp),
-                            title = "Tactical Analysis",
-                            containerColor = Primary.copy(alpha = 0.05f)
+                            glowColor = Primary
                         ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color.White.copy(alpha = 0.02f))
+                                    .padding(bottom = 10.dp)
+                            ) {
+                                Text(
+                                    text = "TACTICAL INSIGHTS ANALYSIS",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Primary,
+                                    letterSpacing = 1.5.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                             Row(
-                                Modifier.padding(16.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
@@ -107,7 +121,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
                                 Text(
                                     text = state.aiInsight.uppercase(),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = OnBackground,
+                                    color = Color.White.copy(alpha = 0.9f),
                                     fontWeight = FontWeight.Medium,
                                     lineHeight = 18.sp
                                 )
@@ -117,21 +131,21 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = hiltViewModel()) {
 
                     if (activityCards.isNotEmpty()) {
                         item {
-                            Text("Activity & Training", style = MaterialTheme.typography.titleLarge, color = Primary, modifier = Modifier.padding(top = 8.dp))
+                            Text("Activity & Training", style = MaterialTheme.typography.titleMedium, color = Primary, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
                         }
                         items(activityCards) { card -> AnalyticsCard(card, timeframe) }
                     }
 
                     if (vitalsCards.isNotEmpty()) {
                         item {
-                            Text("Vitals & Recovery", style = MaterialTheme.typography.titleLarge, color = Primary, modifier = Modifier.padding(top = 8.dp))
+                            Text("Vitals & Recovery", style = MaterialTheme.typography.titleMedium, color = Primary, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
                         }
                         items(vitalsCards) { card -> AnalyticsCard(card, timeframe) }
                     }
 
                     if (nutritionCards.isNotEmpty()) {
                         item {
-                            Text("Nutrition & Fuel", style = MaterialTheme.typography.titleLarge, color = Primary, modifier = Modifier.padding(top = 8.dp))
+                            Text("Nutrition & Fuel", style = MaterialTheme.typography.titleMedium, color = Primary, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
                         }
                         items(nutritionCards) { card -> AnalyticsCard(card, timeframe) }
                     }
@@ -146,16 +160,19 @@ private fun AnalyticsCard(card: AnalyticsMetricCard, timeframe: Int) {
     val axisLabels = timeframeAxisLabels(timeframe, card.values.size)
     val metricColor = getMetricColor(card.title)
 
-    ApexCard(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    GlassCardGlow(
+        modifier = Modifier.fillMaxWidth(),
+        glowColor = metricColor
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
                 Column(Modifier.weight(1f)) {
-                    Text(card.title, style = MaterialTheme.typography.titleMedium, color = metricColor, fontWeight = FontWeight.Bold)
-                    Text(card.detail, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
+                    Text(card.title.uppercase(), style = MaterialTheme.typography.titleMedium, color = Color.White, fontWeight = FontWeight.Black)
+                    Text(card.detail, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant.copy(alpha = 0.8f))
                 }
                 Column(horizontalAlignment = Alignment.End) {
-                    Text(card.value, style = MaterialTheme.typography.titleLarge, color = metricColor, fontWeight = FontWeight.Bold)
-                    Text(card.unit, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+                    Text(card.value, style = MaterialTheme.typography.titleLarge, color = metricColor, fontWeight = FontWeight.Black)
+                    Text(card.unit.uppercase(), style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
                 }
             }
             
@@ -163,7 +180,6 @@ private fun AnalyticsCard(card: AnalyticsMetricCard, timeframe: Int) {
                 card.title == "Macro Balance" -> {
                     val latestValue = card.values.lastOrNull() ?: 0f
                     if (latestValue > 0) {
-                        // In a real app we'd pass exact macros. Here we just use a fake split based on the total for demonstration
                         val protein = latestValue * 0.3f
                         val carbs = latestValue * 0.4f
                         val fat = latestValue * 0.3f

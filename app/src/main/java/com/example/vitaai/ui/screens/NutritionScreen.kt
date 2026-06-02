@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalDrink
@@ -18,6 +20,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
@@ -28,7 +32,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vitaai.data.DrinkCatalogItem
 import com.example.vitaai.data.FoodCatalogItem
 import com.example.vitaai.data.NutritionSummary
-import com.example.vitaai.ui.components.ApexCard
+import com.example.vitaai.ui.components.GlassCard
+import com.example.vitaai.ui.components.GlassCardGlow
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.components.LuminousDonutChart
 import com.example.vitaai.ui.theme.*
@@ -82,7 +87,7 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
             item {
                 Text(
                     "QUICK LOGS",
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                     color = OnSurfaceVariant,
                     letterSpacing = 1.2.sp
                 )
@@ -101,7 +106,7 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
             item {
                 Text(
                     "HYDRATION CATALOG",
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                     color = OnSurfaceVariant,
                     letterSpacing = 1.2.sp
                 )
@@ -124,12 +129,18 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
 
 @Composable
 private fun NutritionSummaryCard(summary: NutritionSummary) {
-    ApexCard(
-        modifier = Modifier.fillMaxWidth(),
-        title = "Macro Analysis"
+    GlassCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
+        Text(
+            text = "MACRO ANALYSIS",
+            style = MaterialTheme.typography.labelSmall,
+            color = OnSurfaceVariant,
+            letterSpacing = 1.2.sp,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -140,9 +151,9 @@ private fun NutritionSummaryCard(summary: NutritionSummary) {
                         summary.carbsGrams.toFloat().coerceAtLeast(0.1f),
                         summary.fatGrams.toFloat().coerceAtLeast(0.1f)
                     ),
-                    colors = listOf(Primary, Secondary, Tertiary),
+                    colors = listOf(Primary, Color(0xFFC7C5CE), Color(0xFFE3E1EA).copy(alpha = 0.5f)),
                     modifier = Modifier.size(110.dp),
-                    thickness = 14.dp
+                    thickness = 12.dp
                 )
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
@@ -161,8 +172,8 @@ private fun NutritionSummaryCard(summary: NutritionSummary) {
 
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 TechnicalMacroRow("PROTEIN", summary.proteinGrams, 120.0, Primary)
-                TechnicalMacroRow("CARBS", summary.carbsGrams, 260.0, Secondary)
-                TechnicalMacroRow("FAT", summary.fatGrams, 70.0, Tertiary)
+                TechnicalMacroRow("CARBS", summary.carbsGrams, 260.0, Color(0xFFC7C5CE))
+                TechnicalMacroRow("FAT", summary.fatGrams, 70.0, Color(0xFFE3E1EA).copy(alpha = 0.8f))
             }
         }
     }
@@ -170,42 +181,86 @@ private fun NutritionSummaryCard(summary: NutritionSummary) {
 
 @Composable
 private fun HydrationCommand(summary: NutritionSummary) {
-    ApexCard(
-        modifier = Modifier.fillMaxWidth(),
-        title = "Hydration Level"
+    val progress = (summary.hydrationMl / 3000f).toFloat().coerceIn(0f, 1f)
+    
+    GlassCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            // Volumetric fluid capsule bar
             Box(
-                Modifier
-                    .width(10.dp)
-                    .height(80.dp)
-                    .background(OutlineVariant.copy(alpha = 0.1f), MaterialTheme.shapes.extraSmall)
+                modifier = Modifier
+                    .width(28.dp)
+                    .height(90.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color.White.copy(alpha = 0.05f))
+                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(14.dp))
             ) {
                 Box(
-                    Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight((summary.hydrationMl / 3000f).toFloat().coerceIn(0f, 1f))
+                        .fillMaxHeight(progress)
                         .align(Alignment.BottomCenter)
-                        .background(Color(0xFF00B0FF), MaterialTheme.shapes.extraSmall)
-                )
+                        .clip(RoundedCornerShape(bottomStart = 14.dp, bottomEnd = 14.dp, topStart = 6.dp, topEnd = 6.dp))
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    Color(0xFF00E5FF),
+                                    Color(0xFF00838F)
+                                )
+                            )
+                        )
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(3.dp)
+                            .align(Alignment.CenterStart)
+                            .padding(start = 2.dp)
+                            .background(Color.White.copy(alpha = 0.25f))
+                    )
+                }
             }
             
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "HYDRATION LEVEL",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Primary,
+                    letterSpacing = 1.2.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${(summary.hydrationMl / 1000.0).roundToOne()}L / 3.0L",
                     style = MaterialTheme.typography.headlineSmall,
                     color = OnBackground,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Black
                 )
-                Text(
-                    text = "STATUS: ${hydrationStatus(summary.hydrationMl).uppercase()}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (summary.hydrationMl >= 2000) Primary else Color(0xFFFFC107)
-                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.WaterDrop,
+                        contentDescription = null,
+                        tint = Color(0xFF00E5FF),
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Text(
+                        text = "STATUS: ${hydrationStatus(summary.hydrationMl).uppercase()}",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = if (summary.hydrationMl >= 2000) Color(0xFF00E5FF) else Color(0xFFFFB300)
+                    )
+                }
             }
         }
     }
@@ -213,17 +268,40 @@ private fun HydrationCommand(summary: NutritionSummary) {
 
 @Composable
 private fun TechnicalMacroRow(label: String, value: Double, target: Double, color: Color) {
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-            Text("${value.roundToInt()}G", style = MaterialTheme.typography.labelSmall, color = color, fontWeight = FontWeight.Bold)
+    val progress = (value / target).toFloat().coerceIn(0f, 1f)
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.Bold),
+                color = OnSurfaceVariant
+            )
+            Text(
+                text = "${value.roundToInt()}G / ${target.roundToInt()}G",
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold),
+                color = color
+            )
         }
-        Box(Modifier.fillMaxWidth().height(3.dp).background(OutlineVariant.copy(alpha = 0.1f))) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(6.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(Color.White.copy(alpha = 0.05f))
+        ) {
             Box(
-                Modifier
-                    .fillMaxWidth((value / target).toFloat().coerceIn(0f, 1f))
+                modifier = Modifier
+                    .fillMaxWidth(progress)
                     .fillMaxHeight()
-                    .background(color)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                color.copy(alpha = 0.6f),
+                                color
+                            )
+                        )
+                    )
             )
         }
     }
@@ -232,36 +310,44 @@ private fun TechnicalMacroRow(label: String, value: Double, target: Double, colo
 @Composable
 private fun MealSelector(selectedMeal: String, onMealSelected: (String) -> Unit) {
     val meals = listOf("Breakfast", "Lunch", "Dinner", "Snack")
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    val vitaColors = LocalVitaColors.current
+    val capsuleShape = RoundedCornerShape(24.dp)
+    
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(capsuleShape)
+            .background(vitaColors.glassFill)
+            .border(1.dp, vitaColors.glassBorderDark, capsuleShape)
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
         meals.forEach { meal ->
             val selected = meal == selectedMeal
             val backgroundColor by animateColorAsState(
-                targetValue = if (selected) Primary else SurfaceContainerHigh,
+                targetValue = if (selected) Primary else Color.Transparent,
                 label = "mealBackground$meal"
             )
             val textColor by animateColorAsState(
-                targetValue = if (selected) OnPrimary else Primary,
+                targetValue = if (selected) OnPrimary else OnSurfaceVariant,
                 label = "mealText$meal"
-            )
-            val scale by animateFloatAsState(
-                targetValue = if (selected) 1f else 0.97f,
-                label = "mealScale$meal"
             )
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .graphicsLayer(scaleX = scale, scaleY = scale)
-                    .background(backgroundColor, MaterialTheme.shapes.extraSmall)
-                    .border(
-                        width = 1.dp,
-                        color = if (selected) Primary.copy(alpha = 0.4f) else OutlineVariant.copy(alpha = 0.2f),
-                        shape = MaterialTheme.shapes.extraSmall
-                    )
+                    .clip(capsuleShape)
+                    .background(backgroundColor)
                     .clickable { onMealSelected(meal) }
-                    .padding(vertical = 12.dp),
+                    .padding(vertical = 10.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(meal.uppercase(), color = textColor, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                Text(
+                    text = meal.uppercase(),
+                    color = textColor,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 10.sp
+                )
             }
         }
     }
@@ -269,36 +355,116 @@ private fun MealSelector(selectedMeal: String, onMealSelected: (String) -> Unit)
 
 @Composable
 private fun FoodCard(food: FoodCatalogItem, onClick: () -> Unit) {
-    ApexCard(
+    GlassCardGlow(
         modifier = Modifier
             .size(width = 160.dp, height = 130.dp)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick),
+        glowColor = Primary,
+        cornerRadius = 16.dp
     ) {
-        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.SpaceBetween) {
-            Icon(Icons.Default.Restaurant, contentDescription = null, tint = Primary, modifier = Modifier.size(16.dp))
-            Column {
-                Text(food.name.uppercase(), style = MaterialTheme.typography.labelLarge, color = OnBackground, fontWeight = FontWeight.Bold, maxLines = 1)
-                Text(food.servingLabel, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Restaurant,
+                    contentDescription = null,
+                    tint = Primary,
+                    modifier = Modifier.size(16.dp)
+                )
+                Box(
+                    modifier = Modifier
+                        .background(Primary.copy(alpha = 0.1f), RoundedCornerShape(4.dp))
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        text = "FOOD",
+                        style = androidx.compose.ui.text.TextStyle(fontSize = 8.sp, fontWeight = FontWeight.Bold, color = Primary)
+                    )
+                }
             }
-            Text("${food.proteinGrams.roundToInt()}G P | ${food.calories.roundToInt()} KCAL", style = androidx.compose.ui.text.TextStyle(fontSize = 9.sp, color = Primary))
+            Column {
+                Text(
+                    text = food.name.uppercase(),
+                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 12.sp),
+                    color = OnBackground,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+                Text(
+                    text = food.servingLabel,
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                    color = OnSurfaceVariant
+                )
+            }
+            Text(
+                text = "${food.proteinGrams.roundToInt()}G PRO | ${food.calories.roundToInt()} KCAL",
+                style = androidx.compose.ui.text.TextStyle(fontSize = 9.sp, color = Primary, fontWeight = FontWeight.Bold)
+            )
         }
     }
 }
 
 @Composable
 private fun DrinkCard(drink: DrinkCatalogItem, onClick: () -> Unit) {
-    ApexCard(
+    val drinkColor = Color(0xFF00E5FF)
+    GlassCardGlow(
         modifier = Modifier
             .size(width = 160.dp, height = 130.dp)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick),
+        glowColor = drinkColor,
+        cornerRadius = 16.dp
     ) {
-        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.SpaceBetween) {
-            Icon(if (drink.type == "Water") Icons.Default.WaterDrop else Icons.Default.LocalDrink, contentDescription = null, tint = Color(0xFF00B0FF), modifier = Modifier.size(16.dp))
-            Column {
-                Text(drink.name.uppercase(), style = MaterialTheme.typography.labelLarge, color = OnBackground, fontWeight = FontWeight.Bold, maxLines = 1)
-                Text("${drink.defaultMl.roundToInt()} ML", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = if (drink.type == "Water") Icons.Default.WaterDrop else Icons.Default.LocalDrink,
+                    contentDescription = null,
+                    tint = drinkColor,
+                    modifier = Modifier.size(16.dp)
+                )
+                Box(
+                    modifier = Modifier
+                        .background(drinkColor.copy(alpha = 0.1f), RoundedCornerShape(4.dp))
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        text = drink.type.uppercase(),
+                        style = androidx.compose.ui.text.TextStyle(fontSize = 8.sp, fontWeight = FontWeight.Bold, color = drinkColor)
+                    )
+                }
             }
-            Text(drink.benefit.uppercase(), style = androidx.compose.ui.text.TextStyle(fontSize = 8.sp, color = OnSurfaceVariant), maxLines = 2)
+            Column {
+                Text(
+                    text = drink.name.uppercase(),
+                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 12.sp),
+                    color = OnBackground,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+                Text(
+                    text = "${drink.defaultMl.roundToInt()} ML",
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                    color = OnSurfaceVariant
+                )
+            }
+            Text(
+                text = drink.benefit.uppercase(),
+                style = androidx.compose.ui.text.TextStyle(fontSize = 8.sp, color = OnSurfaceVariant, fontWeight = FontWeight.Medium),
+                maxLines = 2
+            )
         }
     }
 }
@@ -310,11 +476,17 @@ private fun QuickAddMacros(onQuickAdd: (Double, Double, Double, Double) -> Unit)
     var carbs by remember { mutableStateOf("") }
     var fat by remember { mutableStateOf("") }
 
-    ApexCard(
-        modifier = Modifier.fillMaxWidth(),
-        title = "Direct Injection"
+    GlassCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(
+            text = "DIRECT INJECTION",
+            style = MaterialTheme.typography.labelSmall,
+            color = OnSurfaceVariant,
+            letterSpacing = 1.2.sp,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 MacroInput("KCAL", calories, { calories = it }, Modifier.weight(1f))
                 MacroInput("PRO (G)", protein, { protein = it }, Modifier.weight(1f))
@@ -336,9 +508,11 @@ private fun QuickAddMacros(onQuickAdd: (Double, Double, Double, Double) -> Unit)
                     carbs = ""
                     fat = ""
                 },
-                modifier = Modifier.fillMaxWidth().height(40.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = OnPrimary),
-                shape = MaterialTheme.shapes.extraSmall
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text("LOG PERFORMANCE DATA", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
             }
@@ -348,38 +522,121 @@ private fun QuickAddMacros(onQuickAdd: (Double, Double, Double, Double) -> Unit)
 
 @Composable
 private fun MacroInput(label: String, value: String, onChange: (String) -> Unit, modifier: Modifier) {
+    val vitaColors = LocalVitaColors.current
+    val shape = RoundedCornerShape(12.dp)
+    
     OutlinedTextField(
         value = value,
         onValueChange = onChange,
         modifier = modifier,
-        label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+        label = { Text(label, style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp)) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         singleLine = true,
-        textStyle = MaterialTheme.typography.bodySmall,
-        shape = MaterialTheme.shapes.extraSmall
+        textStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+        shape = shape,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Primary,
+            unfocusedBorderColor = vitaColors.glassBorderLight.copy(alpha = 0.2f),
+            focusedContainerColor = Color.Black.copy(alpha = 0.2f),
+            unfocusedContainerColor = vitaColors.glassFill,
+            focusedLabelColor = Primary,
+            unfocusedLabelColor = OnSurfaceVariant,
+            cursorColor = Primary
+        )
     )
 }
 
 @Composable
 private fun LogHistory(summary: NutritionSummary) {
-    ApexCard(
-        modifier = Modifier.fillMaxWidth(),
-        title = "Recent Logs"
+    GlassCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = "RECENT LOGS",
+            style = MaterialTheme.typography.labelSmall,
+            color = OnSurfaceVariant,
+            letterSpacing = 1.2.sp,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             if (summary.foods.isEmpty() && summary.drinks.isEmpty()) {
-                Text("NO DATA LOGGED", color = OnSurfaceVariant, style = MaterialTheme.typography.labelSmall)
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "NO DATA LOGGED TODAY",
+                        color = OnSurfaceVariant,
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    )
+                }
             }
             summary.foods.take(5).forEach {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("${it.meal.uppercase()}: ${it.name.uppercase()}", color = OnBackground, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.SemiBold)
-                    Text("${it.calories.roundToInt()} KCAL", color = Primary, style = MaterialTheme.typography.labelSmall)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.White.copy(alpha = 0.02f))
+                        .border(1.dp, Color.White.copy(alpha = 0.04f), RoundedCornerShape(8.dp))
+                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Restaurant,
+                            contentDescription = null,
+                            tint = Primary,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Text(
+                            text = "${it.meal.uppercase()}: ${it.name.uppercase()}",
+                            color = OnBackground,
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        )
+                    }
+                    Text(
+                        text = "+${it.calories.roundToInt()} KCAL",
+                        color = Primary,
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    )
                 }
             }
             summary.drinks.take(5).forEach {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(it.name.uppercase(), color = OnBackground, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.SemiBold)
-                    Text("${it.volumeMl.roundToInt()} ML", color = Color(0xFF00B0FF), style = MaterialTheme.typography.labelSmall)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.White.copy(alpha = 0.02f))
+                        .border(1.dp, Color.White.copy(alpha = 0.04f), RoundedCornerShape(8.dp))
+                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.WaterDrop,
+                            contentDescription = null,
+                            tint = Color(0xFF00E5FF),
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Text(
+                            text = it.name.uppercase(),
+                            color = OnBackground,
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        )
+                    }
+                    Text(
+                        text = "+${it.volumeMl.roundToInt()} ML",
+                        color = Color(0xFF00E5FF),
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    )
                 }
             }
         }

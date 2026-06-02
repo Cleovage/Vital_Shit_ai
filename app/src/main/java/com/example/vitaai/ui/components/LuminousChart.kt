@@ -331,52 +331,66 @@ fun LuminousLineChart(
             val valueStr = yAxisLabelFormatter(dataPoints[index])
             val labelStr = if (index < xAxisLabels.size) xAxisLabels[index] else ""
             
-            // Highlight line
+            // Highlight vertical guide cursor line
             drawLine(
-                color = lineColor.copy(alpha = 0.5f),
+                color = lineColor.copy(alpha = 0.35f),
                 start = Offset(point.x, chartTop),
                 end = Offset(point.x, chartBottom),
-                strokeWidth = 2.dp.toPx()
+                strokeWidth = 1.5.dp.toPx(),
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 8f), 0f)
             )
             
-            // Highlight point
-            drawCircle(color = glowColor, radius = 12f, center = point)
+            // Dribbble-tier concentric glowing active nodes
+            drawCircle(color = glowColor.copy(alpha = 0.25f), radius = 16f, center = point)
+            drawCircle(color = lineColor.copy(alpha = 0.6f), radius = 10f, center = point)
             drawCircle(color = Color.White, radius = 6f, center = point)
+            drawCircle(color = lineColor, radius = 3f, center = point)
             
             drawIntoCanvas { canvas ->
                 val tooltipTextPaint = Paint().apply {
                     color = Color.White.toArgb()
-                    textSize = labelTextSizePx * 1.2f
+                    textSize = labelTextSizePx * 1.1f
                     isAntiAlias = true
                     textAlign = Paint.Align.CENTER
+                    typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
                 }
                 
                 val tooltipBgPaint = Paint().apply {
-                    color = Color.DarkGray.toArgb()
-                    alpha = 220
+                    color = Color(0xFF121212).toArgb()
+                    alpha = 240
                     isAntiAlias = true
+                    style = Paint.Style.FILL
+                }
+
+                val tooltipBorderPaint = Paint().apply {
+                    color = lineColor.toArgb() // Neon outline matching active line color
+                    strokeWidth = 1.5.dp.toPx()
+                    isAntiAlias = true
+                    style = Paint.Style.STROKE
                 }
                 
                 val textToDraw = "$valueStr ${if (labelStr.isNotEmpty()) "($labelStr)" else ""}"
                 val textWidth = tooltipTextPaint.measureText(textToDraw)
-                val padding = 16f
+                val paddingX = 14.dp.toPx()
+                val paddingY = 8.dp.toPx()
                 
                 var tooltipX = point.x
-                if (tooltipX - textWidth / 2 - padding < chartLeft) {
-                    tooltipX = chartLeft + textWidth / 2 + padding
-                } else if (tooltipX + textWidth / 2 + padding > chartRight) {
-                    tooltipX = chartRight - textWidth / 2 - padding
+                if (tooltipX - textWidth / 2 - paddingX < chartLeft) {
+                    tooltipX = chartLeft + textWidth / 2 + paddingX
+                } else if (tooltipX + textWidth / 2 + paddingX > chartRight) {
+                    tooltipX = chartRight - textWidth / 2 - paddingX
                 }
                 
-                val tooltipY = point.y - 30f
+                val tooltipY = point.y - 32.dp.toPx()
                 val bgRect = android.graphics.RectF(
-                    tooltipX - textWidth / 2 - padding,
-                    tooltipY - tooltipTextPaint.textSize - padding,
-                    tooltipX + textWidth / 2 + padding,
-                    tooltipY + padding
+                    tooltipX - textWidth / 2 - paddingX,
+                    tooltipY - tooltipTextPaint.textSize - paddingY,
+                    tooltipX + textWidth / 2 + paddingX,
+                    tooltipY + paddingY
                 )
                 
-                canvas.nativeCanvas.drawRoundRect(bgRect, 8f, 8f, tooltipBgPaint)
+                canvas.nativeCanvas.drawRoundRect(bgRect, 10.dp.toPx(), 10.dp.toPx(), tooltipBgPaint)
+                canvas.nativeCanvas.drawRoundRect(bgRect, 10.dp.toPx(), 10.dp.toPx(), tooltipBorderPaint)
                 canvas.nativeCanvas.drawText(textToDraw, tooltipX, tooltipY, tooltipTextPaint)
             }
         }
@@ -653,40 +667,55 @@ fun LuminousBarChart(
             val valueStr = yAxisLabelFormatter(dataPoints[index])
             val labelStr = if (index < xAxisLabels.size) xAxisLabels[index] else ""
             
+            // Draw visual target indicator ring on top of bar
+            drawCircle(color = glowColor.copy(alpha = 0.35f), radius = 10f, center = Offset(x, y))
+            drawCircle(color = Color.White, radius = 5f, center = Offset(x, y))
+            
             drawIntoCanvas { canvas ->
                 val tooltipTextPaint = Paint().apply {
                     color = Color.White.toArgb()
-                    textSize = labelTextSizePx * 1.2f
+                    textSize = labelTextSizePx * 1.1f
                     isAntiAlias = true
                     textAlign = Paint.Align.CENTER
+                    typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
                 }
                 
                 val tooltipBgPaint = Paint().apply {
-                    color = Color.DarkGray.toArgb()
-                    alpha = 220
+                    color = Color(0xFF121212).toArgb()
+                    alpha = 240
                     isAntiAlias = true
+                    style = Paint.Style.FILL
+                }
+
+                val tooltipBorderPaint = Paint().apply {
+                    color = barColor.toArgb() // Neon outline matching active bar color
+                    strokeWidth = 1.5.dp.toPx()
+                    isAntiAlias = true
+                    style = Paint.Style.STROKE
                 }
                 
                 val textToDraw = "$valueStr ${if (labelStr.isNotEmpty()) "($labelStr)" else ""}"
                 val textWidth = tooltipTextPaint.measureText(textToDraw)
-                val padding = 16f
+                val paddingX = 14.dp.toPx()
+                val paddingY = 8.dp.toPx()
                 
                 var tooltipX = x
-                if (tooltipX - textWidth / 2 - padding < chartLeft) {
-                    tooltipX = chartLeft + textWidth / 2 + padding
-                } else if (tooltipX + textWidth / 2 + padding > chartRight) {
-                    tooltipX = chartRight - textWidth / 2 - padding
+                if (tooltipX - textWidth / 2 - paddingX < chartLeft) {
+                    tooltipX = chartLeft + textWidth / 2 + paddingX
+                } else if (tooltipX + textWidth / 2 + paddingX > chartRight) {
+                    tooltipX = chartRight - textWidth / 2 - paddingX
                 }
                 
-                val tooltipY = y - 30f
+                val tooltipY = y - 32.dp.toPx()
                 val bgRect = android.graphics.RectF(
-                    tooltipX - textWidth / 2 - padding,
-                    tooltipY - tooltipTextPaint.textSize - padding,
-                    tooltipX + textWidth / 2 + padding,
-                    tooltipY + padding
+                    tooltipX - textWidth / 2 - paddingX,
+                    tooltipY - tooltipTextPaint.textSize - paddingY,
+                    tooltipX + textWidth / 2 + paddingX,
+                    tooltipY + paddingY
                 )
                 
-                canvas.nativeCanvas.drawRoundRect(bgRect, 8f, 8f, tooltipBgPaint)
+                canvas.nativeCanvas.drawRoundRect(bgRect, 10.dp.toPx(), 10.dp.toPx(), tooltipBgPaint)
+                canvas.nativeCanvas.drawRoundRect(bgRect, 10.dp.toPx(), 10.dp.toPx(), tooltipBorderPaint)
                 canvas.nativeCanvas.drawText(textToDraw, tooltipX, tooltipY, tooltipTextPaint)
             }
         }
@@ -828,8 +857,8 @@ fun LuminousStackedBarChart(
     dataPoints: List<Pair<Float, Float>>, // Pair(BottomValue, TopValue)
     modifier: Modifier = Modifier,
     height: Dp = 180.dp,
-    bottomColor: Color = Color(0xFF448AFF), // Idle (Blue)
-    topColor: Color = Color(0xFFFFAB40),   // Active (Orange)
+    bottomColor: Color = Color(0xFF37474F), // Idle / Basal (Graphite Slate)
+    topColor: Color = Color(0xFFFF3D00),   // Active / Exercise (Neon Orange)
     barSpacing: Float = 0.3f,
     xAxisLabels: List<String> = emptyList(),
     yAxisTicks: Int = 5,
@@ -1077,12 +1106,17 @@ fun LuminousStackedBarChart(
             val tStr = yAxisLabelFormatter(valuePair.second)
             val labelStr = if (index < xAxisLabels.size) xAxisLabels[index] else ""
             
+            // Target indicator ring on top of stacked bar
+            drawCircle(color = topColor.copy(alpha = 0.35f), radius = 10f, center = Offset(x, y))
+            drawCircle(color = Color.White, radius = 5f, center = Offset(x, y))
+            
             drawIntoCanvas { canvas ->
                 val tooltipTextPaint = Paint().apply {
                     color = Color.White.toArgb()
-                    textSize = labelTextSizePx * 1.2f
+                    textSize = labelTextSizePx * 1.1f
                     isAntiAlias = true
                     textAlign = Paint.Align.CENTER
+                    typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
                 }
                 val detailTextPaint = Paint().apply {
                     color = Color.LightGray.toArgb()
@@ -1092,33 +1126,43 @@ fun LuminousStackedBarChart(
                 }
                 
                 val tooltipBgPaint = Paint().apply {
-                    color = Color.DarkGray.toArgb()
-                    alpha = 220
+                    color = Color(0xFF121212).toArgb()
+                    alpha = 240
                     isAntiAlias = true
+                    style = Paint.Style.FILL
+                }
+
+                val tooltipBorderPaint = Paint().apply {
+                    color = topColor.toArgb() // Neon outline matching top active segment
+                    strokeWidth = 1.5.dp.toPx()
+                    isAntiAlias = true
+                    style = Paint.Style.STROKE
                 }
                 
                 val textToDraw = "$valueStr ${if (labelStr.isNotEmpty()) "($labelStr)" else ""}"
                 val detailStr = "Idle: $bStr | Act: $tStr"
                 
                 val textWidth = kotlin.math.max(tooltipTextPaint.measureText(textToDraw), detailTextPaint.measureText(detailStr))
-                val padding = 16f
+                val paddingX = 14.dp.toPx()
+                val paddingY = 8.dp.toPx()
                 
                 var tooltipX = x
-                if (tooltipX - textWidth / 2 - padding < chartLeft) {
-                    tooltipX = chartLeft + textWidth / 2 + padding
-                } else if (tooltipX + textWidth / 2 + padding > chartRight) {
-                    tooltipX = chartRight - textWidth / 2 - padding
+                if (tooltipX - textWidth / 2 - paddingX < chartLeft) {
+                    tooltipX = chartLeft + textWidth / 2 + paddingX
+                } else if (tooltipX + textWidth / 2 + paddingX > chartRight) {
+                    tooltipX = chartRight - textWidth / 2 - paddingX
                 }
                 
-                val tooltipY = y - 40f
+                val tooltipY = y - 42.dp.toPx()
                 val bgRect = android.graphics.RectF(
-                    tooltipX - textWidth / 2 - padding,
-                    tooltipY - tooltipTextPaint.textSize - padding,
-                    tooltipX + textWidth / 2 + padding,
-                    tooltipY + detailTextPaint.textSize + padding
+                    tooltipX - textWidth / 2 - paddingX,
+                    tooltipY - tooltipTextPaint.textSize - paddingY,
+                    tooltipX + textWidth / 2 + paddingX,
+                    tooltipY + detailTextPaint.textSize + paddingY
                 )
                 
-                canvas.nativeCanvas.drawRoundRect(bgRect, 8f, 8f, tooltipBgPaint)
+                canvas.nativeCanvas.drawRoundRect(bgRect, 10.dp.toPx(), 10.dp.toPx(), tooltipBgPaint)
+                canvas.nativeCanvas.drawRoundRect(bgRect, 10.dp.toPx(), 10.dp.toPx(), tooltipBorderPaint)
                 canvas.nativeCanvas.drawText(textToDraw, tooltipX, tooltipY, tooltipTextPaint)
                 canvas.nativeCanvas.drawText(detailStr, tooltipX, tooltipY + detailTextPaint.textSize + 4f, detailTextPaint)
             }

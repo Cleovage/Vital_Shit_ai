@@ -10,7 +10,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -64,6 +63,9 @@ import com.example.vitaai.data.HealthSnapshot
 import com.example.vitaai.data.NutritionSummary
 import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.ui.components.AuraBackground
+import com.example.vitaai.ui.components.GlassCard
+import com.example.vitaai.ui.components.GlassCardGlow
+import com.example.vitaai.ui.components.ProgressRing
 import com.example.vitaai.data.GoalProgress
 import com.example.vitaai.ui.theme.Error
 import com.example.vitaai.ui.theme.OnBackground
@@ -77,51 +79,6 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
-
-@Composable
-fun GlassCard(
-    modifier: Modifier = Modifier,
-    title: String? = null,
-    borderColor: Color = Color.White.copy(alpha = 0.08f),
-    containerColor: Color = Color.Black.copy(alpha = 0.45f),
-    content: @Composable BoxScope.() -> Unit
-) {
-    Box(
-        modifier = modifier
-            .clip(MaterialTheme.shapes.large)
-            .background(containerColor)
-            .border(1.dp, borderColor, MaterialTheme.shapes.large)
-    ) {
-        Column {
-            if (title != null) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White.copy(alpha = 0.02f))
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
-                ) {
-                    Text(
-                        text = title.uppercase(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.White.copy(alpha = 0.8f),
-                        letterSpacing = 1.5.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Box(
-                        Modifier
-                            .align(Alignment.BottomStart)
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .background(Color.White.copy(alpha = 0.05f))
-                    )
-                }
-            }
-            Box(Modifier.fillMaxWidth()) {
-                content()
-            }
-        }
-    }
-}
 
 @Composable
 fun StreakFireBadge(streakDays: Int, modifier: Modifier = Modifier) {
@@ -395,40 +352,65 @@ private fun DashboardContent(
             }
         }
 
-        // --- 2. VITALS HUB ---
+        // --- 2. VITALS HUB (Circular Progress Rings HUD) ---
         item {
-            GlassCard(
-                modifier = Modifier.fillMaxWidth(),
-                title = "Critical Vitals"
-            ) {
+            GlassCard(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White.copy(alpha = 0.02f))
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                ) {
+                    Text(
+                        text = "CRITICAL VITALS",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.8f),
+                        letterSpacing = 1.5.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                
                 Row(
                     modifier = Modifier.padding(16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    VitalItem(
+                    val heartProgress = if (snapshot.avgHeartRate > 0) (snapshot.avgHeartRate.toFloat() / 150f).coerceIn(0f, 1f) else 0f
+                    VitalProgressRingItem(
                         label = "HEART",
                         value = if (snapshot.avgHeartRate > 0) snapshot.avgHeartRate.roundToInt().toString() else "--",
                         unit = "BPM",
                         icon = Icons.Default.Favorite,
-                        color = Color(0xFFF48FB1),
+                        progress = heartProgress,
+                        ringColors = listOf(Color(0xFFF48FB1), Color(0xFFFF2D55)),
+                        ringGlowColor = Color(0xFFF48FB1),
                         modifier = Modifier.weight(1f)
                     )
+                    
                     VerticalDivider(color = Color.White.copy(alpha = 0.1f), modifier = Modifier.height(48.dp))
-                    VitalItem(
+                    
+                    val sleepProgress = (snapshot.sleepDurationHours.toFloat() / 8f).coerceIn(0f, 1f)
+                    VitalProgressRingItem(
                         label = "SLEEP",
                         value = String.format(Locale.US, "%.1f", snapshot.sleepDurationHours),
                         unit = "HRS",
                         icon = Icons.Default.DirectionsRun,
-                        color = Color(0xFF90CAF9),
+                        progress = sleepProgress,
+                        ringColors = listOf(Color(0xFF90CAF9), Color(0xFF2979FF)),
+                        ringGlowColor = Color(0xFF90CAF9),
                         modifier = Modifier.weight(1f)
                     )
+                    
                     VerticalDivider(color = Color.White.copy(alpha = 0.1f), modifier = Modifier.height(48.dp))
-                    VitalItem(
+                    
+                    val idleProgress = (snapshot.basalCalories.toFloat() / 2000f).coerceIn(0f, 1f)
+                    VitalProgressRingItem(
                         label = "IDLE",
                         value = snapshot.basalCalories.roundToInt().toString(),
                         unit = "KCAL",
                         icon = Icons.Default.Whatshot,
-                        color = Color(0xFFFFCC80),
+                        progress = idleProgress,
+                        ringColors = listOf(Color(0xFFFFCC80), Color(0xFFFF9100)),
+                        ringGlowColor = Color(0xFFFFCC80),
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -437,10 +419,21 @@ private fun DashboardContent(
 
         // --- 2.5. DAILY DIRECTIVES (Gamification Goals) ---
         item {
-            GlassCard(
-                modifier = Modifier.fillMaxWidth(),
-                title = "Daily Directives"
-            ) {
+            GlassCard(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White.copy(alpha = 0.02f))
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                ) {
+                    Text(
+                        text = "DAILY DIRECTIVES",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.8f),
+                        letterSpacing = 1.5.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     GoalProgressBar(label = "STEPS", progress = goalProgress.stepsProgress, color = Primary)
                     GoalProgressBar(label = "HYDRATION", progress = goalProgress.hydrationProgress, color = Color(0xFF00B0FF))
@@ -554,10 +547,21 @@ private fun DashboardContent(
 
         // --- 4. QUICK HYDRATION LOG ---
         item {
-            GlassCard(
-                modifier = Modifier.fillMaxWidth(),
-                title = "Quick Hydration Log"
-            ) {
+            GlassCard(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White.copy(alpha = 0.02f))
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                ) {
+                    Text(
+                        text = "QUICK HYDRATION LOG",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.8f),
+                        letterSpacing = 1.5.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(
                         "Tap to record hydration instant-sync:",
@@ -590,10 +594,21 @@ private fun DashboardContent(
 
         // --- 4.5. FUELING & OPTIMIZATION ---
         item {
-            GlassCard(
-                modifier = Modifier.fillMaxWidth(),
-                title = "Fueling Status"
-            ) {
+            GlassCard(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White.copy(alpha = 0.02f))
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                ) {
+                    Text(
+                        text = "FUELING STATUS",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.8f),
+                        letterSpacing = 1.5.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     MacroBar(nutrition)
                     Row(
@@ -618,12 +633,24 @@ private fun DashboardContent(
 
         // --- 5. TACTICAL INSIGHTS ---
         item {
-            GlassCard(
+            GlassCardGlow(
                 modifier = Modifier.fillMaxWidth(),
-                title = "Tactical Analysis",
-                borderColor = Primary.copy(alpha = 0.25f),
-                containerColor = Primary.copy(alpha = 0.05f)
+                glowColor = Primary
             ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White.copy(alpha = 0.02f))
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                ) {
+                    Text(
+                        text = "TACTICAL ANALYSIS",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Primary,
+                        letterSpacing = 1.5.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 Row(
                     Modifier.padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -666,25 +693,65 @@ private fun DashboardContent(
 }
 
 @Composable
-private fun VitalItem(
+private fun VitalProgressRingItem(
     label: String,
     value: String,
     unit: String,
     icon: ImageVector,
-    color: Color = Primary,
+    progress: Float,
+    ringColors: List<Color>,
+    ringGlowColor: Color,
     modifier: Modifier = Modifier
 ) {
     Column(modifier, horizontalAlignment = Alignment.Start) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, contentDescription = null, tint = color.copy(alpha = 0.6f), modifier = Modifier.size(12.dp))
-            Spacer(Modifier.width(4.dp))
-            Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant.copy(alpha = 0.7f), fontWeight = FontWeight.Bold, letterSpacing = 0.8.sp)
-        }
-        Spacer(Modifier.height(2.dp))
-        Row(verticalAlignment = Alignment.Bottom) {
-            Text(value, style = MaterialTheme.typography.headlineLarge, color = Color.White, fontWeight = FontWeight.ExtraBold)
-            Spacer(Modifier.width(3.dp))
-            Text(unit, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant.copy(alpha = 0.6f), modifier = Modifier.padding(bottom = 4.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.size(52.dp)) {
+                ProgressRing(
+                    progress = progress,
+                    size = 52.dp,
+                    strokeWidth = 5.dp,
+                    glowWidth = 8.dp,
+                    colors = ringColors,
+                    glowColor = ringGlowColor
+                )
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = ringGlowColor,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+            Column {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = OnSurfaceVariant.copy(alpha = 0.7f),
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.8.sp
+                )
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        text = value,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                    Spacer(Modifier.width(2.dp))
+                    Text(
+                        text = unit,
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = OnSurfaceVariant.copy(alpha = 0.5f)
+                        ),
+                        modifier = Modifier.padding(bottom = 2.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -701,8 +768,7 @@ private fun DashboardMetricTile(
     onClick: () -> Unit
 ) {
     GlassCard(
-        modifier = modifier.clickable(onClick = onClick),
-        borderColor = color.copy(alpha = 0.15f)
+        modifier = modifier.clickable(onClick = onClick)
     ) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {

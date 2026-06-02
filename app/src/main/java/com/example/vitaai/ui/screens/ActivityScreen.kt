@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -22,7 +25,8 @@ import androidx.navigation.NavController
 import com.example.vitaai.data.*
 import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.data.local.WorkoutTemplateEntity
-import com.example.vitaai.ui.components.ApexCard
+import com.example.vitaai.ui.components.GlassCard
+import com.example.vitaai.ui.components.GlassCardGlow
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.theme.*
 import java.time.Instant
@@ -97,22 +101,34 @@ private fun WorkoutHome(
         }
 
         item {
+            val shape = RoundedCornerShape(24.dp)
+            val vitaColors = LocalVitaColors.current
+            
             OutlinedTextField(
                 value = query,
                 onValueChange = onQueryChange,
                 modifier = Modifier.fillMaxWidth(),
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Primary) },
-                label = { Text("SEARCH PROTOCOLS", style = MaterialTheme.typography.labelSmall) },
+                label = { Text("SEARCH PROTOCOLS", style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp)) },
                 singleLine = true,
-                shape = MaterialTheme.shapes.extraSmall,
-                textStyle = MaterialTheme.typography.bodySmall
+                shape = shape,
+                textStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Primary,
+                    unfocusedBorderColor = vitaColors.glassBorderLight.copy(alpha = 0.2f),
+                    focusedContainerColor = Color.Black.copy(alpha = 0.2f),
+                    unfocusedContainerColor = vitaColors.glassFill,
+                    focusedLabelColor = Primary,
+                    unfocusedLabelColor = OnSurfaceVariant,
+                    cursorColor = Primary
+                )
             )
         }
 
         item {
             Text(
                 "ACTIVE PROTOCOLS",
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                 color = OnSurfaceVariant,
                 letterSpacing = 1.2.sp
             )
@@ -127,7 +143,7 @@ private fun WorkoutHome(
         item {
             Text(
                 "PERFORMANCE HISTORY",
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                 color = OnSurfaceVariant,
                 letterSpacing = 1.2.sp
             )
@@ -135,13 +151,17 @@ private fun WorkoutHome(
 
         if (sessions.isEmpty()) {
             item {
-                ApexCard(Modifier.fillMaxWidth()) {
-                    Text(
-                        "NO SESSION DATA DETECTED. INITIATE TRAINING TO GENERATE LOGS.",
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = OnSurfaceVariant
-                    )
+                GlassCard(Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "NO SESSION DATA DETECTED. INITIATE TRAINING TO GENERATE LOGS.",
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold),
+                            color = OnSurfaceVariant
+                        )
+                    }
                 }
             }
         } else {
@@ -156,15 +176,22 @@ private fun WorkoutHome(
 
 @Composable
 private fun WorkoutTemplateCard(template: WorkoutTemplateEntity, navController: NavController) {
-    ApexCard(
+    val glowColor = when {
+        template.trackingMode == TRACKING_CARDIO -> Primary
+        template.trackingMode == TRACKING_MOBILITY -> Color(0xFF00E5FF)
+        template.trackingMode == TRACKING_STRENGTH || template.trackingMode == "bodyweight" -> Color(0xFFD0BCFF)
+        else -> Color(0xFFC8C6C9)
+    }
+
+    GlassCardGlow(
         modifier = Modifier
             .size(width = 180.dp, height = 150.dp)
-            .clickable { navController.navigate("workout/session/${template.id}") }
+            .clickable { navController.navigate("workout/session/${template.id}") },
+        glowColor = glowColor,
+        cornerRadius = 16.dp
     ) {
         Column(
-            Modifier
-                .fillMaxSize()
-                .padding(14.dp),
+            Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
@@ -172,35 +199,35 @@ private fun WorkoutTemplateCard(template: WorkoutTemplateEntity, navController: 
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(iconForTemplate(template), contentDescription = null, tint = Primary, modifier = Modifier.size(20.dp))
+                Icon(iconForTemplate(template), contentDescription = null, tint = glowColor, modifier = Modifier.size(20.dp))
                 Box(
                     Modifier
-                        .background(Primary.copy(alpha = 0.1f), MaterialTheme.shapes.extraSmall)
+                        .background(glowColor.copy(alpha = 0.1f), RoundedCornerShape(4.dp))
                         .padding(horizontal = 6.dp, vertical = 2.dp)
                 ) {
                     Text(
                         text = template.trackingMode.uppercase(Locale.US),
-                        style = androidx.compose.ui.text.TextStyle(fontSize = 8.sp, fontWeight = FontWeight.Bold, color = Primary)
+                        style = androidx.compose.ui.text.TextStyle(fontSize = 8.sp, fontWeight = FontWeight.Bold, color = glowColor)
                     )
                 }
             }
             Column {
                 Text(
                     text = template.name.uppercase(),
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 13.sp),
                     color = OnBackground,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1
                 )
                 Text(
                     text = template.description,
-                    style = androidx.compose.ui.text.TextStyle(fontSize = 9.sp, color = OnSurfaceVariant),
+                    style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = OnSurfaceVariant),
                     maxLines = 2
                 )
             }
             Text(
-                text = if (template.gpsEnabled) "GPS ENABLED" else "MANUAL ENTRY",
-                style = androidx.compose.ui.text.TextStyle(fontSize = 8.sp, color = Primary, fontWeight = FontWeight.Medium)
+                text = if (template.gpsEnabled) "GPS SYSTEM ENGAGED" else "MANUAL METRICS",
+                style = androidx.compose.ui.text.TextStyle(fontSize = 9.sp, color = glowColor, fontWeight = FontWeight.Bold)
             )
         }
     }
@@ -208,31 +235,48 @@ private fun WorkoutTemplateCard(template: WorkoutTemplateEntity, navController: 
 
 @Composable
 private fun WorkoutSessionRow(session: WorkoutSessionEntity) {
-    ApexCard(Modifier.fillMaxWidth()) {
+    val categoryColor = when {
+        session.category == TRACKING_CARDIO -> Primary
+        session.category == TRACKING_MOBILITY -> Color(0xFF00E5FF)
+        session.category == TRACKING_STRENGTH || session.category == "bodyweight" -> Color(0xFFD0BCFF)
+        else -> Color(0xFFC8C6C9)
+    }
+
+    GlassCard(Modifier.fillMaxWidth()) {
         Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(Modifier.weight(1f)) {
-                Text(
-                    text = session.title.uppercase(),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = OnBackground,
-                    fontWeight = FontWeight.Bold
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                // Glow indicator dot
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .background(categoryColor, CircleShape)
                 )
-                Text(
-                    text = formatSessionTime(session.startTimeMillis).uppercase(),
-                    style = androidx.compose.ui.text.TextStyle(fontSize = 9.sp, color = OnSurfaceVariant)
-                )
+                Column {
+                    Text(
+                        text = session.title.uppercase(),
+                        style = MaterialTheme.typography.labelLarge.copy(fontSize = 13.sp),
+                        color = OnBackground,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = formatSessionTime(session.startTimeMillis).uppercase(),
+                        style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = OnSurfaceVariant, fontWeight = FontWeight.Medium)
+                    )
+                }
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = "${session.durationSeconds / 60} MIN",
                     style = MaterialTheme.typography.labelSmall,
-                    color = Primary,
+                    color = categoryColor,
                     fontWeight = FontWeight.Bold
                 )
                 val detailText = if (session.totalSets > 0 || session.totalReps > 0) {
@@ -255,7 +299,7 @@ private fun WorkoutSessionRow(session: WorkoutSessionEntity) {
                 }
                 Text(
                     text = detailText,
-                    style = androidx.compose.ui.text.TextStyle(fontSize = 9.sp, color = OnSurfaceVariant)
+                    style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = OnSurfaceVariant, fontWeight = FontWeight.SemiBold)
                 )
             }
         }

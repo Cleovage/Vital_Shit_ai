@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,7 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.health.connect.client.PermissionController
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.vitaai.ui.components.ApexCard
+import com.example.vitaai.ui.components.GlassCard
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.components.LuminousBarChart
 import com.example.vitaai.ui.components.LuminousLineChart
@@ -168,93 +169,88 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
                     Text("Metric Details", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
                 }
             }
-            HorizontalDivider(color = OutlineVariant.copy(alpha = 0.5f))
+            HorizontalDivider(color = OutlineVariant.copy(alpha = 0.2f))
         }
 
         item {
-            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("TODAY", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        Text(
-                            text = detail.currentValue,
-                            style = MaterialTheme.typography.displayMedium.copy(fontSize = 44.sp),
-                            color = Primary,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = detail.unitLabel, style = MaterialTheme.typography.titleMedium, color = OnSurfaceVariant)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(detail.description, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
+            GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Text("TODAY", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant.copy(alpha = 0.8f), fontWeight = FontWeight.Bold, letterSpacing = 0.8.sp)
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        text = detail.currentValue,
+                        style = MaterialTheme.typography.displayMedium.copy(fontSize = 44.sp),
+                        color = Primary,
+                        fontWeight = FontWeight.Black
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = detail.unitLabel.uppercase(), style = MaterialTheme.typography.titleMedium, color = OnSurfaceVariant.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(detail.description, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant.copy(alpha = 0.9f))
             }
         }
 
         item {
-            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("SYNCED SOURCES", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                    detail.sourceLabels.forEach { source ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(SurfaceContainerHigh, shape = MaterialTheme.shapes.small)
-                                .border(1.dp, OutlineVariant, MaterialTheme.shapes.small)
-                                .padding(horizontal = 10.dp, vertical = 8.dp)
-                        ) {
-                            Text(text = source, style = MaterialTheme.typography.bodySmall, color = Primary)
-                        }
+            GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Text("SYNCED SOURCES", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant.copy(alpha = 0.8f), fontWeight = FontWeight.Bold, letterSpacing = 0.8.sp)
+                Spacer(modifier = Modifier.height(10.dp))
+                detail.sourceLabels.forEach { source ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .background(Color.White.copy(alpha = 0.03f), shape = MaterialTheme.shapes.small)
+                            .border(1.dp, Color.White.copy(alpha = 0.08f), MaterialTheme.shapes.small)
+                            .padding(horizontal = 12.dp, vertical = 10.dp)
+                    ) {
+                        Text(text = source.uppercase(), style = MaterialTheme.typography.bodySmall, color = Primary, fontWeight = FontWeight.Bold)
                     }
                 }
             }
         }
 
         item {
-            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("TODAY'S TREND", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                    Spacer(modifier = Modifier.height(10.dp))
-                    LuminousLineChart(
-                        dataPoints = detail.todayChartValues.ifEmpty { listOf(0f, 0f) },
-                        lineColor = Primary,
-                        glowColor = Primary.copy(alpha = 0.35f),
-                        xAxisLabels = detail.todayLabels,
-                        yAxisLabelFormatter = { value -> formatAxisValue(value, detail.unitLabel) },
-                        showGrid = false,
-                        modifier = Modifier.fillMaxWidth().height(160.dp)
-                    )
-                }
+            GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Text("TODAY'S TREND", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant.copy(alpha = 0.8f), fontWeight = FontWeight.Bold, letterSpacing = 0.8.sp)
+                Spacer(modifier = Modifier.height(10.dp))
+                LuminousLineChart(
+                    dataPoints = detail.todayChartValues.ifEmpty { listOf(0f, 0f) },
+                    lineColor = Primary,
+                    glowColor = Primary.copy(alpha = 0.35f),
+                    xAxisLabels = detail.todayLabels,
+                    yAxisLabelFormatter = { value -> formatAxisValue(value, detail.unitLabel) },
+                    showGrid = false,
+                    modifier = Modifier.fillMaxWidth().height(160.dp)
+                )
             }
         }
 
         item {
-            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("7-DAY TREND", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                    Spacer(modifier = Modifier.height(10.dp))
-                    LuminousBarChart(
-                        dataPoints = detail.weekChartValues.ifEmpty { listOf(0f, 0f) },
-                        barColor = Primary,
-                        glowColor = Primary.copy(alpha = 0.3f),
-                        xAxisLabels = detail.weekLabels,
-                        yAxisLabelFormatter = { value -> formatAxisValue(value, detail.unitLabel) },
-                        showGrid = false,
-                        modifier = Modifier.fillMaxWidth().height(150.dp)
-                    )
-                }
+            GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Text("7-DAY TREND", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant.copy(alpha = 0.8f), fontWeight = FontWeight.Bold, letterSpacing = 0.8.sp)
+                Spacer(modifier = Modifier.height(10.dp))
+                LuminousBarChart(
+                    dataPoints = detail.weekChartValues.ifEmpty { listOf(0f, 0f) },
+                    barColor = Primary,
+                    glowColor = Primary.copy(alpha = 0.3f),
+                    xAxisLabels = detail.weekLabels,
+                    yAxisLabelFormatter = { value -> formatAxisValue(value, detail.unitLabel) },
+                    showGrid = false,
+                    modifier = Modifier.fillMaxWidth().height(150.dp)
+                )
             }
         }
 
         item {
-            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("RELATED STATS", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+            GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Text("RELATED STATS", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant.copy(alpha = 0.8f), fontWeight = FontWeight.Bold, letterSpacing = 0.8.sp)
+                Spacer(modifier = Modifier.height(10.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     detail.relatedStats.forEach { stat ->
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(stat.first, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
-                            Text(stat.second, style = MaterialTheme.typography.bodySmall, color = Primary, fontWeight = FontWeight.SemiBold)
+                            Text(stat.first, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant.copy(alpha = 0.8f))
+                            Text(stat.second, style = MaterialTheme.typography.bodySmall, color = Primary, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

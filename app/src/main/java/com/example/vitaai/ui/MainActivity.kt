@@ -6,17 +6,22 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -109,46 +114,79 @@ private fun ApexNavigationBar(navController: androidx.navigation.NavHostControll
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    NavigationBar(
-        containerColor = SurfaceContainerLowest,
-        contentColor = OnSurfaceVariant,
-        tonalElevation = 0.dp,
-        modifier = Modifier.border(width = 1.dp, color = OutlineVariant, shape = androidx.compose.ui.graphics.RectangleShape)
+    val vitaColors = LocalVitaColors.current
+    val shape = RoundedCornerShape(28.dp)
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(start = 16.dp, end = 16.dp, bottom = 12.dp, top = 4.dp)
     ) {
-        items.forEach { item ->
-            val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
-            NavigationBarItem(
-                icon = {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(shape)
+                .background(vitaColors.glassFill)
+                .border(
+                    width = 1.dp,
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            vitaColors.glassBorderLight,
+                            vitaColors.glassBorderLight.copy(alpha = 0.10f),
+                            vitaColors.glassBorderDark
+                        )
+                    ),
+                    shape = shape
+                )
+                .padding(vertical = 8.dp, horizontal = 12.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items.forEach { item ->
+                val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable {
+                            navController.navigate(item.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                        .padding(vertical = 6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Icon(
                         imageVector = item.icon,
                         contentDescription = item.title,
+                        tint = if (selected) Primary else OnSurfaceVariant,
                         modifier = Modifier.size(24.dp)
                     )
-                },
-                label = {
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = item.title,
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 9.sp,
+                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                        ),
+                        color = if (selected) Primary else OnSurfaceVariant
                     )
-                },
-                selected = selected,
-                onClick = {
-                    navController.navigate(item.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Primary,
-                    selectedTextColor = Primary,
-                    unselectedIconColor = OnSurfaceVariant,
-                    unselectedTextColor = OnSurfaceVariant,
-                    indicatorColor = Color.Transparent
-                )
-            )
+                    Spacer(modifier = Modifier.height(3.dp))
+                    // Glowing indicator node
+                    Box(
+                        modifier = Modifier
+                            .size(width = 12.dp, height = 3.dp)
+                            .clip(RoundedCornerShape(1.5.dp))
+                            .background(if (selected) Primary else Color.Transparent)
+                    )
+                }
+            }
         }
     }
 }
