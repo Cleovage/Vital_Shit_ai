@@ -11,20 +11,21 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 data class HealthSnapshot(
-    val steps: Long,
-    val avgHeartRate: Double,
-    val sleepDurationHours: Double,
-    val calories: Double,
-    val basalCalories: Double,
-    val hydrationLiters: Double,
-    val distanceMeters: Double,
-    val exerciseMinutes: Double,
-    val caloriesIntake: Double,
-    val proteinGrams: Double,
-    val carbsGrams: Double,
-    val fatGrams: Double,
-    val hourlySteps: Map<Instant, Long> = emptyMap(),
-    val hourlyHeartRate: Map<Instant, Double> = emptyMap()
+    val steps: Long = 0,
+    val avgHeartRate: Double = 0.0,
+    val sleepDurationHours: Double = 0.0,
+    val calories: Double = 0.0,
+    val basalCalories: Double = 0.0,
+    val hydrationLiters: Double = 0.0,
+    val distanceMeters: Double = 0.0,
+    val exerciseMinutes: Double = 0.0,
+    val caloriesIntake: Double = 0.0,
+    val proteinGrams: Double = 0.0,
+    val carbsGrams: Double = 0.0,
+    val fatGrams: Double = 0.0,
+    val timestamp: Long = System.currentTimeMillis(),
+    val hourlySteps: Map<String, Long> = emptyMap(),
+    val hourlyHeartRate: Map<String, Double> = emptyMap()
 )
 
 @Singleton
@@ -82,8 +83,8 @@ class VitaRepository @Inject constructor(
             proteinGrams = nutrition.proteinGrams,
             carbsGrams = nutrition.carbsGrams,
             fatGrams = nutrition.fatGrams,
-            hourlySteps = hourlySteps,
-            hourlyHeartRate = hourlyHeartRate
+            hourlySteps = hourlySteps.mapKeys { it.key.toString() },
+            hourlyHeartRate = hourlyHeartRate.mapKeys { it.key.toString() }
         )
     }
 

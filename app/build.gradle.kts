@@ -4,6 +4,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -65,17 +66,17 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.52")
-    kapt("com.google.dagger:hilt-compiler:2.52")
+    implementation("com.google.dagger:hilt-android:2.55")
+    kapt("com.google.dagger:hilt-compiler:2.55")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
     // Health Connect
     implementation("androidx.health.connect:connect-client:1.1.0")
 
     // Local persistence
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-runtime:2.7.0-alpha13")
+    implementation("androidx.room:room-ktx:2.7.0-alpha13")
+    kapt("androidx.room:room-compiler:2.7.0-alpha13")
 
     // Charts (Vico)
     implementation("com.patrykandpatrick.vico:compose-m3:1.14.0")
@@ -83,6 +84,13 @@ dependencies {
     // Network
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:34.14.0"))
+    implementation("com.google.firebase:firebase-analytics-ktx:22.1.2")
+    implementation("com.google.firebase:firebase-firestore-ktx:25.1.4")
+    implementation("com.google.firebase:firebase-auth-ktx:23.2.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0")
 
     // Glance for App Widget
     implementation("androidx.glance:glance-appwidget:1.0.0")

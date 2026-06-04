@@ -278,11 +278,28 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                         )
                         HorizontalDivider(color = OutlineVariant.copy(alpha = 0.12f))
                         ConnectionRow(
-                            icon = Icons.Default.MonitorWeight,
-                            name = "SOMATIC BODY METRICS WRITE",
-                            status = if (state.permissionsGranted) "WRITE ALLOWED" else "PENDING GRANT",
-                            connected = state.permissionsGranted
+                            icon = Icons.Default.CloudUpload,
+                            name = "FIREBASE CLOUD SYNC",
+                            status = if (state.isLoggedIntoFirebase) "AUTHORIZED" else "LOG IN REQUIRED",
+                            connected = state.isLoggedIntoFirebase
                         )
+                        
+                        if (state.isLoggedIntoFirebase) {
+                            Spacer(Modifier.height(8.dp))
+                            GlowButton(
+                                text = "PUSH TO CLOUD",
+                                onClick = { viewModel.syncToCloud() },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            state.lastSyncStatus?.let {
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Primary,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }

@@ -4,9 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vitaai.data.HealthConnectManager
 import com.example.vitaai.data.WorkoutRepository
+import com.example.vitaai.data.FirebaseRepository
+import com.example.vitaai.data.VitaRepository
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,20 +23,47 @@ data class ProfileUiState(
     val levelProgress: Float = 0f,
     val permissionsGranted: Boolean = false,
     val isSaving: Boolean = false,
-    val hasAllRequiredPermissions: Boolean = false
+    val hasAllRequiredPermissions: Boolean = false,
+    val isLoggedIntoFirebase: Boolean = false,
+    val lastSyncStatus: String? = null
 )
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val healthConnectManager: HealthConnectManager,
-    private val workoutRepository: WorkoutRepository
+    private val workoutRepository: WorkoutRepository,
+    private val firebaseRepository: FirebaseRepository,
+    private val vitaRepository: VitaRepository,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
-    val uiState: StateFlow<ProfileUiState> = _uiState
+    val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
         loadProfile()
+        checkLoginStatus()
+    }
+
+    private fun checkLoginStatus() {
+        _uiState.value = _uiState.value.copy(
+            isLoggedIntoFirebase = auth.currentUser != null
+        )
+    }
+
+    fun syncToCloud() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isSaving = true, lastSyncStatus = "Syncing...")
+            try {
+                val snapshot = vitaRepository.getDailySnapshot()
+                firebaseRepository.saveHealthSnapshot(snapshot)
+                _uiState.value = _uiState.value.copy(lastSyncStatus = "Successfully Synced")
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(lastSyncStatus = "Error: ${e.message}")
+            } finally {
+                _uiState.value = _uiState.value.copy(isSaving = false)
+            }
+        }
     }
 
     fun loadProfile() {
