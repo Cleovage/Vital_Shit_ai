@@ -54,7 +54,7 @@ fun CircadianScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
-                    .padding(bottom = 80.dp) // Leave room for floating bottom bar
+                    .padding(bottom = 100.dp) // Leave room for floating bottom bar
             ) {
             // Header Bar
             Row(

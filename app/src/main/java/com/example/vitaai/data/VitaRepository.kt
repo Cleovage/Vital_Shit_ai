@@ -3,6 +3,11 @@ package com.example.vitaai.data
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -47,13 +52,18 @@ class VitaRepository @Inject constructor(
         val steps = healthConnectManager.readDailySteps(startOfDay, now)
         val avgHr = healthConnectManager.readAvgHeartRate(startOfDay, now)
         val hourlyHeartRate = healthConnectManager.readHourlyHeartRate(startOfDay, now)
-        val sleepDuration = healthConnectManager.readSleepDuration(
+        val hcSleepDuration = healthConnectManager.readSleepDuration(
             now.minus(24, ChronoUnit.HOURS),
             now
         )
-        // Sum active calories of local workouts logged today
         val startMillis = startOfDay.toEpochMilli()
         val endMillis = now.toEpochMilli()
+        
+        val localSleepSessions = dao.getSleepSessions(startMillis, endMillis)
+        val localSleepDuration = localSleepSessions.sumOf { it.durationMinutes } / 60.0
+        val sleepDuration = maxOf(hcSleepDuration, localSleepDuration)
+
+        // Sum active calories of local workouts logged today
         val localWorkouts = dao.getWorkoutSessions(startMillis, endMillis)
         val localWorkoutsCalories = localWorkouts.sumOf { it.calories }
 
@@ -96,7 +106,11 @@ class VitaRepository @Inject constructor(
             }
             delay(10000) // Refresh every 10 seconds
         }
-    }
+    }.shareIn(
+        scope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
+        started = SharingStarted.WhileSubscribed(5000),
+        replay = 1
+    )
 
     suspend fun getHistoricalSteps(days: Int): Map<Instant, Long> {
         val now = Instant.now()
@@ -147,8 +161,11 @@ class VitaRepository @Inject constructor(
                 if (samples.isEmpty()) 0.0 else samples.average()
             }
             HealthMetricType.SLEEP -> {
-                val sessions = healthConnectManager.readSleepSessions(start, end)
-                sessions.sumOf { session -> java.time.Duration.between(session.startTime, session.endTime).toMinutes() } / 60.0
+                val hcSessions = healthConnectManager.readSleepSessions(start, end)
+                val hcDuration = hcSessions.sumOf { session -> java.time.Duration.between(session.startTime, session.endTime).toMinutes() } / 60.0
+                val localSessions = dao.getSleepSessions(start.toEpochMilli(), end.toEpochMilli())
+                val localDuration = localSessions.sumOf { it.durationMinutes } / 60.0
+                maxOf(hcDuration, localDuration)
             }
             HealthMetricType.DISTANCE -> healthConnectManager.readDistance(start, end) / 1000.0
             HealthMetricType.HYDRATION -> {

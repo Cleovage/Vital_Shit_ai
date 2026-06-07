@@ -53,12 +53,13 @@ class CircadianViewModel @Inject constructor(
             }
         }
 
-        // Load today's light logs
+        // Observe today's light logs reactively
         viewModelScope.launch {
             val startOfDay = getStartOfDayMillis()
-            val endOfDay = System.currentTimeMillis()
-            val logs = vitaDao.getAmbientLightLogs(startOfDay, endOfDay)
-            _uiState.value = _uiState.value.copy(todayLightLogs = logs)
+            val tomorrowStart = startOfDay + 24 * 3600 * 1000L
+            vitaDao.observeAmbientLightLogs(startOfDay, tomorrowStart).collect { logs ->
+                _uiState.value = _uiState.value.copy(todayLightLogs = logs)
+            }
         }
     }
 

@@ -89,6 +89,9 @@ interface VitaDao {
     @Query("SELECT * FROM ambient_light_logs WHERE timestampMillis BETWEEN :startMillis AND :endMillis ORDER BY timestampMillis ASC")
     suspend fun getAmbientLightLogs(startMillis: Long, endMillis: Long): List<AmbientLightLogEntity>
 
+    @Query("SELECT * FROM ambient_light_logs WHERE timestampMillis BETWEEN :startMillis AND :endMillis ORDER BY timestampMillis ASC")
+    fun observeAmbientLightLogs(startMillis: Long, endMillis: Long): Flow<List<AmbientLightLogEntity>>
+
     @Query("SELECT * FROM screen_state_events WHERE timestampMillis BETWEEN :startMillis AND :endMillis ORDER BY timestampMillis ASC")
     suspend fun getScreenStateEvents(startMillis: Long, endMillis: Long): List<ScreenStateEventEntity>
 }

@@ -176,7 +176,7 @@ fun CircadianClockDial(
         drawIntoCanvas { canvas ->
             val paint = Paint().asFrameworkPaint().apply {
                 isAntiAlias = true
-                color = Color(0xFFE6E1E5).toArgb() // Premium white label
+                color = Color(0xFF0F172A).toArgb() // Slate-900 label for high contrast
                 textSize = 12.sp.toPx()
                 textAlign = android.graphics.Paint.Align.CENTER
                 typeface = android.graphics.Typeface.DEFAULT_BOLD

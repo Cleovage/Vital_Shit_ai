@@ -4,9 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.Spring
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -117,10 +116,82 @@ fun VitaApp() {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            fun getRouteIndex(route: String?): Int {
+                val cleanRoute = route?.split("/")?.firstOrNull() ?: ""
+                return when (cleanRoute) {
+                    "chat" -> 0
+                    "activity" -> 1
+                    "dashboard" -> 2
+                    "analytics" -> 3
+                    "profile" -> 4
+                    else -> -1
+                }
+            }
+
             NavHost(
                 navController = navController,
                 startDestination = "dashboard",
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                enterTransition = {
+                    val initialIndex = getRouteIndex(initialState.destination.route)
+                    val targetIndex = getRouteIndex(targetState.destination.route)
+                    if (initialIndex != -1 && targetIndex != -1) {
+                        if (targetIndex > initialIndex) {
+                            slideInHorizontally(animationSpec = tween(300, easing = FastOutSlowInEasing)) { it } + fadeIn(animationSpec = tween(300))
+                        } else if (targetIndex < initialIndex) {
+                            slideInHorizontally(animationSpec = tween(300, easing = FastOutSlowInEasing)) { -it } + fadeIn(animationSpec = tween(300))
+                        } else {
+                            fadeIn(animationSpec = tween(300))
+                        }
+                    } else {
+                        fadeIn(animationSpec = tween(300))
+                    }
+                },
+                exitTransition = {
+                    val initialIndex = getRouteIndex(initialState.destination.route)
+                    val targetIndex = getRouteIndex(targetState.destination.route)
+                    if (initialIndex != -1 && targetIndex != -1) {
+                        if (targetIndex > initialIndex) {
+                            slideOutHorizontally(animationSpec = tween(300, easing = FastOutSlowInEasing)) { -it } + fadeOut(animationSpec = tween(300))
+                        } else if (targetIndex < initialIndex) {
+                            slideOutHorizontally(animationSpec = tween(300, easing = FastOutSlowInEasing)) { it } + fadeOut(animationSpec = tween(300))
+                        } else {
+                            fadeOut(animationSpec = tween(300))
+                        }
+                    } else {
+                        fadeOut(animationSpec = tween(300))
+                    }
+                },
+                popEnterTransition = {
+                    val initialIndex = getRouteIndex(initialState.destination.route)
+                    val targetIndex = getRouteIndex(targetState.destination.route)
+                    if (initialIndex != -1 && targetIndex != -1) {
+                        if (targetIndex > initialIndex) {
+                            slideInHorizontally(animationSpec = tween(300, easing = FastOutSlowInEasing)) { it } + fadeIn(animationSpec = tween(300))
+                        } else if (targetIndex < initialIndex) {
+                            slideInHorizontally(animationSpec = tween(300, easing = FastOutSlowInEasing)) { -it } + fadeIn(animationSpec = tween(300))
+                        } else {
+                            fadeIn(animationSpec = tween(300))
+                        }
+                    } else {
+                        fadeIn(animationSpec = tween(300))
+                    }
+                },
+                popExitTransition = {
+                    val initialIndex = getRouteIndex(initialState.destination.route)
+                    val targetIndex = getRouteIndex(targetState.destination.route)
+                    if (initialIndex != -1 && targetIndex != -1) {
+                        if (targetIndex > initialIndex) {
+                            slideOutHorizontally(animationSpec = tween(300, easing = FastOutSlowInEasing)) { -it } + fadeOut(animationSpec = tween(300))
+                        } else if (targetIndex < initialIndex) {
+                            slideOutHorizontally(animationSpec = tween(300, easing = FastOutSlowInEasing)) { it } + fadeOut(animationSpec = tween(300))
+                        } else {
+                            fadeOut(animationSpec = tween(300))
+                        }
+                    } else {
+                        fadeOut(animationSpec = tween(300))
+                    }
+                }
             ) {
                 composable("dashboard") { DashboardScreen(navController = navController) }
                 composable("activity") { ActivityScreen(navController = navController) }

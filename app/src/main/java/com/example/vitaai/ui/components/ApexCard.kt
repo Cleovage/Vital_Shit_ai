@@ -16,23 +16,18 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import com.example.vitaai.ui.theme.OnSurfaceVariant
-import com.example.vitaai.ui.theme.OutlineVariant
-import com.example.vitaai.ui.theme.Primary
-import com.example.vitaai.ui.theme.SurfaceContainer
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 
 /**
- * Standard technical card for Apex Vitality.
+ * Standard technical card for Apex Vitality, updated to match Shader Dash light theme.
  */
 @Composable
 fun ApexCard(
     modifier: Modifier = Modifier,
     title: String? = null,
     shape: Shape = MaterialTheme.shapes.large,
-    containerColor: Color = Color(0xFF1E1F2E).copy(alpha = 0.6f),
+    containerColor: Color = Color.White.copy(alpha = 0.78f),
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
@@ -41,12 +36,7 @@ fun ApexCard(
             .background(containerColor)
             .border(
                 width = 1.dp,
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFF00E5FF).copy(alpha = 0.35f),
-                        Color(0xFF2979FF).copy(alpha = 0.25f)
-                    )
-                ),
+                color = Color.Black.copy(alpha = 0.07f),
                 shape = shape
             )
     ) {
@@ -55,10 +45,10 @@ fun ApexCard(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFF00E5FF).copy(alpha = 0.08f))
+                        .background(Color.Black.copy(alpha = 0.03f))
                         .border(
                             width = 1.dp,
-                            color = Color(0xFF00E5FF).copy(alpha = 0.15f),
+                            color = Color.Black.copy(alpha = 0.05f),
                             shape = RectangleShape
                         )
                         .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -66,7 +56,7 @@ fun ApexCard(
                     Text(
                         text = title.uppercase(),
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF00E5FF),
+                        color = Color(0xFF0F172A), // slate-900
                         letterSpacing = 1.2.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -78,3 +68,4 @@ fun ApexCard(
         }
     }
 }
+
