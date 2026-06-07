@@ -67,13 +67,7 @@ import com.example.vitaai.ui.components.GlassCard
 import com.example.vitaai.ui.components.GlassCardGlow
 import com.example.vitaai.ui.components.ProgressRing
 import com.example.vitaai.data.GoalProgress
-import com.example.vitaai.ui.theme.Error
-import com.example.vitaai.ui.theme.OnBackground
-import com.example.vitaai.ui.theme.OnPrimary
-import com.example.vitaai.ui.theme.OnSurfaceVariant
-import com.example.vitaai.ui.theme.OutlineVariant
-import com.example.vitaai.ui.theme.Primary
-import com.example.vitaai.ui.theme.SurfaceContainerHigh
+import com.example.vitaai.ui.theme.*
 import java.util.Locale
 import java.time.Instant
 import java.time.ZoneId
@@ -186,14 +180,14 @@ fun RecentWorkoutSessionRow(session: WorkoutSessionEntity) {
                     Text(
                         text = session.title.uppercase(),
                         style = MaterialTheme.typography.labelLarge,
-                        color = OnBackground,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = formatSessionTime(session.startTimeMillis).uppercase(),
-                    style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = OnSurfaceVariant)
+                    style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = GlebSlate400)
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
@@ -223,7 +217,7 @@ fun RecentWorkoutSessionRow(session: WorkoutSessionEntity) {
                 }
                 Text(
                     text = detailText,
-                    style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = OnSurfaceVariant)
+                    style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = GlebSlate400)
                 )
             }
         }
@@ -281,7 +275,7 @@ private fun PermissionsScreen(viewModel: DashboardViewModel) {
         Text(
             "Grant Health Connect access to sync Samsung Health, Google/Fitbit data, and VitaAI logs.",
             textAlign = TextAlign.Center,
-            color = OnSurfaceVariant
+            color = GlebSlate400
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
@@ -468,7 +462,7 @@ private fun DashboardContent(
             Text(
                 "DAILY PERFORMANCE",
                 style = MaterialTheme.typography.labelSmall,
-                color = OnSurfaceVariant.copy(alpha = 0.8f),
+                color = GlebSlate400.copy(alpha = 0.8f),
                 letterSpacing = 1.2.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -566,7 +560,7 @@ private fun DashboardContent(
                     Text(
                         "Tap to record hydration instant-sync:",
                         style = MaterialTheme.typography.bodySmall,
-                        color = OnSurfaceVariant.copy(alpha = 0.8f)
+                        color = GlebSlate400.copy(alpha = 0.8f)
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -618,7 +612,7 @@ private fun DashboardContent(
                         Text(
                             text = "${nutrition.calories.roundToInt()} KCAL INTAKE",
                             style = MaterialTheme.typography.labelSmall,
-                            color = OnSurfaceVariant.copy(alpha = 0.8f)
+                            color = GlebSlate400.copy(alpha = 0.8f)
                         )
                         Text(
                             text = "OPTIMAL FUEL RANGE",
@@ -678,7 +672,7 @@ private fun DashboardContent(
                 Text(
                     "RECENT COMPLETED PROTOCOLS",
                     style = MaterialTheme.typography.labelSmall,
-                    color = OnSurfaceVariant.copy(alpha = 0.8f),
+                    color = GlebSlate400.copy(alpha = 0.8f),
                     letterSpacing = 1.2.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -729,7 +723,7 @@ private fun VitalProgressRingItem(
                 Text(
                     text = label,
                     style = MaterialTheme.typography.labelSmall,
-                    color = OnSurfaceVariant.copy(alpha = 0.7f),
+                    color = GlebSlate400.copy(alpha = 0.7f),
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.8.sp
                 )
@@ -746,7 +740,7 @@ private fun VitalProgressRingItem(
                         style = androidx.compose.ui.text.TextStyle(
                             fontSize = 8.sp,
                             fontWeight = FontWeight.Bold,
-                            color = OnSurfaceVariant.copy(alpha = 0.5f)
+                            color = GlebSlate400.copy(alpha = 0.5f)
                         ),
                         modifier = Modifier.padding(bottom = 2.dp)
                     )
@@ -772,7 +766,7 @@ private fun DashboardMetricTile(
     ) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant.copy(alpha = 0.8f), fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                Text(label, style = MaterialTheme.typography.labelSmall, color = GlebSlate400.copy(alpha = 0.8f), fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
                 Icon(icon, contentDescription = label, tint = color.copy(alpha = 0.7f), modifier = Modifier.size(16.dp))
             }
             Row(verticalAlignment = Alignment.Bottom) {
@@ -781,7 +775,7 @@ private fun DashboardMetricTile(
                 Text(unit, style = androidx.compose.ui.text.TextStyle(
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color = OnSurfaceVariant.copy(alpha = 0.6f),
+                    color = GlebSlate400.copy(alpha = 0.6f),
                     letterSpacing = 0.5.sp
                 ), modifier = Modifier.padding(bottom = 4.dp))
             }
@@ -812,7 +806,7 @@ private fun MacroBar(nutrition: NutritionSummary) {
 private fun GoalProgressBar(label: String, progress: Float, color: Color) {
     Column {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant.copy(alpha = 0.8f), fontWeight = FontWeight.Bold, letterSpacing = 0.8.sp)
+            Text(label, style = MaterialTheme.typography.labelSmall, color = GlebSlate400.copy(alpha = 0.8f), fontWeight = FontWeight.Bold, letterSpacing = 0.8.sp)
             Text("${(progress * 100).toInt()}%", style = MaterialTheme.typography.labelSmall, color = color, fontWeight = FontWeight.Bold)
         }
         Spacer(Modifier.height(6.dp))

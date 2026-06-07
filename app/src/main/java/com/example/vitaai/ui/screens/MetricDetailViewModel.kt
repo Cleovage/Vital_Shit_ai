@@ -147,8 +147,8 @@ class MetricDetailViewModel @Inject constructor(
 
     private fun todaySeries(metric: HealthMetricType, snapshot: HealthSnapshot): ChartSeries {
         return when (metric) {
-            HealthMetricType.STEPS -> hourlySeries(snapshot.hourlySteps, snapshot.steps.toFloat())
-            HealthMetricType.HEART_RATE -> hourlySeries(snapshot.hourlyHeartRate, snapshot.avgHeartRate.toFloat())
+            HealthMetricType.STEPS -> hourlySeries(snapshot.hourlySteps.mapKeys { Instant.parse(it.key) }, snapshot.steps.toFloat())
+            HealthMetricType.HEART_RATE -> hourlySeries(snapshot.hourlyHeartRate.mapKeys { Instant.parse(it.key) }, snapshot.avgHeartRate.toFloat())
             HealthMetricType.ACTIVE_CALORIES -> simpleSeries(snapshot.calories.toFloat())
             HealthMetricType.SLEEP -> simpleSeries(snapshot.sleepDurationHours.toFloat())
             HealthMetricType.DISTANCE -> simpleSeries((snapshot.distanceMeters / 1000.0).toFloat())

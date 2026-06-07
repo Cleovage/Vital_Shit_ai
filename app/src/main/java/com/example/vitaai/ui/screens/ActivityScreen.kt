@@ -92,7 +92,7 @@ private fun WorkoutHome(
                 Text(
                     text = "INTEL & LOGS",
                     style = MaterialTheme.typography.displaySmall,
-                    color = OnBackground,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.height(12.dp))
@@ -119,7 +119,7 @@ private fun WorkoutHome(
                     focusedContainerColor = Color.Black.copy(alpha = 0.2f),
                     unfocusedContainerColor = vitaColors.glassFill,
                     focusedLabelColor = Primary,
-                    unfocusedLabelColor = OnSurfaceVariant,
+                    unfocusedLabelColor = GlebSlate400,
                     cursorColor = Primary
                 )
             )
@@ -129,7 +129,7 @@ private fun WorkoutHome(
             Text(
                 "ACTIVE PROTOCOLS",
                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                color = OnSurfaceVariant,
+                color = GlebSlate400,
                 letterSpacing = 1.2.sp
             )
             Spacer(Modifier.height(10.dp))
@@ -144,7 +144,7 @@ private fun WorkoutHome(
             Text(
                 "PERFORMANCE HISTORY",
                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                color = OnSurfaceVariant,
+                color = GlebSlate400,
                 letterSpacing = 1.2.sp
             )
         }
@@ -159,7 +159,7 @@ private fun WorkoutHome(
                         Text(
                             "NO SESSION DATA DETECTED. INITIATE TRAINING TO GENERATE LOGS.",
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold),
-                            color = OnSurfaceVariant
+                            color = GlebSlate400
                         )
                     }
                 }
@@ -215,13 +215,13 @@ private fun WorkoutTemplateCard(template: WorkoutTemplateEntity, navController: 
                 Text(
                     text = template.name.uppercase(),
                     style = MaterialTheme.typography.labelLarge.copy(fontSize = 13.sp),
-                    color = OnBackground,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1
                 )
                 Text(
                     text = template.description,
-                    style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = OnSurfaceVariant),
+                    style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = GlebSlate400),
                     maxLines = 2
                 )
             }
@@ -263,12 +263,12 @@ private fun WorkoutSessionRow(session: WorkoutSessionEntity) {
                     Text(
                         text = session.title.uppercase(),
                         style = MaterialTheme.typography.labelLarge.copy(fontSize = 13.sp),
-                        color = OnBackground,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = formatSessionTime(session.startTimeMillis).uppercase(),
-                        style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = OnSurfaceVariant, fontWeight = FontWeight.Medium)
+                        style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = GlebSlate400, fontWeight = FontWeight.Medium)
                     )
                 }
             }
@@ -299,7 +299,7 @@ private fun WorkoutSessionRow(session: WorkoutSessionEntity) {
                 }
                 Text(
                     text = detailText,
-                    style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = OnSurfaceVariant, fontWeight = FontWeight.SemiBold)
+                    style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = GlebSlate400, fontWeight = FontWeight.SemiBold)
                 )
             }
         }

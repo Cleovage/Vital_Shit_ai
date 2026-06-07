@@ -4,7 +4,6 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("com.google.gms.google-services")
 }
 
 android {
@@ -86,11 +85,11 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:34.14.0"))
-    implementation("com.google.firebase:firebase-analytics-ktx:22.1.2")
-    implementation("com.google.firebase:firebase-firestore-ktx:25.1.4")
-    implementation("com.google.firebase:firebase-auth-ktx:23.2.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0")
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     // Glance for App Widget
     implementation("androidx.glance:glance-appwidget:1.0.0")
