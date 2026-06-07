@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.Instant
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -34,7 +35,9 @@ data class WorkoutSessionUiState(
     val calories: Double = 0.0,
     val saving: Boolean = false,
     val savedSessionId: Long? = null,
-    val error: String? = null
+    val error: String? = null,
+    val currentWeightKg: Double = 20.0,
+    val currentPace: String = "--"
 )
 
 @HiltViewModel
@@ -108,8 +111,24 @@ class WorkoutSessionViewModel @Inject constructor(
         )
     }
 
-    fun completeSet(weightKg: Double = 0.0) {
+    fun setWeight(weight: Double) {
+        _uiState.value = _uiState.value.copy(currentWeightKg = weight.coerceAtLeast(0.0))
+    }
+    
+    fun adjustWeight(delta: Double) {
+        val next = _uiState.value.currentWeightKg + delta
+        _uiState.value = _uiState.value.copy(currentWeightKg = next.coerceAtLeast(0.0))
+    }
+
+    fun adjustReps(delta: Int) {
+        val nextReps = (_uiState.value.currentReps + delta).coerceAtLeast(0)
+        val nextTotalReps = (_uiState.value.totalReps + delta).coerceAtLeast(0)
+        _uiState.value = _uiState.value.copy(currentReps = nextReps, totalReps = nextTotalReps)
+    }
+
+    fun completeSet() {
         val template = _uiState.value.template ?: return
+        val weightKg = _uiState.value.currentWeightKg
         val reps = _uiState.value.currentReps.coerceAtLeast(if (template.trackingMode == TRACKING_CARDIO) 0 else 1)
         val setNumber = sets.size + 1
         sets += WorkoutSetDraft(
@@ -173,6 +192,15 @@ class WorkoutSessionViewModel @Inject constructor(
         }
     }
 
+    private fun calculatePace(seconds: Long, distanceMeters: Double): String {
+        if (distanceMeters <= 0.0 || seconds <= 0) return "--"
+        val distKm = distanceMeters / 1000.0
+        val paceSecs = (seconds / distKm).roundToInt()
+        val mins = paceSecs / 60
+        val secs = paceSecs % 60
+        return String.format(Locale.US, "%02d:%02d/KM", mins, secs)
+    }
+
     private fun startTimer() {
         if (timerJob?.isActive == true) return
         timerJob = viewModelScope.launch {
@@ -185,10 +213,12 @@ class WorkoutSessionViewModel @Inject constructor(
                     val nextCalories = if (template != null) {
                         estimateCalories(template.trackingMode, nextElapsed, avgHr)
                     } else 0.0
+                    val pace = calculatePace(nextElapsed, _uiState.value.distanceMeters)
                     
                     _uiState.value = _uiState.value.copy(
                         elapsedSeconds = nextElapsed,
-                        calories = nextCalories
+                        calories = nextCalories,
+                        currentPace = pace
                     )
                 }
             }
@@ -211,9 +241,12 @@ class WorkoutSessionViewModel @Inject constructor(
                     accuracyMeters = location.accuracy,
                     timestampMillis = location.time
                 )
+                val dist = distanceMeters(route)
+                val pace = calculatePace(_uiState.value.elapsedSeconds, dist)
                 _uiState.value = _uiState.value.copy(
                     routePointCount = route.size,
-                    distanceMeters = distanceMeters(route)
+                    distanceMeters = dist,
+                    currentPace = pace
                 )
             }
         }

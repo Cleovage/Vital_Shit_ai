@@ -11,9 +11,12 @@ import androidx.room.RoomDatabase
         WorkoutSessionEntity::class,
         WorkoutExerciseEntity::class,
         ExerciseSetEntity::class,
-        RoutePointEntity::class
+        RoutePointEntity::class,
+        SleepSessionEntity::class,
+        AmbientLightLogEntity::class,
+        ScreenStateEventEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class VitaDatabase : RoomDatabase() {

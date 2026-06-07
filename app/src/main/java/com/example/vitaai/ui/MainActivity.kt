@@ -4,11 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -17,8 +19,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,13 +40,28 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.vitaai.ui.screens.*
 import com.example.vitaai.ui.theme.*
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    @JvmField
+    var auth: FirebaseAuth? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+        // Firebase guest anonymous login bypass fallback
+        auth?.let {
+            if (it.currentUser == null) {
+                it.signInAnonymously()
+            }
+        }
+
         setContent {
             VitaAITheme {
                 VitaApp()
@@ -50,105 +73,174 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun VitaApp() {
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    // Define which routes hide the bottom navigation bar
+    val shouldShowBottomBar = currentRoute != null &&
+            currentRoute != "session" &&
+            !currentRoute.startsWith("workout/session")
+
+    // Density and dimensions for translation Y calculation
+    val density = LocalDensity.current
+    val bottomBarHeight = 100.dp
+    val bottomBarHeightPx = with(density) { bottomBarHeight.toPx() }
+
+    // Scroll state offset for auto-hide bottom navigation
+    var bottomBarOffsetHeightPx by remember { mutableStateOf(0f) }
+
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                val delta = available.y
+                val newOffset = bottomBarOffsetHeightPx - delta
+                bottomBarOffsetHeightPx = newOffset.coerceIn(0f, bottomBarHeightPx)
+                return Offset.Zero
+            }
+        }
+    }
+
+    // Animate the vertical translation offset smoothly
+    val animatedTranslationY by animateFloatAsState(
+        targetValue = if (shouldShowBottomBar) bottomBarOffsetHeightPx else bottomBarHeightPx,
+        animationSpec = spring(stiffness = Spring.StiffnessMedium),
+        label = "BottomBarOffset"
+    )
 
     Scaffold(
-        bottomBar = {
-            ApexNavigationBar(
-                navController = navController
-            )
-        },
         containerColor = Background,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.nestedScroll(nestedScrollConnection)
     ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = "dashboard",
-            modifier = Modifier.padding(innerPadding)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            composable("dashboard") { DashboardScreen(navController = navController) }
-            composable("activity") { ActivityScreen(navController = navController) }
-            composable("nutrition") { NutritionScreen() }
-            composable("chat") { ChatScreen() }
-            composable("analytics") { AnalyticsScreen() }
-            composable("profile") { ProfileScreen() }
-            composable("session") { SessionScreen(navController = navController) }
-            composable("workout/start") { ActivityScreen(navController = navController) }
-            composable(
-                route = "workout/session/{templateId}",
-                arguments = listOf(navArgument("templateId") { type = NavType.StringType })
+            NavHost(
+                navController = navController,
+                startDestination = "dashboard",
+                modifier = Modifier.fillMaxSize()
             ) {
-                SessionScreen(navController = navController)
+                composable("dashboard") { DashboardScreen(navController = navController) }
+                composable("activity") { ActivityScreen(navController = navController) }
+                composable("nutrition") { NutritionScreen() }
+                composable("chat") { ChatScreen() }
+                composable("analytics") { AnalyticsScreen(navController = navController) }
+                composable("profile") { ProfileScreen() }
+                composable("circadian") { CircadianScreen(navController = navController) }
+                composable("session") { SessionScreen(navController = navController) }
+                composable("workout/start") { ActivityScreen(navController = navController) }
+                composable(
+                    route = "workout/session/{templateId}",
+                    arguments = listOf(navArgument("templateId") { type = NavType.StringType })
+                ) {
+                    SessionScreen(navController = navController)
+                }
+                composable(
+                    route = "workout/detail/{sessionId}",
+                    arguments = listOf(navArgument("sessionId") { type = NavType.LongType })
+                ) { HistoryScreen(navController = navController) }
+                composable(
+                    route = "exercise/{exerciseId}",
+                    arguments = listOf(navArgument("exerciseId") { type = NavType.StringType })
+                ) { ActivityScreen(navController = navController) }
+                composable("history") { HistoryScreen(navController = navController) }
+                composable(
+                    route = "metric/{metricRoute}",
+                    arguments = listOf(navArgument("metricRoute") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    MetricDetailScreen(
+                        navController = navController,
+                        metricRoute = backStackEntry.arguments?.getString("metricRoute")
+                    )
+                }
             }
-            composable(
-                route = "workout/detail/{sessionId}",
-                arguments = listOf(navArgument("sessionId") { type = NavType.LongType })
-            ) { HistoryScreen(navController = navController) }
-            composable(
-                route = "exercise/{exerciseId}",
-                arguments = listOf(navArgument("exerciseId") { type = NavType.StringType })
-            ) { ActivityScreen(navController = navController) }
-            composable("history") { HistoryScreen(navController = navController) }
-            composable(
-                route = "metric/{metricRoute}",
-                arguments = listOf(navArgument("metricRoute") { type = NavType.StringType })
-            ) { backStackEntry ->
-                MetricDetailScreen(
-                    navController = navController,
-                    metricRoute = backStackEntry.arguments?.getString("metricRoute")
-                )
-            }
+
+            // Floating Navigation Bar overlay
+            ApexNavigationBar(
+                navController = navController,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .graphicsLayer {
+                        translationY = animatedTranslationY
+                    }
+            )
         }
     }
 }
 
 @Composable
-private fun ApexNavigationBar(navController: androidx.navigation.NavHostController) {
+private fun ApexNavigationBar(
+    navController: androidx.navigation.NavHostController,
+    modifier: Modifier = Modifier
+) {
     val items = listOf(
-        NavigationItem("dashboard", "Dashboard", Icons.Default.Dashboard),
-        NavigationItem("activity", "Workouts", Icons.Default.FitnessCenter),
-        NavigationItem("nutrition", "Nutrition", Icons.Default.Restaurant),
-        NavigationItem("analytics", "Analytics", Icons.Default.Leaderboard),
-        NavigationItem("profile", "Profile", Icons.Default.Person)
+        NavigationItem("chat", "Vita", Icons.Default.SmartToy),
+        NavigationItem("activity", "Vitals", Icons.Default.FitnessCenter),
+        NavigationItem("dashboard", "Today", Icons.Default.Home),
+        NavigationItem("analytics", "Trends", Icons.Default.Leaderboard),
+        NavigationItem("profile", "You", Icons.Default.Person)
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val vitaColors = LocalVitaColors.current
-    val shape = RoundedCornerShape(28.dp)
+    val shape = RoundedCornerShape(32.dp)
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .padding(start = 16.dp, end = 16.dp, bottom = 12.dp, top = 4.dp)
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .widthIn(max = 480.dp)
     ) {
+        // Soft shadow bloom behind nav
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .offset(y = 8.dp)
+                .padding(horizontal = 20.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color.Black.copy(alpha = 0.08f), Color.Transparent),
+                        center = Offset.Zero
+                    ),
+                    shape = RoundedCornerShape(30.dp)
+                )
+        )
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape)
-                .background(vitaColors.glassFill)
+                .background(Color.White.copy(alpha = 0.85f)) // bg-white/85
                 .border(
                     width = 1.dp,
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            vitaColors.glassBorderLight,
-                            vitaColors.glassBorderLight.copy(alpha = 0.10f),
-                            vitaColors.glassBorderDark
-                        )
-                    ),
+                    color = Color.Black.copy(alpha = 0.07f),
                     shape = shape
                 )
-                .padding(vertical = 8.dp, horizontal = 12.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+                .padding(6.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             items.forEach { item ->
                 val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
+
+                val itemBg = if (selected) Color(0xFF0F172A) else Color.Transparent
+                val itemContentColor = if (selected) Color.White else Color.Black.copy(alpha = 0.45f)
+                val scale = if (selected) 1.05f else 1.0f
+
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(16.dp))
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(itemBg)
                         .clickable {
                             navController.navigate(item.route) {
                                 popUpTo(navController.graph.findStartDestination().id) {
@@ -158,33 +250,28 @@ private fun ApexNavigationBar(navController: androidx.navigation.NavHostControll
                                 restoreState = true
                             }
                         }
-                        .padding(vertical = 6.dp),
+                        .padding(vertical = if (selected) 8.dp else 12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Icon(
                         imageVector = item.icon,
                         contentDescription = item.title,
-                        tint = if (selected) Primary else OnSurfaceVariant,
-                        modifier = Modifier.size(24.dp)
+                        tint = itemContentColor,
+                        modifier = Modifier.size(if (selected) 20.dp else 24.dp)
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = item.title,
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 9.sp,
-                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
-                        ),
-                        color = if (selected) Primary else OnSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(3.dp))
-                    // Glowing indicator node
-                    Box(
-                        modifier = Modifier
-                            .size(width = 12.dp, height = 3.dp)
-                            .clip(RoundedCornerShape(1.5.dp))
-                            .background(if (selected) Primary else Color.Transparent)
-                    )
+                    if (selected) {
+                        Spacer(modifier = Modifier.height(3.dp))
+                        Text(
+                            text = item.title,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = (-0.03).sp
+                            ),
+                            color = itemContentColor
+                        )
+                    }
                 }
             }
         }

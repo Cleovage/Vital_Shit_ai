@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.health.connect.client.records.ExerciseSessionRecord
 
 @HiltViewModel
 class ActivityViewModel @Inject constructor(
@@ -97,6 +98,48 @@ class ActivityViewModel @Inject constructor(
                 notes = "Manual Entry",
                 manualDistanceMeters = distanceMeters
             )
+        }
+    }
+
+    fun createTemplate(
+        name: String,
+        description: String,
+        trackingMode: String,
+        defaultRestSeconds: Int,
+        gpsEnabled: Boolean
+    ) {
+        viewModelScope.launch {
+            val category = when (trackingMode) {
+                com.example.vitaai.data.TRACKING_CARDIO -> "Cardio"
+                com.example.vitaai.data.TRACKING_STRENGTH -> "Strength"
+                com.example.vitaai.data.TRACKING_MOBILITY -> "Mobility"
+                else -> "Bodyweight"
+            }
+            val exerciseType = when (trackingMode) {
+                com.example.vitaai.data.TRACKING_CARDIO -> ExerciseSessionRecord.EXERCISE_TYPE_RUNNING
+                com.example.vitaai.data.TRACKING_STRENGTH -> ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING
+                com.example.vitaai.data.TRACKING_MOBILITY -> ExerciseSessionRecord.EXERCISE_TYPE_YOGA
+                else -> ExerciseSessionRecord.EXERCISE_TYPE_CALISTHENICS
+            }
+            val primaryMetric = when (trackingMode) {
+                com.example.vitaai.data.TRACKING_CARDIO -> "pace"
+                com.example.vitaai.data.TRACKING_STRENGTH -> "sets"
+                com.example.vitaai.data.TRACKING_MOBILITY -> "time"
+                else -> "reps"
+            }
+            
+            val newTemplate = WorkoutTemplateEntity(
+                id = java.util.UUID.randomUUID().toString(),
+                name = name,
+                category = category,
+                exerciseType = exerciseType,
+                trackingMode = trackingMode,
+                gpsEnabled = gpsEnabled,
+                defaultRestSeconds = defaultRestSeconds,
+                description = description,
+                primaryMetric = primaryMetric
+            )
+            workoutRepository.saveTemplate(newTemplate)
         }
     }
 }

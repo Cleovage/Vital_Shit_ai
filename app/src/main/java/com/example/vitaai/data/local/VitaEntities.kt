@@ -97,3 +97,28 @@ data class RoutePointEntity(
     val accuracyMeters: Float,
     val timestampMillis: Long
 )
+
+@Entity(tableName = "sleep_sessions")
+data class SleepSessionEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val startTimeMillis: Long,
+    val endTimeMillis: Long,
+    val durationMinutes: Long,
+    val sleepQualityScore: Int,
+    val source: String,
+    val notes: String? = null
+)
+
+@Entity(tableName = "ambient_light_logs")
+data class AmbientLightLogEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val timestampMillis: Long,
+    val luxValue: Float
+)
+
+@Entity(tableName = "screen_state_events")
+data class ScreenStateEventEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val timestampMillis: Long,
+    val eventType: String // "SCREEN_ON", "SCREEN_OFF"
+)

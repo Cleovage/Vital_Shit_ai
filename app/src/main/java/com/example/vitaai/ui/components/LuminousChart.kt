@@ -348,7 +348,7 @@ fun LuminousLineChart(
             
             drawIntoCanvas { canvas ->
                 val tooltipTextPaint = Paint().apply {
-                    color = Color.White.toArgb()
+                    color = Color(0xFF0F172A).toArgb() // Slate-900
                     textSize = labelTextSizePx * 1.1f
                     isAntiAlias = true
                     textAlign = Paint.Align.CENTER
@@ -356,8 +356,8 @@ fun LuminousLineChart(
                 }
                 
                 val tooltipBgPaint = Paint().apply {
-                    color = Color(0xFF121212).toArgb()
-                    alpha = 240
+                    color = Color.White.toArgb() // White
+                    alpha = 248
                     isAntiAlias = true
                     style = Paint.Style.FILL
                 }
@@ -673,7 +673,7 @@ fun LuminousBarChart(
             
             drawIntoCanvas { canvas ->
                 val tooltipTextPaint = Paint().apply {
-                    color = Color.White.toArgb()
+                    color = Color(0xFF0F172A).toArgb() // Slate-900
                     textSize = labelTextSizePx * 1.1f
                     isAntiAlias = true
                     textAlign = Paint.Align.CENTER
@@ -681,8 +681,8 @@ fun LuminousBarChart(
                 }
                 
                 val tooltipBgPaint = Paint().apply {
-                    color = Color(0xFF121212).toArgb()
-                    alpha = 240
+                    color = Color.White.toArgb() // White
+                    alpha = 248
                     isAntiAlias = true
                     style = Paint.Style.FILL
                 }

@@ -17,9 +17,23 @@ object FirebaseModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseAuth(): FirebaseAuth = Firebase.auth
+    fun provideFirebaseAuth(): FirebaseAuth? {
+        return try {
+            Firebase.auth
+        } catch (t: Throwable) {
+            android.util.Log.e("FirebaseModule", "Failed to initialize FirebaseAuth", t)
+            null
+        }
+    }
 
     @Provides
     @Singleton
-    fun provideFirebaseFirestore(): FirebaseFirestore = Firebase.firestore
+    fun provideFirebaseFirestore(): FirebaseFirestore? {
+        return try {
+            Firebase.firestore
+        } catch (t: Throwable) {
+            android.util.Log.e("FirebaseModule", "Failed to initialize FirebaseFirestore", t)
+            null
+        }
+    }
 }

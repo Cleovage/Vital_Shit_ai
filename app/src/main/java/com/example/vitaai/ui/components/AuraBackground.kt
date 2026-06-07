@@ -1,71 +1,84 @@
 package com.example.vitaai.ui.components
 
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import com.example.vitaai.ui.theme.*
 
 /**
- * Atmospheric Ink Background. Deep dark theme with subtle mesh glows.
- * No Haze/blur overhead for optimal performance.
- */
+2. Design System: AuraBackground
+- Base Background: Pure white #ffffff
+- Ambient Glow Blobs: Three large, blurred, absolute-positioned decorative elements in the background:
+    * Green Readiness Blob (Top Left): bg-emerald-400/[0.06] (approx. #34d399 at 6% opacity)
+    * Blue Sleep Blob (Top Right): bg-blue-400/[0.06] (approx. #60a5fa at 6% opacity)
+    * Cyan AI Blob (Bottom Center): bg-cyan-300/[0.05] (approx. #67e8f9 at 5% opacity)
+    * Bottom Warm Gradient: bg-gradient-to-t from-slate-50/60 to-transparent covering the bottom 1/3 of the screen.
+*/
 @Composable
 fun AuraBackground(
     modifier: Modifier = Modifier,
-    showGrid: Boolean = false,
+    showGrid: Boolean = false, // disabled for light theme
     content: @Composable BoxScope.() -> Unit
 ) {
-    val infiniteTransition = rememberInfiniteTransition(label = "mesh")
-    val phase by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(30000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "phase"
-    )
-
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(InkBlack)
+            .background(Color.White)
     ) {
+        // SVG Ambient Glow Blobs
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val width = size.width
-            val height = size.height
-
-            // Glow 1: Deep Purple
+            // Green Readiness Blob (Top Left)
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(GlebPurple.copy(alpha = 0.15f), Color.Transparent),
-                    center = Offset(width * (0.2f + 0.1f * phase), height * 0.2f),
-                    radius = width * 0.8f
+                    colors = listOf(Color(0xFF34D399).copy(alpha = 0.06f), Color.Transparent),
+                    center = Offset(-size.width * 0.1f, -size.height * 0.1f),
+                    radius = size.width * 1.1f
                 ),
-                center = Offset(width * (0.2f + 0.1f * phase), height * 0.2f),
-                radius = width * 0.8f
+                center = Offset(-size.width * 0.1f, -size.height * 0.1f),
+                radius = size.width * 1.1f
             )
 
-            // Glow 2: Emerald
+            // Blue Sleep Blob (Top Right)
             drawCircle(
                 brush = Brush.radialGradient(
-                    colors = listOf(GlebEmerald.copy(alpha = 0.1f), Color.Transparent),
-                    center = Offset(width * (0.8f - 0.1f * phase), height * 0.8f),
-                    radius = width * 0.9f
+                    colors = listOf(Color(0xFF60A5FA).copy(alpha = 0.06f), Color.Transparent),
+                    center = Offset(size.width * 1.1f, 0f),
+                    radius = size.width * 1.1f
                 ),
-                center = Offset(width * (0.8f - 0.1f * phase), height * 0.8f),
-                radius = width * 0.9f
+                center = Offset(size.width * 1.1f, 0f),
+                radius = size.width * 1.1f
+            )
+
+            // Cyan AI Blob (Bottom Center)
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(Color(0xFF67E8F9).copy(alpha = 0.05f), Color.Transparent),
+                    center = Offset(size.width * 0.5f, size.height * 1.1f),
+                    radius = size.width * 1.3f
+                ),
+                center = Offset(size.width * 0.5f, size.height * 1.1f),
+                radius = size.width * 1.3f
             )
         }
+
+        // Bottom Warm Gradient: bg-gradient-to-t from-slate-50/60 to-transparent covering the bottom 1/3 of the screen
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawRect(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Color.Transparent, Color(0xFFF1F5F9).copy(alpha = 0.60f)),
+                    startY = size.height * 0.67f,
+                    endY = size.height
+                )
+            )
+        }
+
+        // Foreground Content
         content()
     }
 }

@@ -8,15 +8,16 @@ import javax.inject.Singleton
 
 @Singleton
 class FirebaseRepository @Inject constructor(
-    private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val auth: FirebaseAuth?,
+    private val firestore: FirebaseFirestore?
 ) {
     private val userId: String?
-        get() = auth.currentUser?.uid
+        get() = auth?.currentUser?.uid
 
     suspend fun saveHealthSnapshot(snapshot: HealthSnapshot) {
         val uid = userId ?: throw IllegalStateException("User must be logged in to save data")
-        firestore.collection("users")
+        val db = firestore ?: throw IllegalStateException("Firestore is not available")
+        db.collection("users")
             .document(uid)
             .collection("snapshots")
             .add(snapshot)
@@ -25,8 +26,9 @@ class FirebaseRepository @Inject constructor(
 
     suspend fun getLatestSnapshot(): HealthSnapshot? {
         val uid = userId ?: return null
+        val db = firestore ?: return null
         return try {
-            val snapshots = firestore.collection("users")
+            val snapshots = db.collection("users")
                 .document(uid)
                 .collection("snapshots")
             

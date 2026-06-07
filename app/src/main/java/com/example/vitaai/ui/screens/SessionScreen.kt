@@ -17,19 +17,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.vitaai.ui.components.GlassCard
-import com.example.vitaai.ui.components.GlassCardGlow
-import com.example.vitaai.ui.components.AuraBackground
-import com.example.vitaai.ui.components.ProgressRing
+import com.example.vitaai.ui.components.*
 import com.example.vitaai.ui.theme.*
 import java.util.Locale
+import kotlin.math.roundToInt
 
 @Composable
 fun SessionScreen(
@@ -37,296 +37,200 @@ fun SessionScreen(
     viewModel: WorkoutSessionViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
-    var showFinishDialog by remember { mutableStateOf(false) }
-
-    LaunchedEffect(state.savedSessionId) {
-        state.savedSessionId?.let {
-            navController.navigate("dashboard") {
-                popUpTo("dashboard") { inclusive = true }
-            }
-        }
-    }
+    var showExitConfirm by remember { mutableStateOf(false) }
 
     AuraBackground {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(20.dp)
         ) {
-            // --- TOP STATUS BAR ---
+            // --- PREMIUM TOP HUD ---
             Row(
-                Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                IconButton(
+                    onClick = { showExitConfirm = true },
+                    modifier = Modifier
+                        .background(Color.Black.copy(alpha = 0.03f), CircleShape)
+                        .border(1.dp, Color.Black.copy(alpha = 0.07f), CircleShape)
+                ) {
+                    Icon(Icons.Default.Close, contentDescription = "Exit", tint = Color(0xFF0F172A))
+                }
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = state.template?.name?.uppercase() ?: "ACTIVE PROTOCOL",
+                        text = state.template?.name?.uppercase(Locale.US) ?: "WORKOUT",
                         style = MaterialTheme.typography.labelSmall,
                         color = Primary,
-                        letterSpacing = 1.5.sp,
+                        letterSpacing = 2.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "STATUS: ${if (state.running) "ENGAGED" else "PAUSED"}",
-                        style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = OnSurfaceVariant, fontWeight = FontWeight.Bold)
+                        text = if (state.running) "PROTOCOL ACTIVE" else "PAUSED",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (state.running) Color(0xFF00E676) else Color(0xFFFF3D00),
+                        fontWeight = FontWeight.Black
                     )
                 }
-                Icon(
-                    imageVector = Icons.Default.Adjust,
-                    contentDescription = null,
-                    tint = if (state.running) Primary else Color(0xFFFF3B30),
-                    modifier = Modifier.size(16.dp)
-                )
+
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Primary.copy(alpha = 0.1f))
+                        .border(1.dp, Primary.copy(alpha = 0.3f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.FlashOn, contentDescription = null, tint = Primary, modifier = Modifier.size(20.dp))
+                }
             }
 
-            // --- PRIMARY TIMER HUD RING ---
-            val restFraction = if (state.restRemainingSeconds > 0 && (state.template?.defaultRestSeconds ?: 0) > 0) {
-                state.restRemainingSeconds.toFloat() / (state.template?.defaultRestSeconds ?: 30)
-            } else {
-                (state.elapsedSeconds % 60) / 60f
-            }
-            
-            val ringColors = if (state.restRemainingSeconds > 0) {
-                listOf(Color(0xFF00E5FF), Color(0xFF00B0FF))
-            } else {
-                listOf(PrimaryContainer, Primary)
-            }
-            
-            val ringGlowColor = if (state.restRemainingSeconds > 0) {
-                Color(0xFF00E5FF).copy(alpha = 0.3f)
-            } else {
-                GlowPrimary
-            }
+            Spacer(Modifier.height(32.dp))
 
-            GlassCard(
+            // --- CENTRAL PROGRESS & TIMER ---
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(240.dp)
+                    .aspectRatio(1f),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    ProgressRing(
-                        progress = restFraction,
-                        size = 200.dp,
-                        strokeWidth = 10.dp,
-                        glowWidth = 16.dp,
-                        colors = ringColors,
-                        glowColor = ringGlowColor
+                // Progress Ring Background
+                ProgressRing(
+                    progress = (state.elapsedSeconds % 60 / 60f),
+                    size = 280.dp,
+                    strokeWidth = 8.dp,
+                    glowWidth = 12.dp,
+                    colors = listOf(Primary, Secondary),
+                    glowColor = Primary.copy(alpha = 0.3f)
+                )
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = formatTime(state.elapsedSeconds),
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontSize = 64.sp,
+                            fontWeight = FontWeight.Light,
+                            color = Color(0xFF0F172A),
+                            fontFamily = FontFamily.Monospace
+                        )
                     )
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "ELAPSED TRAINING TIME",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Black.copy(alpha = 0.5f),
+                        letterSpacing = 1.sp
+                    )
+                    if (state.restRemainingSeconds > 0) {
                         Text(
-                            text = formatTime(state.elapsedSeconds),
-                            style = androidx.compose.ui.text.TextStyle(
-                                fontSize = 42.sp,
-                                fontWeight = FontWeight.Black,
-                                color = if (state.restRemainingSeconds > 0) Color(0xFF00E5FF) else Primary,
-                                fontFamily = FontFamily.Monospace
-                            )
+                            text = "REST: ${formatTime(state.restRemainingSeconds.toLong())}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Secondary,
+                            modifier = Modifier.padding(top = 8.dp)
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = if (state.restRemainingSeconds > 0) "REST ACTIVE" else "ELAPSED TIME",
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = OnSurfaceVariant,
-                            letterSpacing = 1.sp
-                        )
-                        if (state.restRemainingSeconds > 0) {
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "${state.restRemainingSeconds}S REMAINING",
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = Color(0xFF00E5FF)
-                            )
-                        }
                     }
                 }
             }
 
-            // --- HUD STAT TILES GRID ---
-            val isStrength = state.template?.trackingMode == com.example.vitaai.data.TRACKING_STRENGTH || state.template?.trackingMode == "bodyweight"
-            val isCardio = state.template?.trackingMode == com.example.vitaai.data.TRACKING_CARDIO
-            val hasGps = state.template?.gpsEnabled == true
-
-            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            // --- SECONDARY METRICS GRID ---
+            val isStrength = state.template?.category == "strength" || state.template?.category == "bodyweight"
+            
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                HUDStatTile(
+                    label = "HEART RATE",
+                    value = if (state.liveHeartRate > 0) state.liveHeartRate.toString() else "--",
+                    unit = "BPM",
+                    modifier = Modifier.weight(1f),
+                    icon = Icons.Default.Favorite
+                )
+                if (isStrength) {
                     HUDStatTile(
-                        label = "HEART RATE",
-                        value = if (state.liveHeartRate > 0) state.liveHeartRate.toString() else "--",
-                        unit = "BPM",
-                        glowColor = Color(0xFFFF3B30),
+                        label = "REPS",
+                        value = state.currentReps.toString(),
+                        unit = "CUR",
                         modifier = Modifier.weight(1f),
-                        icon = Icons.Default.Favorite
+                        icon = Icons.Default.FitnessCenter
                     )
-                    if (isStrength) {
-                        HUDStatTile(
-                            label = "REPS",
-                            value = state.currentReps.toString(),
-                            unit = "CUR",
-                            glowColor = Color(0xFFD0BCFF),
-                            modifier = Modifier.weight(1f),
-                            icon = Icons.Default.FitnessCenter
-                        )
-                    } else {
-                        HUDStatTile(
-                            label = "INTENSITY",
-                            value = "ZONE 3",
-                            unit = "LVL",
-                            glowColor = Primary,
-                            modifier = Modifier.weight(1f),
-                            icon = Icons.Default.Whatshot
-                        )
-                    }
-                }
-
-                Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                    if (isCardio && hasGps) {
-                        HUDStatTile(
-                            label = "DISTANCE",
-                            value = String.format(Locale.US, "%.2f", state.distanceMeters / 1000.0),
-                            unit = "KM",
-                            glowColor = Color(0xFF00E5FF),
-                            modifier = Modifier.weight(1f),
-                            icon = Icons.Default.Map
-                        )
-                    } else if (isStrength) {
-                        HUDStatTile(
-                            label = "SETS",
-                            value = state.completedSets.toString(),
-                            unit = "DONE",
-                            glowColor = Color(0xFFD0BCFF),
-                            modifier = Modifier.weight(1f),
-                            icon = Icons.Default.FormatListNumbered
-                        )
-                    } else {
-                        HUDStatTile(
-                            label = "GPS",
-                            value = "OFF",
-                            unit = "GPS",
-                            glowColor = OnSurfaceVariant,
-                            modifier = Modifier.weight(1f),
-                            icon = Icons.Default.GpsOff
-                        )
-                    }
+                } else {
                     HUDStatTile(
                         label = "CALORIES",
-                        value = state.calories.toInt().toString(),
+                        value = (state.elapsedSeconds * 0.15).roundToInt().toString(),
                         unit = "KCAL",
-                        glowColor = Color(0xFFFF9500),
                         modifier = Modifier.weight(1f),
-                        icon = Icons.Default.Bolt
+                        icon = Icons.Default.Whatshot
                     )
                 }
             }
 
             Spacer(Modifier.weight(1f))
 
-            // --- STRENGTH ACTIONS CENTER ---
-            if (isStrength && state.running) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    val shapes = RoundedCornerShape(16.dp)
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp)
-                            .clip(shapes)
-                            .background(Color.White.copy(alpha = 0.05f))
-                            .border(1.dp, Color(0xFFD0BCFF).copy(alpha = 0.3f), shapes)
-                            .clickable { viewModel.addRep() },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("+1 REP", color = Color(0xFFD0BCFF), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
-                    }
-                    
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp)
-                            .clip(shapes)
-                            .background(Primary.copy(alpha = 0.1f))
-                            .border(1.dp, Primary.copy(alpha = 0.4f), shapes)
-                            .clickable { viewModel.completeSet() },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("FINISH SET", color = Primary, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
-                    }
-                }
-            }
-
-            // --- HUD TACTILE CONTROL BAR ---
+            // --- HUD CONTROLS ---
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Pause/Resume Button
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(CircleShape)
-                        .background(if (state.running) Color.Transparent else Primary)
-                        .border(1.5.dp, Primary, CircleShape)
-                        .clickable { if (state.running) viewModel.pause() else viewModel.start() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (state.running) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = null,
-                        tint = if (state.running) Primary else OnPrimary,
-                        modifier = Modifier.size(24.dp)
-                    )
+                GlowButton(
+                    text = if (state.running) "PAUSE" else "RESUME",
+                    onClick = { if (state.running) viewModel.pause() else viewModel.start() },
+                    modifier = Modifier.weight(1f)
+                )
+
+                if (isStrength) {
+                    Button(
+                        onClick = { viewModel.addRep() },
+                        modifier = Modifier.size(64.dp),
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = OnPrimary),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Add Rep")
+                    }
                 }
 
-                // Main Action Button (Stop/Finish)
-                Button(
-                    onClick = { showFinishDialog = true },
+                IconButton(
+                    onClick = { viewModel.save("Manual training protocol completed via VitaAI HUD.") },
                     modifier = Modifier
-                        .weight(1f)
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF3B30),
-                        contentColor = Color.White
-                    ),
-                    shape = RoundedCornerShape(16.dp)
+                        .size(64.dp)
+                        .background(Color.Black.copy(alpha = 0.03f), CircleShape)
+                        .border(1.dp, Color.Black.copy(alpha = 0.07f), CircleShape)
                 ) {
-                    Text(
-                        "TERMINATE SESSION",
-                        color = Color.White,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 1.sp,
-                        style = MaterialTheme.typography.labelSmall
-                    )
+                    Icon(Icons.Default.Save, contentDescription = "Save", tint = Color(0xFF0F172A))
                 }
             }
         }
     }
 
-    if (showFinishDialog) {
+    if (showExitConfirm) {
         AlertDialog(
-            onDismissRequest = { showFinishDialog = false },
-            title = { Text("TERMINATE SESSION?", fontWeight = FontWeight.Bold) },
-            text = { Text("ALL ANALYTICS WILL BE SYNCED TO THE COMMAND CENTER.") },
+            onDismissRequest = { showExitConfirm = false },
+            title = { Text("ABANDON PROTOCOL?") },
+            text = { Text("Unsaved progress will be lost. Terminate session?") },
             confirmButton = {
-                TextButton(onClick = { viewModel.save("COMPLETED SESSION") }) {
-                    Text("SYNC & FINISH", color = Primary, fontWeight = FontWeight.Bold)
+                TextButton(onClick = { navController.popBackStack() }) {
+                    Text("EXIT", color = Color.Red)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showFinishDialog = false }) {
-                    Text("CANCEL", color = OnSurfaceVariant)
+                TextButton(onClick = { showExitConfirm = false }) {
+                    Text("CONTINUE")
                 }
             },
-            containerColor = SurfaceContainerHighest,
-            shape = RoundedCornerShape(16.dp)
+            containerColor = Color.White,
+            titleContentColor = Color(0xFF0F172A),
+            textContentColor = Color.Black.copy(alpha = 0.65f)
         )
+    }
+
+    LaunchedEffect(state.savedSessionId) {
+        if (state.savedSessionId != null) {
+            navController.navigate("dashboard") {
+                popUpTo("session") { inclusive = true }
+            }
+        }
     }
 }
 
@@ -335,27 +239,19 @@ private fun HUDStatTile(
     label: String,
     value: String,
     unit: String,
-    glowColor: Color,
     modifier: Modifier = Modifier,
     icon: ImageVector
 ) {
-    GlassCardGlow(
-        modifier = modifier,
-        glowColor = glowColor,
-        cornerRadius = 16.dp
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(icon, contentDescription = null, tint = glowColor.copy(alpha = 0.6f), modifier = Modifier.size(12.dp))
-                Spacer(Modifier.width(6.dp))
-                Text(label, style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.Bold), color = OnSurfaceVariant)
+    GlassCard(modifier = modifier) {
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Icon(icon, contentDescription = null, tint = Primary.copy(alpha = 0.5f), modifier = Modifier.size(14.dp))
+                Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
             }
             Row(verticalAlignment = Alignment.Bottom) {
-                Text(value, style = MaterialTheme.typography.headlineMedium.copy(fontSize = 24.sp), color = OnBackground, fontWeight = FontWeight.Black)
+                Text(value, style = MaterialTheme.typography.titleLarge, color = Color(0xFF0F172A), fontWeight = FontWeight.Black)
                 Spacer(Modifier.width(4.dp))
-                Text(unit, style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = OnSurfaceVariant, fontWeight = FontWeight.Bold))
+                Text(unit, style = MaterialTheme.typography.labelSmall, color = Color.Black.copy(alpha = 0.5f))
             }
         }
     }

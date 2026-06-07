@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -24,350 +25,313 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.vitaai.ui.components.ApexCard
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.components.GlassCard
-import com.example.vitaai.ui.components.GlassCardGlow
 import com.example.vitaai.ui.components.GlowButton
-import com.example.vitaai.ui.components.ProgressRing
 import com.example.vitaai.ui.theme.*
 import java.util.Locale
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     var showEditDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val currentWeight = state.weightKg
     val currentHeight = state.heightMeters
     val weightLbs = currentWeight?.let { it * 2.20462 }
     val heightInches = currentHeight?.let { it * 39.3701 }
-    val bmi = if (currentWeight != null && currentHeight != null && currentHeight > 0.0) {
-        currentWeight / (currentHeight * currentHeight)
-    } else null
 
     AuraBackground {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding(),
-            contentPadding = PaddingValues(20.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            contentPadding = PaddingValues(start = 20.dp, top = 20.dp, end = 20.dp, bottom = 100.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // --- 1. ATHLETE DOSSIER & PROGRESSION RING ---
+            // --- 1. HEADER ---
             item {
-                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = "ATHLETE STATUS CARD",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Primary,
-                        letterSpacing = 2.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                    
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(160.dp)) {
-                        ProgressRing(
-                            progress = state.levelProgress,
-                            size = 150.dp,
-                            strokeWidth = 10.dp,
-                            glowWidth = 18.dp,
-                            colors = listOf(Primary, Secondary),
-                            glowColor = GlowPrimary
-                        )
+                PageHeader(title = "Profile", kicker = "Personalization")
+            }
+
+            // --- 2. PROFILE HERO CARD (1:1 copy of Web UI) ---
+            item {
+                GlassCard(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
+                        // Left side: Dark slate-900 circle with User icon
                         Box(
-                            Modifier
-                                .size(108.dp)
-                                .clip(CircleShape)
-                                .background(SurfaceContainerHigh)
-                                .border(1.dp, OutlineVariant.copy(alpha = 0.5f), CircleShape),
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(RoundedCornerShape(28.dp))
+                                .background(Color(0xFF0F172A)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                Icons.Default.Person,
-                                contentDescription = null,
-                                tint = Primary,
-                                modifier = Modifier.size(48.dp)
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "User Avatar",
+                                tint = Color.White,
+                                modifier = Modifier.size(40.dp)
                             )
                         }
-                    }
-                    
-                    Spacer(Modifier.height(16.dp))
-                    
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = "ALEX VANCE",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = OnBackground,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 1.sp
-                        )
-                        Box(
-                            Modifier
-                                .background(Primary, MaterialTheme.shapes.extraSmall)
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
-                        ) {
+                        
+                        // Right side: Name and Sync info
+                        Column {
                             Text(
-                                "LVL ${state.level}",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = OnPrimary,
-                                fontWeight = FontWeight.Bold
+                                text = "Alex",
+                                style = MaterialTheme.typography.displaySmall.copy(
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    letterSpacing = (-1.12).sp
+                                ),
+                                color = Color(0xFF0F172A)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = if (state.permissionsGranted) 
+                                    "Health Connect synced • Premium trial"
+                                else 
+                                    "Health Connect pending • Premium trial",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.Black.copy(alpha = 0.5f)
                             )
                         }
                     }
-                    
-                    Spacer(Modifier.height(4.dp))
-                    
-                    Text(
-                        text = "RANK STATUS: ELITE PERFORMA | ${state.completedWorkoutsCount} SESSIONS COMPLETE",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = OnSurfaceVariant,
-                        letterSpacing = 0.5.sp
+                }
+            }
+
+            // --- 3. ACTION ROWS (1:1 copy of Web UI) ---
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    ActionRow(
+                        icon = Icons.Default.Star,
+                        title = "Achievements",
+                        subtitle = "8 streaks, 3 nutrition badges",
+                        onClick = { 
+                            Toast.makeText(context, "You're in the top 5% of users this week!", Toast.LENGTH_SHORT).show()
+                        }
                     )
                     
-                    Spacer(Modifier.height(16.dp))
-                    HorizontalDivider(color = Primary.copy(alpha = 0.2f), thickness = 2.dp)
-                }
-            }
-
-            // --- 2. BIOMETRIC INTERACTIVE DETAILS ---
-            item {
-                Text(
-                    "BIOMETRIC ANALYSIS HUB",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = OnSurfaceVariant,
-                    letterSpacing = 1.2.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            if (state.weightKg == null || state.heightMeters == null) {
-                // Missing data prompt
-                item {
-                    GlassCardGlow(
-                        modifier = Modifier.fillMaxWidth(),
-                        glowColor = Secondary
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.fillMaxWidth().padding(8.dp)
-                        ) {
-                            Icon(Icons.Default.Warning, contentDescription = null, tint = Secondary, modifier = Modifier.size(36.dp))
-                            Text(
-                                "BIOMETRIC SYNC INCOMPLETE",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = Secondary,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                "Health Connect biometric metrics are uncalibrated. Complete manual calibration below to activate dynamic somatic index analysis.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = OnSurfaceVariant,
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                lineHeight = 16.sp
-                            )
+                    ActionRow(
+                        icon = Icons.Default.VerifiedUser,
+                        title = "Health Connect",
+                        subtitle = if (state.permissionsGranted) 
+                            "Vitals, workouts, nutrition permissions synced" 
+                        else 
+                            "Permissions pending setup",
+                        onClick = {
+                            Toast.makeText(context, "Health Connect sync is active.", Toast.LENGTH_SHORT).show()
                         }
-                    }
-                }
-            } else {
-                // Sourced biometrics display
-                item {
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        BiometricCard(
-                            label = "WEIGHT",
-                            value = String.format(Locale.US, "%.1f", weightLbs ?: 0.0),
-                            unit = "LBS",
-                            subtext = String.format(Locale.US, "%.1f kg in Health Connect", state.weightKg),
-                            modifier = Modifier.weight(1f)
-                        )
-                        BiometricCard(
-                            label = "HEIGHT",
-                            value = String.format(Locale.US, "%.1f", heightInches ?: 0.0),
-                            unit = "IN",
-                            subtext = String.format(Locale.US, "%.2fm in Health Connect", state.heightMeters),
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
-
-                bmi?.let { bmiValue ->
-                    item {
-                        val (bmiCategory, bmiColor) = when {
-                            bmiValue < 18.5 -> "UNDERWEIGHT" to Color.Yellow
-                            bmiValue < 25.0 -> "NORMAL SOMATOTYPE" to Primary
-                            bmiValue < 30.0 -> "OVERWEIGHT" to Color(0xFFFFAB40) // Orange
-                            else -> "OBESE SOMATOTYPE" to Color.Red
+                    )
+                    
+                    ActionRow(
+                        icon = Icons.Default.Settings,
+                        title = "Biometric Settings",
+                        subtitle = "Calibrate weight, height, BMR, and targets",
+                        onClick = { 
+                            showEditDialog = true 
                         }
-
-                        GlassCard(modifier = Modifier.fillMaxWidth()) {
-                            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column {
-                                        Text("BODY MASS INDEX (BMI)", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                                        Text(bmiCategory, style = MaterialTheme.typography.titleMedium, color = bmiColor, fontWeight = FontWeight.Black)
-                                    }
-                                    Text(
-                                        text = String.format(Locale.US, "%.1f", bmiValue),
-                                        style = MaterialTheme.typography.displaySmall,
-                                        color = OnBackground,
-                                        fontWeight = FontWeight.Black
-                                    )
-                                }
-
-                                Spacer(Modifier.height(4.dp))
-                                
-                                // Clean dynamic progress slider of body index
-                                val progress = (bmiValue / 40.0f).coerceIn(0.0, 1.0)
-                                Box(Modifier.fillMaxWidth().height(6.dp).background(OutlineVariant.copy(alpha = 0.15f), MaterialTheme.shapes.small)) {
-                                    Box(
-                                        Modifier
-                                            .fillMaxWidth(progress.toFloat())
-                                            .fillMaxHeight()
-                                            .background(bmiColor, MaterialTheme.shapes.small)
-                                    )
-                                }
-                                
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text("18.5", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                                    Text("25.0", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                                    Text("30.0", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                                }
-                            }
+                    )
+                    
+                    val hydrationGoal = if (state.hydrationGoalLiters > 0.0) state.hydrationGoalLiters else 2.4
+                    ActionRow(
+                        icon = Icons.Default.LocalDrink,
+                        title = "Hydration goal",
+                        subtitle = String.format(Locale.US, "%.1f L daily target", hydrationGoal),
+                        onClick = {
+                            Toast.makeText(context, "Water logged! Hydration target is up to date.", Toast.LENGTH_SHORT).show()
                         }
-                    }
+                    )
                 }
             }
-
-            // --- 3. DYNAMIC CONNECTIVITY HUB ---
-            item {
-                Text(
-                    "CYBERNETIC CONNECTIVITY HUB",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = OnSurfaceVariant,
-                    letterSpacing = 1.2.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            item {
-                GlassCard(modifier = Modifier.fillMaxWidth()) {
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        ConnectionRow(
-                            icon = Icons.Default.CloudSync,
-                            name = "HEALTH CONNECT DATABASE",
-                            status = if (state.permissionsGranted) "SYNC ACTIVE" else "PERMISSION PENDING",
-                            connected = state.permissionsGranted
-                        )
-                        HorizontalDivider(color = OutlineVariant.copy(alpha = 0.12f))
-                        ConnectionRow(
-                            icon = Icons.Default.VerifiedUser,
-                            name = "VITALS READ/WRITE CONDUIT",
-                            status = if (state.permissionsGranted) "ENGAGED" else "DISENGAGED",
-                            connected = state.permissionsGranted
-                        )
-                        HorizontalDivider(color = OutlineVariant.copy(alpha = 0.12f))
-                        ConnectionRow(
-                            icon = Icons.Default.CloudUpload,
-                            name = "FIREBASE CLOUD SYNC",
-                            status = if (state.isLoggedIntoFirebase) "AUTHORIZED" else "LOG IN REQUIRED",
-                            connected = state.isLoggedIntoFirebase
-                        )
-                        
-                        if (state.isLoggedIntoFirebase) {
-                            Spacer(Modifier.height(8.dp))
-                            GlowButton(
-                                text = "PUSH TO CLOUD",
-                                onClick = { viewModel.syncToCloud() },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            state.lastSyncStatus?.let {
-                                Text(
-                                    text = it,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = Primary,
-                                    modifier = Modifier.padding(top = 4.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            // --- 4. CALIBRATION TRIGGER ---
-            item {
-                GlowButton(
-                    text = "CALIBRATE SOMATIC BIOMETRICS",
-                    onClick = { showEditDialog = true },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            
-            item { Spacer(Modifier.height(24.dp)) }
         }
     }
 
     if (showEditDialog) {
         var wInput by remember { mutableStateOf(weightLbs?.let { String.format(Locale.US, "%.1f", it) } ?: "") }
         var hInput by remember { mutableStateOf(heightInches?.let { String.format(Locale.US, "%.1f", it) } ?: "") }
+        var ageInput by remember { mutableStateOf(state.age.toString()) }
+        var genderInput by remember { mutableStateOf(state.gender) }
+        var activityInput by remember { mutableStateOf(state.activityLevel) }
+        var stepsInput by remember { mutableStateOf(state.stepGoal.toString()) }
+        var hydrationInput by remember { mutableStateOf(state.hydrationGoalLiters.toString()) }
+        var exerciseInput by remember { mutableStateOf(state.exerciseMinutesGoal.toString()) }
+        var caloriesInput by remember { mutableStateOf(state.caloriesBurnGoal.toString()) }
         var isInputError by remember { mutableStateOf(false) }
 
         AlertDialog(
             onDismissRequest = { showEditDialog = false },
             title = { 
                 Text(
-                    "BIOMETRIC CALIBRATION", 
-                    color = Primary, 
-                    fontWeight = FontWeight.Black, 
-                    style = MaterialTheme.typography.titleMedium,
-                    letterSpacing = 1.sp
+                    text = "Biometric Calibration", 
+                    color = Color(0xFF0F172A),
+                    fontWeight = FontWeight.Bold, 
+                    style = MaterialTheme.typography.titleLarge,
+                    letterSpacing = (-0.5).sp
                 ) 
             },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                     Text(
-                        "Input weight and height. These calibration entries will write directly back to your Health Connect profile.",
+                        text = "Configure your details below. These are synced in real-time to compute custom BMR, active burn, and macro balance targets.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = OnSurfaceVariant
+                        color = Color.Black.copy(alpha = 0.55f),
+                        lineHeight = 18.sp
                     )
+                    
                     OutlinedTextField(
                         value = wInput,
-                        onValueChange = { 
-                            wInput = it
-                            isInputError = false 
-                        },
-                        label = { Text("WEIGHT (LBS)") },
-                        shape = MaterialTheme.shapes.extraSmall,
+                        onValueChange = { wInput = it; isInputError = false },
+                        label = { Text("Weight (lbs)") },
+                        shape = RoundedCornerShape(12.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
                     OutlinedTextField(
                         value = hInput,
-                        onValueChange = { 
-                            hInput = it
-                            isInputError = false 
-                        },
-                        label = { Text("HEIGHT (INCHES)") },
-                        shape = MaterialTheme.shapes.extraSmall,
+                        onValueChange = { hInput = it; isInputError = false },
+                        label = { Text("Height (inches)") },
+                        shape = RoundedCornerShape(12.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
+                    OutlinedTextField(
+                        value = ageInput,
+                        onValueChange = { ageInput = it; isInputError = false },
+                        label = { Text("Age (years)") },
+                        shape = RoundedCornerShape(12.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Text(
+                        text = "Gender type", 
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                        color = Color.Black.copy(alpha = 0.45f)
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        listOf("Male", "Female", "Other").forEach { g ->
+                            val isSel = genderInput.lowercase() == g.lowercase()
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(if (isSel) Color(0xFF0F172A) else Color.Black.copy(alpha = 0.03f))
+                                    .clickable { genderInput = g }
+                                    .border(1.dp, if (isSel) Color(0xFF0F172A) else Color.Black.copy(alpha = 0.08f), RoundedCornerShape(12.dp))
+                                    .padding(vertical = 10.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = g,
+                                    color = if (isSel) Color.White else Color.Black.copy(alpha = 0.6f),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+
+                    Text(
+                        text = "Physical Activity Factor", 
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                        color = Color.Black.copy(alpha = 0.45f)
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        listOf("Sedentary", "Light", "Active", "Very Active").forEach { lvl ->
+                            val isSel = activityInput.lowercase() == lvl.lowercase()
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(if (isSel) Color(0xFF0F172A) else Color.Black.copy(alpha = 0.03f))
+                                    .clickable { activityInput = lvl }
+                                    .border(1.dp, if (isSel) Color(0xFF0F172A) else Color.Black.copy(alpha = 0.08f), RoundedCornerShape(10.dp))
+                                    .padding(vertical = 10.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = lvl,
+                                    color = if (isSel) Color.White else Color.Black.copy(alpha = 0.6f),
+                                    style = androidx.compose.ui.text.TextStyle(fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                )
+                            }
+                        }
+                    }
+
+                    HorizontalDivider(color = Color.Black.copy(alpha = 0.08f))
+                    Text(
+                        text = "Daily Protocol Targets", 
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                        color = Color.Black.copy(alpha = 0.45f)
+                    )
+
+                    OutlinedTextField(
+                        value = stepsInput,
+                        onValueChange = { stepsInput = it; isInputError = false },
+                        label = { Text("Steps Target") },
+                        shape = RoundedCornerShape(12.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = hydrationInput,
+                        onValueChange = { hydrationInput = it; isInputError = false },
+                        label = { Text("Water Target (liters)") },
+                        shape = RoundedCornerShape(12.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = exerciseInput,
+                        onValueChange = { exerciseInput = it; isInputError = false },
+                        label = { Text("Exercise Target (mins)") },
+                        shape = RoundedCornerShape(12.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = caloriesInput,
+                        onValueChange = { caloriesInput = it; isInputError = false },
+                        label = { Text("Active Burn Target (kcal)") },
+                        shape = RoundedCornerShape(12.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
                     if (isInputError) {
                         Text(
-                            "Please enter valid positive values.",
-                            color = Color.Red,
+                            text = "Please enter valid positive values.",
+                            color = Color(0xFFEF4444),
                             style = MaterialTheme.typography.labelSmall
                         )
                     }
@@ -378,69 +342,186 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                     onClick = {
                         val weight = wInput.toDoubleOrNull()
                         val height = hInput.toDoubleOrNull()
-                        if (weight != null && weight > 0.0 && height != null && height > 0.0) {
-                            viewModel.calibrate(weight, height)
+                        val age = ageInput.toIntOrNull()
+                        val steps = stepsInput.toLongOrNull()
+                        val hydration = hydrationInput.toDoubleOrNull()
+                        val exercise = exerciseInput.toDoubleOrNull()
+                        val calories = caloriesInput.toDoubleOrNull()
+                        
+                        if (weight != null && weight > 0.0 && height != null && height > 0.0 &&
+                            age != null && age > 0 && steps != null && steps > 0 &&
+                            hydration != null && hydration > 0.0 && exercise != null && exercise > 0.0 &&
+                            calories != null && calories > 0.0
+                        ) {
+                            viewModel.calibrate(
+                                weightLbs = weight,
+                                heightInches = height,
+                                age = age,
+                                gender = genderInput,
+                                activityLevel = activityInput,
+                                stepGoal = steps,
+                                hydrationGoalLiters = hydration,
+                                exerciseMinutesGoal = exercise,
+                                caloriesBurnGoal = calories
+                            )
                             showEditDialog = false
                         } else {
                             isInputError = true
                         }
                     }
                 ) {
-                    Text("SYNC CALIBRATION", color = Primary, fontWeight = FontWeight.Bold)
+                    Text("SYNC CALIBRATION", color = Color(0xFF06B6D4), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showEditDialog = false }) {
-                    Text("CANCEL", color = OnSurfaceVariant)
+                    Text("CANCEL", color = Color.Black.copy(alpha = 0.5f))
                 }
             },
-            containerColor = SurfaceContainerHighest,
-            shape = MaterialTheme.shapes.extraSmall
+            containerColor = Color.White,
+            shape = RoundedCornerShape(24.dp)
         )
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Page Header Component (Pulse Sync)
+// ─────────────────────────────────────────────────────────────────────────────
+
 @Composable
-private fun BiometricCard(
-    label: String,
-    value: String,
-    unit: String,
-    subtext: String,
-    modifier: Modifier = Modifier
-) {
-    GlassCard(modifier) {
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-            Row(verticalAlignment = Alignment.Bottom) {
-                Text(value, style = MaterialTheme.typography.displaySmall, color = OnBackground, fontWeight = FontWeight.Black)
-                Spacer(Modifier.width(4.dp))
-                Text(unit, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant, modifier = Modifier.padding(bottom = 6.dp))
-            }
-            Text(subtext, style = androidx.compose.ui.text.TextStyle(fontSize = 8.sp, color = OnSurfaceVariant.copy(alpha = 0.8f)))
+private fun PageHeader(title: String, kicker: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp, bottom = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
+    ) {
+        Column {
+            Text(
+                text = kicker.uppercase(Locale.US),
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 4.4.sp // 0.34em
+                ),
+                color = Color.Black.copy(alpha = 0.40f)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.displayMedium.copy(
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = (-2).sp // -0.05em
+                ),
+                color = Color(0xFF0F172A) // slate-900
+            )
+        }
+
+        // AI Sync active ping badge
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(20.dp))
+                .border(
+                    width = 1.dp,
+                    color = Color.Black.copy(alpha = 0.08f),
+                    shape = RoundedCornerShape(20.dp)
+                )
+                .background(Color.White.copy(alpha = 0.8f))
+                .padding(horizontal = 14.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF06B6D4))
+            )
+            Text(
+                text = "AI Sync",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                color = Color(0xFF0891B2)
+            )
         }
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// ActionRow Component (Matching Web UI ActionRow layout)
+// ─────────────────────────────────────────────────────────────────────────────
+
 @Composable
-private fun ConnectionRow(
+private fun ActionRow(
     icon: ImageVector,
-    name: String,
-    status: String,
-    connected: Boolean
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit
 ) {
-    val indicatorColor = if (connected) Primary else Color.Yellow
-    Row(
-        Modifier.fillMaxWidth().padding(vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+    GlassCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Icon(icon, contentDescription = null, tint = OnSurfaceVariant, modifier = Modifier.size(20.dp))
-            Text(name, style = MaterialTheme.typography.labelSmall, color = OnBackground, fontWeight = FontWeight.SemiBold, letterSpacing = 0.5.sp)
-        }
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            Box(Modifier.size(8.dp).clip(CircleShape).background(indicatorColor))
-            Text(status, style = MaterialTheme.typography.labelSmall, color = indicatorColor, fontWeight = FontWeight.Bold)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Left: Gray circular background box for icon
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color.Black.copy(alpha = 0.04f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = Color(0xFF0F172A),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            
+            // Center: Title and Subtitle
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = (-0.48).sp // -0.03em
+                    ),
+                    color = Color(0xFF0F172A)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
+                    color = Color.Black.copy(alpha = 0.5f)
+                )
+            }
+            
+            // Right: Chevron inside circular gray background
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.04f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ChevronRight,
+                    contentDescription = null,
+                    tint = Color.Black.copy(alpha = 0.4f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }

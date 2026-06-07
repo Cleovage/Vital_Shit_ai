@@ -21,7 +21,19 @@ class DashboardViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
     val uiState: StateFlow<DashboardUiState> = _uiState
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     private var snapshotJob: Job? = null
+
+    fun refresh() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            loadData()
+            kotlinx.coroutines.delay(800) // Tactile delay for spinner
+            _isRefreshing.value = false
+        }
+    }
 
     init {
         viewModelScope.launch { workoutRepository.seedDefaultTemplatesIfNeeded() }
@@ -37,29 +49,41 @@ class DashboardViewModel @Inject constructor(
             }
 
             snapshotJob = launch {
-                combine(
-                    repository.healthSnapshotFlow,
-                    nutritionRepository.observeTodaySummary(),
-                    workoutRepository.observeRecentSessions(limit = 3),
-                    goalsRepository.observeGoalProgress(repository.healthSnapshotFlow),
-                    goalsRepository.streakDays
-                ) { snapshot, nutrition, workouts, goalsProgress, streakDays ->
-                    val insight = repository.getAiInsight(snapshot)
-                    DashboardUiState.Success(
-                        snapshot = snapshot,
-                        insight = insight,
-                        nutrition = nutrition,
-                        recentWorkouts = workouts,
-                        goalProgress = goalsProgress,
-                        streakDays = streakDays
-                    ) as DashboardUiState
-                }
-                .catch { e ->
-                    _uiState.value = DashboardUiState.Error(e.message ?: "Unknown error")
-                }
-                .collect { state ->
-                    _uiState.value = state
-                }
+                repository.healthSnapshotFlow
+                    .combine(nutritionRepository.observeTodaySummary()) { snapshot, nutrition ->
+                        snapshot to nutrition
+                    }
+                    .combine(workoutRepository.observeRecentSessions(limit = 3)) { sn, workouts ->
+                        Triple(sn.first, sn.second, workouts)
+                    }
+                    .combine(goalsRepository.observeGoalProgress(repository.healthSnapshotFlow)) { snw, goalProgress ->
+                        snw to goalProgress
+                    }
+                    .combine(goalsRepository.streakDays) { data, streakDays ->
+                        data to streakDays
+                    }
+                    .combine(goalsRepository.goals) { data, goals ->
+                        val (snw_gp, streakDays) = data
+                        val (snw, goalProgress) = snw_gp
+                        val (snapshot, nutrition, workouts) = snw
+                        
+                        val insight = repository.getAiInsight(snapshot)
+                        DashboardUiState.Success(
+                            snapshot = snapshot,
+                            insight = insight,
+                            nutrition = nutrition,
+                            recentWorkouts = workouts,
+                            goalProgress = goalProgress,
+                            streakDays = streakDays,
+                            goals = goals
+                        )
+                    }
+                    .catch { e ->
+                        _uiState.value = DashboardUiState.Error(e.message ?: "Unknown error")
+                    }
+                    .collect { state ->
+                        _uiState.value = state
+                    }
             }
         }
     }
@@ -97,7 +121,8 @@ sealed class DashboardUiState {
         val nutrition: NutritionSummary,
         val recentWorkouts: List<com.example.vitaai.data.local.WorkoutSessionEntity>,
         val goalProgress: GoalProgress,
-        val streakDays: Int
+        val streakDays: Int,
+        val goals: DailyGoals
     ) : DashboardUiState()
     data class Error(val message: String) : DashboardUiState()
 }

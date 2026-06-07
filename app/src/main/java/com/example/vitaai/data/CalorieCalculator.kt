@@ -100,4 +100,67 @@ object CalorieCalculator {
             else -> 0.8
         }
     }
+
+    /**
+     * Estimates Basal Metabolic Rate (BMR) using Mifflin-St Jeor Equation.
+     */
+    fun estimateBmr(
+        weightKg: Double,
+        heightMeters: Double,
+        ageYears: Int,
+        gender: String
+    ): Double {
+        val heightCm = heightMeters * 100.0
+        return when (gender.lowercase()) {
+            "male" -> 10.0 * weightKg + 6.25 * heightCm - 5.0 * ageYears + 5.0
+            "female" -> 10.0 * weightKg + 6.25 * heightCm - 5.0 * ageYears - 161.0
+            else -> 10.0 * weightKg + 6.25 * heightCm - 5.0 * ageYears - 78.0 // average offset
+        }
+    }
+
+    /**
+     * Estimates dynamic idle calories burned based on current elapsed time today.
+     * Activity level multiplier represents Sedentary (1.1), Light (1.2), Active (1.3), Very Active (1.4).
+     */
+    fun estimateIdleCalories(
+        bmr: Double,
+        activityLevel: String,
+        minutesElapsedToday: Int
+    ): Double {
+        val multiplier = when (activityLevel.lowercase()) {
+            "sedentary" -> 1.1
+            "light" -> 1.2
+            "active" -> 1.3
+            "very active" -> 1.4
+            else -> 1.2
+        }
+        val dayFraction = minutesElapsedToday / 1440.0
+        return bmr * multiplier * dayFraction
+    }
+
+    /**
+     * Estimates active calories burned from walking steps.
+     */
+    fun estimateActiveCaloriesFromSteps(steps: Long, weightKg: Double): Double {
+        val baseFactor = 0.04 // average kcal per step for a 70kg person
+        val weightAdjustment = weightKg / 70.0
+        return steps * baseFactor * weightAdjustment
+    }
+
+    /**
+     * Estimates active calories from heart rate elevation.
+     */
+    fun estimateHeartRateActiveCalories(
+        avgHeartRate: Double,
+        restingHeartRate: Double = 70.0,
+        weightKg: Double = 75.0,
+        activeMinutes: Double
+    ): Double {
+        if (avgHeartRate <= restingHeartRate || activeMinutes <= 0.0) return 0.0
+        val excessHr = avgHeartRate - restingHeartRate
+        // Linear MET increase: +10 bpm above resting ~ +0.8 METs
+        val addedMets = (excessHr / 10.0) * 0.8
+        val kcalPerMin = addedMets * 3.5 * weightKg / 200.0
+        return kcalPerMin * activeMinutes
+    }
 }

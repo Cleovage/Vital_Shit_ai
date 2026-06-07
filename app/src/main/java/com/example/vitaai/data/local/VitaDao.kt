@@ -67,4 +67,28 @@ interface VitaDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRoutePoints(points: List<RoutePointEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSleepSession(session: SleepSessionEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAmbientLightLog(log: AmbientLightLogEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertScreenStateEvent(event: ScreenStateEventEntity): Long
+
+    @Query("SELECT * FROM sleep_sessions ORDER BY startTimeMillis DESC LIMIT :limit")
+    fun observeRecentSleepSessions(limit: Int): Flow<List<SleepSessionEntity>>
+
+    @Query("SELECT * FROM sleep_sessions WHERE startTimeMillis BETWEEN :startMillis AND :endMillis ORDER BY startTimeMillis DESC")
+    fun observeSleepSessions(startMillis: Long, endMillis: Long): Flow<List<SleepSessionEntity>>
+
+    @Query("SELECT * FROM sleep_sessions WHERE startTimeMillis BETWEEN :startMillis AND :endMillis ORDER BY startTimeMillis DESC")
+    suspend fun getSleepSessions(startMillis: Long, endMillis: Long): List<SleepSessionEntity>
+
+    @Query("SELECT * FROM ambient_light_logs WHERE timestampMillis BETWEEN :startMillis AND :endMillis ORDER BY timestampMillis ASC")
+    suspend fun getAmbientLightLogs(startMillis: Long, endMillis: Long): List<AmbientLightLogEntity>
+
+    @Query("SELECT * FROM screen_state_events WHERE timestampMillis BETWEEN :startMillis AND :endMillis ORDER BY timestampMillis ASC")
+    suspend fun getScreenStateEvents(startMillis: Long, endMillis: Long): List<ScreenStateEventEntity>
 }

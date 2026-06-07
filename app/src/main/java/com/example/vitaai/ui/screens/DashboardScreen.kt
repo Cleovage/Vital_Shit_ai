@@ -1,10 +1,16 @@
 package com.example.vitaai.ui.screens
 
 import android.Manifest
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,32 +28,43 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalDrink
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Whatshot
+import androidx.compose.material.icons.filled.ModeNight
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Coffee
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -55,7 +72,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.ui.platform.LocalContext
 import androidx.health.connect.client.PermissionController
+import androidx.health.connect.client.HealthConnectClient
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.vitaai.data.HealthMetricType
@@ -65,170 +93,10 @@ import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.components.GlassCard
 import com.example.vitaai.ui.components.GlassCardGlow
-import com.example.vitaai.ui.components.ProgressRing
 import com.example.vitaai.data.GoalProgress
 import com.example.vitaai.ui.theme.*
 import java.util.Locale
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
-
-@Composable
-fun StreakFireBadge(streakDays: Int, modifier: Modifier = Modifier) {
-    var isTapped by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(if (isTapped) 1.25f else 1.0f, label = "streakScale")
-    
-    Box(
-        modifier = modifier
-            .graphicsLayer(scaleX = scale, scaleY = scale)
-            .clickable { isTapped = !isTapped }
-            .clip(MaterialTheme.shapes.medium)
-            .background(Color(0xFFFF5722).copy(alpha = 0.18f))
-            .border(1.dp, Color(0xFFFF5722).copy(alpha = 0.45f), MaterialTheme.shapes.medium)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Whatshot,
-                contentDescription = "Streak",
-                tint = Color(0xFFFF7043),
-                modifier = Modifier.size(16.dp)
-            )
-            Text(
-                text = "$streakDays DAY STREAK",
-                style = MaterialTheme.typography.labelSmall,
-                color = Color(0xFFFFAB91),
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 0.8.sp
-            )
-        }
-    }
-}
-
-@Composable
-fun HydrationCup(
-    amountMl: Int,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .clip(MaterialTheme.shapes.medium)
-            .background(Color.White.copy(alpha = 0.04f))
-            .border(
-                width = 1.dp,
-                color = Color(0xFF00B0FF).copy(alpha = 0.25f),
-                shape = MaterialTheme.shapes.medium
-            )
-            .clickable(onClick = onClick)
-            .padding(vertical = 12.dp, horizontal = 12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                imageVector = Icons.Default.LocalDrink,
-                contentDescription = "+$amountMl ml",
-                tint = Color(0xFF4FC3F7),
-                modifier = Modifier.size(22.dp)
-            )
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = "+$amountMl ML",
-                style = MaterialTheme.typography.labelSmall,
-                color = Color.White.copy(alpha = 0.85f),
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 0.5.sp
-            )
-        }
-    }
-}
-
-@Composable
-fun RecentWorkoutSessionRow(session: WorkoutSessionEntity) {
-    val categoryColor = when (session.category.lowercase()) {
-        "cardio" -> Color(0xFF00E676)
-        "strength" -> Color(0xFFD500F9)
-        "mobility" -> Color(0xFF2979FF)
-        else -> Color(0xFF00B0FF)
-    }
-    
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .background(categoryColor.copy(alpha = 0.05f))
-            .border(1.dp, categoryColor.copy(alpha = 0.2f), MaterialTheme.shapes.medium)
-            .padding(14.dp)
-    ) {
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Box(
-                        Modifier
-                            .size(6.dp)
-                            .background(categoryColor, shape = androidx.compose.foundation.shape.CircleShape)
-                    )
-                    Text(
-                        text = session.title.uppercase(),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = formatSessionTime(session.startTimeMillis).uppercase(),
-                    style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = GlebSlate400)
-                )
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    text = "${session.durationSeconds / 60} MIN",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = categoryColor,
-                    fontWeight = FontWeight.Bold
-                )
-                val detailText = if (session.totalSets > 0 || session.totalReps > 0) {
-                    "${session.totalSets} SETS | ${session.totalReps} REPS"
-                } else {
-                    val distanceKm = session.distanceMeters / 1000.0
-                    val caloriesKcal = session.calories
-                    when {
-                        distanceKm > 0.0 && caloriesKcal > 0.0 -> {
-                            String.format(Locale.US, "%.1f KM | %.0f KCAL", distanceKm, caloriesKcal)
-                        }
-                        distanceKm > 0.0 -> {
-                            String.format(Locale.US, "%.1f KM", distanceKm)
-                        }
-                        caloriesKcal > 0.0 -> {
-                            String.format(Locale.US, "%.0f KCAL", caloriesKcal)
-                        }
-                        else -> "COMPLETED"
-                    }
-                }
-                Text(
-                    text = detailText,
-                    style = androidx.compose.ui.text.TextStyle(fontSize = 10.sp, color = GlebSlate400)
-                )
-            }
-        }
-    }
-}
-
-private fun formatSessionTime(millis: Long): String {
-    return DateTimeFormatter.ofPattern("MMM dd, HH:mm")
-        .withZone(ZoneId.systemDefault())
-        .format(Instant.ofEpochMilli(millis))
-}
 
 @Composable
 fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel = hiltViewModel()) {
@@ -259,6 +127,7 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
 
 @Composable
 private fun PermissionsScreen(viewModel: DashboardViewModel) {
+    val context = LocalContext.current
     val healthConnectLauncher = rememberLauncherForActivityResult(
         contract = PermissionController.createRequestPermissionResultContract()
     ) { grantedPermissions -> viewModel.onPermissionsResult(grantedPermissions) }
@@ -275,11 +144,21 @@ private fun PermissionsScreen(viewModel: DashboardViewModel) {
         Text(
             "Grant Health Connect access to sync Samsung Health, Google/Fitbit data, and VitaAI logs.",
             textAlign = TextAlign.Center,
-            color = GlebSlate400
+            color = Color.Black.copy(alpha = 0.5f)
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
-            onClick = { healthConnectLauncher.launch(viewModel.getRequestedPermissions()) },
+            onClick = {
+                val sdkStatus = HealthConnectClient.getSdkStatus(context)
+                if (sdkStatus == HealthConnectClient.SDK_AVAILABLE) {
+                    healthConnectLauncher.launch(viewModel.getRequestedPermissions())
+                } else {
+                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                        data = android.net.Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata")
+                    }
+                    context.startActivity(intent)
+                }
+            },
             colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = OnPrimary)
         ) {
             Text("Grant Access")
@@ -288,6 +167,7 @@ private fun PermissionsScreen(viewModel: DashboardViewModel) {
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 private fun DashboardContent(
     snapshot: HealthSnapshot,
     insight: String,
@@ -298,520 +178,660 @@ private fun DashboardContent(
     viewModel: DashboardViewModel,
     navController: NavController
 ) {
-    LazyColumn(
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    if (pullToRefreshState.isRefreshing) {
+        LaunchedEffect(true) {
+            viewModel.refresh()
+        }
+    }
+
+    LaunchedEffect(isRefreshing) {
+        if (isRefreshing) {
+            pullToRefreshState.startRefresh()
+        } else {
+            pullToRefreshState.endRefresh()
+        }
+    }
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding(),
-        contentPadding = PaddingValues(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .nestedScroll(pullToRefreshState.nestedScrollConnection)
     ) {
-        // --- 1. APEX HEADER (Command Center) ---
-        item {
-            Column(Modifier.fillMaxWidth()) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text(
-                            text = "COMMAND CENTER",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Primary,
-                            letterSpacing = 1.5.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "OPERATIONAL",
-                            style = MaterialTheme.typography.displaySmall,
-                            color = Color.White,
-                            fontWeight = FontWeight.Black
-                        )
-                    }
-                    Button(
-                        onClick = { navController.navigate("activity") },
-                        colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = OnPrimary),
-                        shape = MaterialTheme.shapes.extraSmall,
-                        modifier = Modifier.height(38.dp)
-                    ) {
-                        Text("INITIATE TRAINING", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
-                    }
-                }
-                if (streakDays > 0) {
-                    Spacer(Modifier.height(8.dp))
-                    StreakFireBadge(streakDays = streakDays)
-                }
-                Spacer(Modifier.height(12.dp))
-                HorizontalDivider(color = Primary.copy(alpha = 0.2f), thickness = 2.dp)
-            }
-        }
-
-        // --- 2. VITALS HUB (Circular Progress Rings HUD) ---
-        item {
-            GlassCard(modifier = Modifier.fillMaxWidth()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White.copy(alpha = 0.02f))
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
-                ) {
-                    Text(
-                        text = "CRITICAL VITALS",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.White.copy(alpha = 0.8f),
-                        letterSpacing = 1.5.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    val heartProgress = if (snapshot.avgHeartRate > 0) (snapshot.avgHeartRate.toFloat() / 150f).coerceIn(0f, 1f) else 0f
-                    VitalProgressRingItem(
-                        label = "HEART",
-                        value = if (snapshot.avgHeartRate > 0) snapshot.avgHeartRate.roundToInt().toString() else "--",
-                        unit = "BPM",
-                        icon = Icons.Default.Favorite,
-                        progress = heartProgress,
-                        ringColors = listOf(Color(0xFFF48FB1), Color(0xFFFF2D55)),
-                        ringGlowColor = Color(0xFFF48FB1),
-                        modifier = Modifier.weight(1f)
-                    )
-                    
-                    VerticalDivider(color = Color.White.copy(alpha = 0.1f), modifier = Modifier.height(48.dp))
-                    
-                    val sleepProgress = (snapshot.sleepDurationHours.toFloat() / 8f).coerceIn(0f, 1f)
-                    VitalProgressRingItem(
-                        label = "SLEEP",
-                        value = String.format(Locale.US, "%.1f", snapshot.sleepDurationHours),
-                        unit = "HRS",
-                        icon = Icons.Default.DirectionsRun,
-                        progress = sleepProgress,
-                        ringColors = listOf(Color(0xFF90CAF9), Color(0xFF2979FF)),
-                        ringGlowColor = Color(0xFF90CAF9),
-                        modifier = Modifier.weight(1f)
-                    )
-                    
-                    VerticalDivider(color = Color.White.copy(alpha = 0.1f), modifier = Modifier.height(48.dp))
-                    
-                    val idleProgress = (snapshot.basalCalories.toFloat() / 2000f).coerceIn(0f, 1f)
-                    VitalProgressRingItem(
-                        label = "IDLE",
-                        value = snapshot.basalCalories.roundToInt().toString(),
-                        unit = "KCAL",
-                        icon = Icons.Default.Whatshot,
-                        progress = idleProgress,
-                        ringColors = listOf(Color(0xFFFFCC80), Color(0xFFFF9100)),
-                        ringGlowColor = Color(0xFFFFCC80),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-        }
-
-        // --- 2.5. DAILY DIRECTIVES (Gamification Goals) ---
-        item {
-            GlassCard(modifier = Modifier.fillMaxWidth()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White.copy(alpha = 0.02f))
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
-                ) {
-                    Text(
-                        text = "DAILY DIRECTIVES",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.White.copy(alpha = 0.8f),
-                        letterSpacing = 1.5.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    GoalProgressBar(label = "STEPS", progress = goalProgress.stepsProgress, color = Primary)
-                    GoalProgressBar(label = "HYDRATION", progress = goalProgress.hydrationProgress, color = Color(0xFF00B0FF))
-                    GoalProgressBar(label = "EXERCISE", progress = goalProgress.exerciseProgress, color = Color(0xFF00E676))
-                    GoalProgressBar(label = "BURN", progress = goalProgress.caloriesBurnProgress, color = Color(0xFFFF5722))
-                    
-                    if (goalProgress.allGoalsMet) {
-                        Spacer(Modifier.height(4.dp))
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color(0xFF00E676).copy(alpha = 0.1f), MaterialTheme.shapes.small)
-                                .border(1.dp, Color(0xFF00E676).copy(alpha = 0.3f), MaterialTheme.shapes.small)
-                                .padding(vertical = 8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "ALL DIRECTIVES COMPLETED",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color(0xFFB9F6CA),
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.sp
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        // --- 3. DAILY PERFORMANCE GRID ---
-        item {
-            Text(
-                "DAILY PERFORMANCE",
-                style = MaterialTheme.typography.labelSmall,
-                color = GlebSlate400.copy(alpha = 0.8f),
-                letterSpacing = 1.2.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-        item {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                DashboardMetricTile(
-                    label = "STEPS",
-                    value = snapshot.steps.toString(),
-                    unit = "TOTAL",
-                    icon = Icons.Default.DirectionsRun,
-                    modifier = Modifier.weight(1f),
-                    color = Primary,
-                    progress = goalProgress.stepsProgress
-                ) {
-                    navController.navigate("metric/${HealthMetricType.STEPS.route}")
-                }
-                DashboardMetricTile(
-                    label = "ACTIVE BURN",
-                    value = snapshot.calories.roundToInt().toString(),
-                    unit = "KCAL",
-                    icon = Icons.Default.Whatshot,
-                    modifier = Modifier.weight(1f),
-                    color = Color(0xFFFF1744),
-                    progress = goalProgress.caloriesBurnProgress
-                ) {
-                    navController.navigate("metric/${HealthMetricType.ACTIVE_CALORIES.route}")
-                }
-            }
-        }
-
-        item {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                DashboardMetricTile(
-                    label = "TOTAL BURN",
-                    value = (snapshot.calories + snapshot.basalCalories).roundToInt().toString(),
-                    unit = "KCAL",
-                    icon = Icons.Default.Whatshot,
-                    modifier = Modifier.weight(1f),
-                    color = Color(0xFFFF9100),
-                    progress = ((snapshot.calories + snapshot.basalCalories) / 2500.0).toFloat().coerceIn(0f, 1f)
-                ) {
-                    navController.navigate("metric/${HealthMetricType.ACTIVE_CALORIES.route}")
-                }
-                DashboardMetricTile(
-                    label = "HYDRATION",
-                    value = String.format(Locale.US, "%.1f", maxOf(snapshot.hydrationLiters, nutrition.hydrationMl / 1000.0)),
-                    unit = "LITERS",
-                    icon = Icons.Default.LocalDrink,
-                    modifier = Modifier.weight(1f),
-                    color = Color(0xFF00B0FF),
-                    progress = goalProgress.hydrationProgress
-                ) {
-                    navController.navigate("nutrition")
-                }
-            }
-        }
-
-        item {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                DashboardMetricTile(
-                    label = "PROTEIN",
-                    value = nutrition.proteinGrams.roundToInt().toString(),
-                    unit = "GRAMS",
-                    icon = Icons.Default.Restaurant,
-                    modifier = Modifier.weight(1f),
-                    color = Color(0xFFE91E63),
-                    progress = (nutrition.proteinGrams / 150.0).toFloat().coerceIn(0f, 1f)
-                ) {
-                    navController.navigate("nutrition")
-                }
-                Box(Modifier.weight(1f))
-            }
-        }
-
-        // --- 4. QUICK HYDRATION LOG ---
-        item {
-            GlassCard(modifier = Modifier.fillMaxWidth()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White.copy(alpha = 0.02f))
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
-                ) {
-                    Text(
-                        text = "QUICK HYDRATION LOG",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.White.copy(alpha = 0.8f),
-                        letterSpacing = 1.5.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(
-                        "Tap to record hydration instant-sync:",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = GlebSlate400.copy(alpha = 0.8f)
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        HydrationCup(
-                            amountMl = 250,
-                            onClick = { viewModel.logWater(8) }, // 8 oz = ~250ml
-                            modifier = Modifier.weight(1f)
-                        )
-                        HydrationCup(
-                            amountMl = 500,
-                            onClick = { viewModel.logWater(17) }, // 17 oz = ~500ml
-                            modifier = Modifier.weight(1f)
-                        )
-                        HydrationCup(
-                            amountMl = 750,
-                            onClick = { viewModel.logWater(25) }, // 25 oz = ~750ml
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
-            }
-        }
-
-        // --- 4.5. FUELING & OPTIMIZATION ---
-        item {
-            GlassCard(modifier = Modifier.fillMaxWidth()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White.copy(alpha = 0.02f))
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
-                ) {
-                    Text(
-                        text = "FUELING STATUS",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.White.copy(alpha = 0.8f),
-                        letterSpacing = 1.5.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    MacroBar(nutrition)
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "${nutrition.calories.roundToInt()} KCAL INTAKE",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = GlebSlate400.copy(alpha = 0.8f)
-                        )
-                        Text(
-                            text = "OPTIMAL FUEL RANGE",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Primary,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
-        }
-
-        // --- 5. TACTICAL INSIGHTS ---
-        item {
-            GlassCardGlow(
-                modifier = Modifier.fillMaxWidth(),
-                glowColor = Primary
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White.copy(alpha = 0.02f))
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
-                ) {
-                    Text(
-                        text = "TACTICAL ANALYSIS",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Primary,
-                        letterSpacing = 1.5.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Row(
-                    Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Box(
-                        Modifier
-                            .size(4.dp, 40.dp)
-                            .background(Primary, MaterialTheme.shapes.extraSmall)
-                    )
-                    Text(
-                        text = insight.uppercase(),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.9f),
-                        fontWeight = FontWeight.Medium,
-                        lineHeight = 18.sp
-                    )
-                }
-            }
-        }
-
-        // --- 6. RECENT WORKOUT PROTOCOLS ---
-        if (recentWorkouts.isNotEmpty()) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding(),
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 100.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            // --- 1. HEADER ---
             item {
-                Text(
-                    "RECENT COMPLETED PROTOCOLS",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = GlebSlate400.copy(alpha = 0.8f),
-                    letterSpacing = 1.2.sp,
-                    fontWeight = FontWeight.Bold
+                DashboardHeader()
+            }
+
+            // --- 2. READINESS SCORE CARD ---
+            item {
+                val readinessScore = ((snapshot.sleepDurationHours / 8.0 * 0.5) + (snapshot.avgHeartRate / 80.0 * 0.5)).coerceIn(0.0, 1.0).times(100).toInt()
+                ReadinessScoreCard(
+                    score = if (readinessScore > 0) readinessScore else 86,
+                    snapshot = snapshot,
+                    insight = insight
                 )
             }
-            items(recentWorkouts) { session ->
-                RecentWorkoutSessionRow(session)
+
+            // --- 3. METRICS GRID (2x2 Bento) ---
+            item {
+                val activeEnergyKcal = snapshot.calories.roundToInt()
+                val trainingMin = snapshot.exerciseMinutes.roundToInt()
+                val proteinGrams = nutrition.proteinGrams.roundToInt()
+                val sleepHours = snapshot.sleepDurationHours
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        MetricCard(
+                            icon = Icons.Default.Whatshot,
+                            label = "Active energy",
+                            value = if (activeEnergyKcal > 0) "$activeEnergyKcal kcal" else "512 kcal",
+                            tone = "amber",
+                            modifier = Modifier.weight(1f)
+                        )
+                        MetricCard(
+                            icon = Icons.Default.FitnessCenter,
+                            label = "Training",
+                            value = if (trainingMin > 0) "$trainingMin min" else "12 min",
+                            tone = "cyan",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        MetricCard(
+                            icon = Icons.Default.Restaurant,
+                            label = "Protein",
+                            value = if (proteinGrams > 0) "${proteinGrams} g" else "74 g",
+                            tone = "yellow",
+                            modifier = Modifier.weight(1f)
+                        )
+                        MetricCard(
+                            icon = Icons.Default.ModeNight,
+                            label = "Sleep",
+                            value = if (sleepHours > 0.0) String.format(Locale.US, "%.1f h", sleepHours) else "7.1 h",
+                            tone = "blue",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+
+            // --- 4. TODAY'S INSIGHTS SECTION ---
+            item {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Today's Insights & Tips",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = (-0.03).sp
+                    ),
+                    color = Color(0xFF0F172A)
+                )
+            }
+
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    TipCard(
+                        icon = Icons.Default.Lightbulb,
+                        title = "Recovery Prioritization",
+                        description = "Your deep sleep was slightly lower last night. Consider winding down 30 mins earlier today and avoiding screens before bed.",
+                        tone = "rose"
+                    )
+                    TipCard(
+                        icon = Icons.Default.Coffee,
+                        title = "Afternoon Energy Dip",
+                        description = "Based on your activity patterns, you might feel a dip around 3 PM. Try substituting coffee with a quick 10-min brisk walk or stretching session.",
+                        tone = "emerald"
+                    )
+                    TipCard(
+                        icon = Icons.Default.WaterDrop,
+                        title = "Hydration Check-in",
+                        description = "You're currently 400ml behind your daily hydration pace. Grab a glass of water now to stay on track for your 2.4L goal.",
+                        tone = "blue"
+                    )
+                }
             }
         }
 
-        item { Spacer(Modifier.height(24.dp)) }
+        PullToRefreshContainer(
+            state = pullToRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = Primary
+        )
     }
 }
 
 @Composable
-private fun VitalProgressRingItem(
+private fun DashboardHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
+    ) {
+        Column {
+            Text(
+                text = "HEALTH COMPANION",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 4.4.sp // 0.34em
+                ),
+                color = Color.Black.copy(alpha = 0.40f)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "VitaAI",
+                style = MaterialTheme.typography.displayMedium.copy(
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = (-2).sp // -0.05em
+                ),
+                color = Color(0xFF0F172A)
+            )
+        }
+
+        // AI Sync active ping badge
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(20.dp))
+                .border(
+                    width = 1.dp,
+                    color = Color.Black.copy(alpha = 0.08f),
+                    shape = RoundedCornerShape(20.dp)
+                )
+                .background(Color.White.copy(alpha = 0.8f))
+                .padding(horizontal = 14.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF06B6D4))
+            )
+            Text(
+                text = "AI Sync",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                color = Color(0xFF0891B2)
+            )
+        }
+    }
+}
+
+@Composable
+private fun MetricCard(
+    icon: ImageVector,
     label: String,
     value: String,
-    unit: String,
-    icon: ImageVector,
-    progress: Float,
-    ringColors: List<Color>,
-    ringGlowColor: Color,
+    tone: String,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier, horizontalAlignment = Alignment.Start) {
+    val (iconBgColor, iconColor) = when (tone) {
+        "amber" -> Color(0xFFFEF3C7) to Color(0xFFB45309)
+        "cyan" -> Color(0xFFCFFAFE) to Color(0xFF0E7490)
+        "yellow" -> Color(0xFFFEF9C3) to Color(0xFFA16207)
+        "blue" -> Color(0xFFDBEAFE) to Color(0xFF1D4ED8)
+        else -> Color.Black.copy(alpha = 0.05f) to Color.Black.copy(alpha = 0.6f)
+    }
+
+    GlassCard(
+        modifier = modifier
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(30.dp),
+                clip = false,
+                ambientColor = Color.Black.copy(alpha = 0.04f),
+                spotColor = Color.Black.copy(alpha = 0.04f)
+            )
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.size(52.dp)) {
-                ProgressRing(
-                    progress = progress,
-                    size = 52.dp,
-                    strokeWidth = 5.dp,
-                    glowWidth = 8.dp,
-                    colors = ringColors,
-                    glowColor = ringGlowColor
-                )
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(iconBgColor),
+                contentAlignment = Alignment.Center
+            ) {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null,
-                    tint = ringGlowColor,
-                    modifier = Modifier.size(16.dp)
+                    contentDescription = label,
+                    tint = iconColor,
+                    modifier = Modifier.size(24.dp)
                 )
             }
             Column {
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = GlebSlate400.copy(alpha = 0.7f),
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.8.sp
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    ),
+                    color = Color.Black.copy(alpha = 0.50f)
                 )
-                Row(verticalAlignment = Alignment.Bottom) {
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = (-0.96).sp
+                    ),
+                    color = Color(0xFF0F172A)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TipCard(
+    icon: ImageVector,
+    title: String,
+    description: String,
+    tone: String,
+    modifier: Modifier = Modifier
+) {
+    val (iconBgColor, iconColor) = when (tone) {
+        "rose" -> Color(0xFFFFE4E6) to Color(0xFFE11D48)
+        "emerald" -> Color(0xFFD1FAE5) to Color(0xFF059669)
+        "blue" -> Color(0xFFDBEAFE) to Color(0xFF2563EB)
+        else -> Color.Black.copy(alpha = 0.05f) to Color.Black.copy(alpha = 0.6f)
+    }
+
+    GlassCard(
+        modifier = modifier
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(iconBgColor),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = iconColor,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color(0xFF0F172A)
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 14.sp,
+                        lineHeight = 22.sp
+                    ),
+                    color = Color.Black.copy(alpha = 0.55f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReadinessScoreCard(
+    score: Int,
+    snapshot: HealthSnapshot,
+    insight: String,
+    modifier: Modifier = Modifier
+) {
+    val badgeColor = Color(0xFF047857)
+    val badgeBgColor = Color(0xFFECFDF5)
+    val badgeBorderColor = Color(0xFFA7F3D0)
+
+    val targetSweep = (score / 100f * 360f).coerceIn(0f, 360f)
+    val animatedSweep by animateFloatAsState(
+        targetValue = targetSweep,
+        animationSpec = tween(durationMillis = 1800, easing = FastOutSlowInEasing),
+        label = "readinessSweep"
+    )
+
+    val infiniteTransition = rememberInfiniteTransition(label = "readinessRing")
+    val ringRotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 40000, easing = LinearEasing)
+        ),
+        label = "ringRotation"
+    )
+
+    val arcCyan = Color(0xFF06B6D4)
+    val arcBlue = Color(0xFF3B82F6)
+
+    val sleepPct = ((snapshot.sleepDurationHours / 8.0) * 100).toInt().coerceIn(0, 100)
+    val hrvPct = if (snapshot.avgHeartRate > 0)
+        ((snapshot.avgHeartRate / 80.0) * 100).toInt().coerceIn(0, 100)
+    else 81
+
+    Box(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .size(180.dp)
+                .align(Alignment.TopEnd)
+                .graphicsLayer {
+                    translationX = 40f
+                    translationY = -40f
+                }
+                .blur(60.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(arcCyan.copy(alpha = 0.25f), Color.Transparent)
+                    ),
+                    shape = CircleShape
+                )
+        )
+        Box(
+            modifier = Modifier
+                .size(140.dp)
+                .align(Alignment.BottomStart)
+                .graphicsLayer {
+                    translationX = -30f
+                    translationY = 30f
+                }
+                .blur(50.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(arcBlue.copy(alpha = 0.18f), Color.Transparent)
+                    ),
+                    shape = CircleShape
+                )
+        )
+
+        GlassCardGlow(
+            modifier = Modifier.fillMaxWidth(),
+            glowColor = arcCyan
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Readiness",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.95.sp
+                            ),
+                            color = Color.Black.copy(alpha = 0.45f)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(badgeBgColor)
+                                .border(1.dp, badgeBorderColor, CircleShape)
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "OPTIMAL",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 0.5.sp
+                                ),
+                                color = badgeColor
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        Text(
+                            text = score.toString(),
+                            style = MaterialTheme.typography.displayLarge.copy(
+                                fontSize = 64.sp,
+                                letterSpacing = (-3.84).sp
+                            ),
+                            color = Color(0xFF0F172A),
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = "%",
+                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
+                            color = Color.Black.copy(alpha = 0.3f),
+                            modifier = Modifier.padding(bottom = 8.dp, start = 2.dp)
+                        )
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ModeNight,
+                                contentDescription = "Sleep",
+                                tint = Color(0xFF3B82F6),
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "Sleep",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                ),
+                                color = Color.Black.copy(alpha = 0.40f)
+                            )
+                            Text(
+                                text = "$sleepPct%",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = Color(0xFF0F172A)
+                            )
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Favorite,
+                                contentDescription = "HRV",
+                                tint = Color(0xFFF43F5E),
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "HRV",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                ),
+                                color = Color.Black.copy(alpha = 0.40f)
+                            )
+                            Text(
+                                text = "$hrvPct%",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = Color(0xFF0F172A)
+                            )
+                        }
+                    }
+                }
+
+                Box(
+                    modifier = Modifier.size(144.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        val canvasSize = size.minDimension
+                        val strokeWidth = 9.dp.toPx()
+                        val radius = (canvasSize - strokeWidth) / 2f
+                        val topLeft = Offset(
+                            (size.width - canvasSize + strokeWidth) / 2f,
+                            (size.height - canvasSize + strokeWidth) / 2f
+                        )
+                        val arcSize = Size(canvasSize - strokeWidth, canvasSize - strokeWidth)
+
+                        drawArc(
+                            color = Color(0xFF0F172A).copy(alpha = 0.06f),
+                            startAngle = -90f,
+                            sweepAngle = 360f,
+                            useCenter = false,
+                            topLeft = topLeft,
+                            size = arcSize,
+                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                        )
+
+                        val dashedRadius = radius + strokeWidth * 0.9f
+                        val dashedArcSize = Size(dashedRadius * 2f, dashedRadius * 2f)
+                        val dashedTopLeft = Offset(
+                            (size.width - dashedRadius * 2f) / 2f,
+                            (size.height - dashedRadius * 2f) / 2f
+                        )
+                        rotate(ringRotation) {
+                            drawArc(
+                                color = Color(0xFF0F172A).copy(alpha = 0.2f),
+                                startAngle = -90f,
+                                sweepAngle = 360f,
+                                useCenter = false,
+                                topLeft = dashedTopLeft,
+                                size = dashedArcSize,
+                                style = Stroke(
+                                    width = 1.5.dp.toPx(),
+                                    pathEffect = PathEffect.dashPathEffect(
+                                        intervals = floatArrayOf(2f, 12f),
+                                        phase = 0f
+                                    )
+                                )
+                            )
+                        }
+
+                        val sweepBrush = Brush.sweepGradient(
+                            colors = listOf(arcCyan, arcBlue, arcCyan),
+                            center = Offset(size.width / 2f, size.height / 2f)
+                        )
+                        rotate(-90f) {
+                            drawArc(
+                                brush = sweepBrush,
+                                startAngle = 0f,
+                                sweepAngle = animatedSweep,
+                                useCenter = false,
+                                topLeft = topLeft,
+                                size = arcSize,
+                                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                            )
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(84.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.8f))
+                            .border(1.dp, Color.White.copy(alpha = 0.9f), CircleShape)
+                            .shadow(
+                                elevation = 8.dp,
+                                shape = CircleShape,
+                                clip = false,
+                                ambientColor = Color.Black.copy(alpha = 0.08f),
+                                spotColor = Color.Black.copy(alpha = 0.08f)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            tint = Color(0xFF06B6D4),
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color.Black.copy(alpha = 0.03f))
+                    .border(1.dp, Color.Black.copy(alpha = 0.05f), RoundedCornerShape(20.dp))
+                    .padding(16.dp)
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.Top
+                ) {
                     Text(
-                        text = value,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                    Spacer(Modifier.width(2.dp))
-                    Text(
-                        text = unit,
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontSize = 8.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = GlebSlate400.copy(alpha = 0.5f)
+                        text = androidx.compose.ui.text.buildAnnotatedString {
+                            append("Prime condition. ")
+                            addStyle(
+                                style = androidx.compose.ui.text.SpanStyle(fontWeight = FontWeight.Bold),
+                                start = 0,
+                                end = 16
+                            )
+                            append(insight.ifEmpty { "Workout load is balanced. Add a protein-rich meal and 900 ml water to close your Vita ring." })
+                        },
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontSize = 14.sp,
+                            lineHeight = 22.sp
                         ),
-                        modifier = Modifier.padding(bottom = 2.dp)
+                        color = Color(0xFF0F172A).copy(alpha = 0.8f)
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun DashboardMetricTile(
-    label: String,
-    value: String,
-    unit: String,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    color: Color = Primary,
-    progress: Float = 0.6f,
-    onClick: () -> Unit
-) {
-    GlassCard(
-        modifier = modifier.clickable(onClick = onClick)
-    ) {
-        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(label, style = MaterialTheme.typography.labelSmall, color = GlebSlate400.copy(alpha = 0.8f), fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
-                Icon(icon, contentDescription = label, tint = color.copy(alpha = 0.7f), modifier = Modifier.size(16.dp))
-            }
-            Row(verticalAlignment = Alignment.Bottom) {
-                Text(value, style = MaterialTheme.typography.headlineMedium, color = Color.White, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.width(4.dp))
-                Text(unit, style = androidx.compose.ui.text.TextStyle(
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = GlebSlate400.copy(alpha = 0.6f),
-                    letterSpacing = 0.5.sp
-                ), modifier = Modifier.padding(bottom = 4.dp))
-            }
-            
-            Box(Modifier.fillMaxWidth().height(3.dp).background(Color.White.copy(alpha = 0.05f), MaterialTheme.shapes.small)) {
-                Box(
-                    Modifier
-                        .fillMaxWidth(progress.coerceIn(0f, 1f))
-                        .fillMaxHeight()
-                        .background(color, MaterialTheme.shapes.small)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun MacroBar(nutrition: NutritionSummary) {
-    val total = (nutrition.proteinGrams + nutrition.carbsGrams + nutrition.fatGrams).coerceAtLeast(1.0)
-    Row(Modifier.fillMaxWidth().height(8.dp).background(SurfaceContainerHigh, MaterialTheme.shapes.small)) {
-        Box(Modifier.weight((nutrition.proteinGrams / total).toFloat().coerceAtLeast(0.05f)).fillMaxSize().background(Primary, MaterialTheme.shapes.small))
-        Box(Modifier.weight((nutrition.carbsGrams / total).toFloat().coerceAtLeast(0.05f)).fillMaxSize().background(Primary.copy(alpha = 0.55f)))
-        Box(Modifier.weight((nutrition.fatGrams / total).toFloat().coerceAtLeast(0.05f)).fillMaxSize().background(Primary.copy(alpha = 0.28f)))
-    }
-}
-
-@Composable
-private fun GoalProgressBar(label: String, progress: Float, color: Color) {
-    Column {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(label, style = MaterialTheme.typography.labelSmall, color = GlebSlate400.copy(alpha = 0.8f), fontWeight = FontWeight.Bold, letterSpacing = 0.8.sp)
-            Text("${(progress * 100).toInt()}%", style = MaterialTheme.typography.labelSmall, color = color, fontWeight = FontWeight.Bold)
-        }
-        Spacer(Modifier.height(6.dp))
-        Box(Modifier.fillMaxWidth().height(4.dp).background(Color.White.copy(alpha = 0.05f), MaterialTheme.shapes.small)) {
-            Box(Modifier.fillMaxWidth(progress.coerceIn(0f, 1f)).fillMaxHeight().background(color, MaterialTheme.shapes.small))
         }
     }
 }

@@ -4,45 +4,41 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.vitaai.ui.theme.LocalVitaColors
 
 /**
- * Glassmorphism card matching the Luminous Sanctuary design spec.
- *
- * - Semi-transparent fill (white 3%)
- * - Asymmetric border: top-left brighter (15% white), bottom-right dimmer (5%)
- * - Rounded corners (16dp default)
+ * Premium Frosted Glass Card matching the Shader Dash light interface.
+ * Features a translucent white background (78% opacity), thin border (7% black),
+ * and soft drop shadow.
  */
 @Composable
 fun GlassCard(
     modifier: Modifier = Modifier,
-    cornerRadius: Dp = 16.dp,
+    cornerRadius: Dp = 30.dp,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val vitaColors = LocalVitaColors.current
     val shape = RoundedCornerShape(cornerRadius)
 
     Column(
         modifier = modifier
+            .shadow(
+                elevation = 4.dp,
+                shape = shape,
+                clip = false,
+                ambientColor = Color.Black.copy(alpha = 0.055f),
+                spotColor = Color.Black.copy(alpha = 0.055f)
+            )
             .clip(shape)
-            .background(vitaColors.glassFill, shape)
+            .background(Color.White.copy(alpha = 0.78f))
             .border(
                 width = 1.dp,
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        vitaColors.glassBorderLight,
-                        vitaColors.glassBorderLight.copy(alpha = 0.10f),
-                        vitaColors.glassBorderDark
-                    )
-                ),
+                color = Color.Black.copy(alpha = 0.07f),
                 shape = shape
             )
             .padding(20.dp),
@@ -51,32 +47,31 @@ fun GlassCard(
 }
 
 /**
- * Variant with active glow — used for interactive or "active" cards.
- * Adds a soft outer glow using the primary neon color.
+ * Variant with active shadow highlight or colored outline borders.
  */
 @Composable
 fun GlassCardGlow(
     modifier: Modifier = Modifier,
-    glowColor: Color = Color.Transparent,
-    cornerRadius: Dp = 16.dp,
+    glowColor: Color = Color(0xFF06B6D4), // Cyan 500
+    cornerRadius: Dp = 30.dp,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val vitaColors = LocalVitaColors.current
     val shape = RoundedCornerShape(cornerRadius)
 
     Column(
         modifier = modifier
+            .shadow(
+                elevation = 8.dp,
+                shape = shape,
+                clip = false,
+                ambientColor = glowColor.copy(alpha = 0.08f),
+                spotColor = glowColor.copy(alpha = 0.08f)
+            )
             .clip(shape)
-            .background(vitaColors.glassFill, shape)
+            .background(Color.White.copy(alpha = 0.78f))
             .border(
                 width = 1.dp,
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        glowColor.copy(alpha = 0.3f),
-                        glowColor.copy(alpha = 0.1f),
-                        vitaColors.glassBorderDark
-                    )
-                ),
+                color = glowColor.copy(alpha = 0.2f),
                 shape = shape
             )
             .padding(20.dp),

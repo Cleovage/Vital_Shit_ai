@@ -15,6 +15,7 @@ import javax.inject.Inject
 data class NutritionUiState(
     val summary: NutritionSummary = NutritionSummary(),
     val foods: List<FoodCatalogItem> = emptyList(),
+    val customFoods: List<FoodCatalogItem> = emptyList(),
     val drinks: List<DrinkCatalogItem> = emptyList(),
     val selectedMeal: String = "Breakfast",
     val error: String? = null
@@ -51,6 +52,36 @@ class NutritionViewModel @Inject constructor(
         }
     }
 
+    fun createCustomFood(
+        name: String,
+        servingLabel: String,
+        calories: Double,
+        protein: Double,
+        carbs: Double,
+        fat: Double,
+        sugar: Double,
+        sodium: Double
+    ) {
+        val newItem = FoodCatalogItem(
+            name = name,
+            servingLabel = servingLabel,
+            calories = calories,
+            proteinGrams = protein,
+            carbsGrams = carbs,
+            fatGrams = fat,
+            fiberGrams = 0.0,
+            sugarGrams = sugar,
+            sodiumMg = sodium,
+            caffeineMg = 0.0
+        )
+        val updatedCustom = _uiState.value.customFoods + newItem
+        val updatedAll = listOf(newItem) + _uiState.value.foods
+        _uiState.value = _uiState.value.copy(
+            customFoods = updatedCustom,
+            foods = updatedAll
+        )
+    }
+
     fun quickAdd(calories: Double, protein: Double, carbs: Double, fat: Double) {
         viewModelScope.launch {
             runCatching {
@@ -63,6 +94,15 @@ class NutritionViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { nutritionRepository.addDrink(item, volumeMl) }
                 .onFailure { _uiState.value = _uiState.value.copy(error = it.message ?: "Unable to add drink") }
+        }
+    }
+
+    fun addDrinkDirect(name: String, volumeMl: Double) {
+        viewModelScope.launch {
+            val drinkItem = _uiState.value.drinks.firstOrNull { it.name.equals(name, ignoreCase = true) }
+                ?: DrinkCatalogItem("Water", "Water", 250.0, 1.0, 0.0, 0.0, 0.0, "Direct hydration with no calories.")
+            runCatching { nutritionRepository.addDrink(drinkItem, volumeMl) }
+                .onFailure { _uiState.value = _uiState.value.copy(error = it.message ?: "Unable to log drink") }
         }
     }
 }

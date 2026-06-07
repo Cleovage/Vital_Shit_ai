@@ -1,20 +1,25 @@
 package com.example.vitaai.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.vitaai.ui.theme.*
 
 /**
- * Primary button with a teal-to-violet gradient fill and white text.
- * Ghost variant uses a luminous stroke with transparent fill.
+ * Premium Button matching the dark slate styling of the Shader Dash spec.
+ * Uses a solid Slate-900 fill (#0F172A) with white text,
+ * and a ghost variant with a thin border and Slate text.
  */
 @Composable
 fun GlowButton(
@@ -23,20 +28,19 @@ fun GlowButton(
     modifier: Modifier = Modifier,
     ghost: Boolean = false
 ) {
-    val shape = PillShape
+    val shape = RoundedCornerShape(24.dp) // pill-like
 
     if (ghost) {
-        // Ghost button with luminous stroke
-        androidx.compose.material3.OutlinedButton(
+        OutlinedButton(
             onClick = onClick,
             modifier = modifier.height(48.dp),
             shape = shape,
-            border = androidx.compose.foundation.BorderStroke(
-                1.dp,
-                Brush.linearGradient(listOf(PrimaryContainer, Secondary))
+            border = BorderStroke(
+                width = 1.dp,
+                color = Color(0x1F0F172A) // 12% Slate
             ),
-            colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
-                contentColor = Primary
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = Color(0xFF0F172A)
             )
         ) {
             Text(
@@ -45,34 +49,21 @@ fun GlowButton(
             )
         }
     } else {
-        // Primary button with gradient fill
-        androidx.compose.material3.Button(
+        Button(
             onClick = onClick,
             modifier = modifier.height(48.dp),
             shape = shape,
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF0F172A),
                 contentColor = Color.White
             ),
-            contentPadding = PaddingValues()
+            contentPadding = PaddingValues(horizontal = 24.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.horizontalGradient(
-                            listOf(PrimaryContainer, Secondary)
-                        ),
-                        shape = shape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = Color.White
-                )
-            }
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelLarge,
+                color = Color.White
+            )
         }
     }
 }

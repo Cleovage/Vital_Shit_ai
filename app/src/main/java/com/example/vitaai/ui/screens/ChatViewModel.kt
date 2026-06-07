@@ -21,18 +21,29 @@ class ChatViewModel @Inject constructor(
     ))
     val messages: StateFlow<List<Message>> = _messages
 
+    private val _isThinking = MutableStateFlow(false)
+    val isThinking: StateFlow<Boolean> = _isThinking
+
     fun sendMessage(text: String) {
         if (text.isBlank()) return
-        
+
         viewModelScope.launch {
             _messages.value += Message(text, true)
-            
-            // Fetch health context for the AI
-            val snapshot = repository.getDailySnapshot()
-            val aiResponse = repository.getAiInsight(snapshot) 
-            // In a real app, this would be a full LLM call with the text and snapshot
-            
-            _messages.value += Message("Based on your data: $aiResponse", false)
+            _isThinking.value = true
+
+            try {
+                // Fetch health context for the AI
+                val aiResponse = runCatching {
+                    val snapshot = repository.getDailySnapshot()
+                    repository.getAiInsight(snapshot)
+                }.getOrElse { e ->
+                    "I'm sorry, I encountered an issue retrieving your health snapshot: ${e.localizedMessage ?: "Unknown error"}"
+                }
+
+                _messages.value += Message("Based on your data: $aiResponse", false)
+            } finally {
+                _isThinking.value = false
+            }
         }
     }
 }

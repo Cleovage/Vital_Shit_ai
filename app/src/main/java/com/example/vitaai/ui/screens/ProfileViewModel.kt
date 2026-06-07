@@ -6,6 +6,8 @@ import com.example.vitaai.data.HealthConnectManager
 import com.example.vitaai.data.WorkoutRepository
 import com.example.vitaai.data.FirebaseRepository
 import com.example.vitaai.data.VitaRepository
+import com.example.vitaai.data.GoalsRepository
+import com.example.vitaai.data.DailyGoals
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +27,16 @@ data class ProfileUiState(
     val isSaving: Boolean = false,
     val hasAllRequiredPermissions: Boolean = false,
     val isLoggedIntoFirebase: Boolean = false,
-    val lastSyncStatus: String? = null
+    val lastSyncStatus: String? = null,
+    
+    // Upgraded somatic biometrics
+    val age: Int = 25,
+    val gender: String = "male",
+    val activityLevel: String = "light",
+    val stepGoal: Long = 10000,
+    val hydrationGoalLiters: Double = 2.5,
+    val exerciseMinutesGoal: Double = 30.0,
+    val caloriesBurnGoal: Double = 500.0
 )
 
 @HiltViewModel
@@ -34,7 +45,8 @@ class ProfileViewModel @Inject constructor(
     private val workoutRepository: WorkoutRepository,
     private val firebaseRepository: FirebaseRepository,
     private val vitaRepository: VitaRepository,
-    private val auth: FirebaseAuth
+    private val goalsRepository: GoalsRepository,
+    private val auth: FirebaseAuth?
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -47,7 +59,7 @@ class ProfileViewModel @Inject constructor(
 
     private fun checkLoginStatus() {
         _uiState.value = _uiState.value.copy(
-            isLoggedIntoFirebase = auth.currentUser != null
+            isLoggedIntoFirebase = auth?.currentUser != null
         )
     }
 
@@ -81,6 +93,7 @@ class ProfileViewModel @Inject constructor(
             val levelProgress = (workoutCount % 5) / 5f
             
             val isConnected = healthConnectManager.hasAllPermissions()
+            val currentGoals = goalsRepository.goals.value
 
             _uiState.value = ProfileUiState(
                 weightKg = weight,
@@ -89,12 +102,30 @@ class ProfileViewModel @Inject constructor(
                 level = calculatedLevel,
                 levelProgress = levelProgress,
                 permissionsGranted = isConnected,
-                hasAllRequiredPermissions = isConnected
+                hasAllRequiredPermissions = isConnected,
+                isLoggedIntoFirebase = auth?.currentUser != null,
+                age = goalsRepository.age.value,
+                gender = goalsRepository.gender.value,
+                activityLevel = goalsRepository.activityLevel.value,
+                stepGoal = currentGoals.stepGoal,
+                hydrationGoalLiters = currentGoals.hydrationGoalLiters,
+                exerciseMinutesGoal = currentGoals.exerciseMinutesGoal,
+                caloriesBurnGoal = currentGoals.caloriesBurnGoal
             )
         }
     }
 
-    fun calibrate(weightLbs: Double, heightInches: Double) {
+    fun calibrate(
+        weightLbs: Double,
+        heightInches: Double,
+        age: Int,
+        gender: String,
+        activityLevel: String,
+        stepGoal: Long,
+        hydrationGoalLiters: Double,
+        exerciseMinutesGoal: Double,
+        caloriesBurnGoal: Double
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isSaving = true)
             try {
@@ -105,6 +136,18 @@ class ProfileViewModel @Inject constructor(
                 
                 healthConnectManager.writeWeight(weightKg)
                 healthConnectManager.writeHeight(heightMeters)
+                
+                goalsRepository.updateAge(age)
+                goalsRepository.updateGender(gender)
+                goalsRepository.updateActivityLevel(activityLevel)
+                goalsRepository.updateGoals(
+                    DailyGoals(
+                        stepGoal = stepGoal,
+                        hydrationGoalLiters = hydrationGoalLiters,
+                        exerciseMinutesGoal = exerciseMinutesGoal,
+                        caloriesBurnGoal = caloriesBurnGoal
+                    )
+                )
                 
                 loadProfile()
             } catch (e: Exception) {

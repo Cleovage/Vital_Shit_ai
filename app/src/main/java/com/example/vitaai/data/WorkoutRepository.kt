@@ -97,6 +97,10 @@ class WorkoutRepository @Inject constructor(
         return dao.getWorkoutTemplate(id)
     }
 
+    suspend fun saveTemplate(template: WorkoutTemplateEntity) {
+        dao.insertWorkoutTemplates(listOf(template))
+    }
+
     suspend fun seedDefaultTemplatesIfNeeded() {
         if (dao.templateCount() > 0) return
         dao.insertWorkoutTemplates(defaultTemplates())
@@ -206,7 +210,11 @@ class WorkoutRepository @Inject constructor(
             template("swimming_pool", "Swimming Pool", "Swimming", ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL, TRACKING_CARDIO, false, 0, "Pool swim timer without GPS.", "time"),
             template("swimming_open", "Open-water Swim", "Swimming", ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_OPEN_WATER, TRACKING_CARDIO, true, 0, "Open-water swim with GPS route when permission is granted.", "distance"),
             template("yoga", "Yoga", "Mobility", ExerciseSessionRecord.EXERCISE_TYPE_YOGA, TRACKING_MOBILITY, false, 0, "Timer, HR, breath pacing, and session notes.", "time"),
-            template("hiit", "HIIT", "HIIT", ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING, TRACKING_BODYWEIGHT, false, 30, "Fast intervals with rep taps and rest prompts.", "rounds")
+            template("hiit", "HIIT", "HIIT", ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING, TRACKING_BODYWEIGHT, false, 30, "Fast intervals with rep taps and rest prompts.", "rounds"),
+            template("kettlebell_flow", "Kettlebell Flow", "Strength", ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING, TRACKING_STRENGTH, false, 90, "Dynamic kettlebell circuits combining strength and coordination.", "sets"),
+            template("pilates_core", "Pilates Core", "Mobility", ExerciseSessionRecord.EXERCISE_TYPE_PILATES, TRACKING_MOBILITY, false, 45, "Mat-based core stability and structural alignment drills.", "time"),
+            template("swim_interval", "Swim Intervals", "Swimming", ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL, TRACKING_CARDIO, false, 60, "Pool laps with timed interval rests and target pacing.", "time"),
+            template("tabata_protocol", "Tabata Protocol", "HIIT", ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING, TRACKING_BODYWEIGHT, false, 10, "Ultra-short recovery intervals: 20s effort, 10s rest.", "rounds")
         )
     }
 

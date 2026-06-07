@@ -32,7 +32,13 @@ data class NutritionTotals(
 class HealthConnectManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private val healthConnectClient by lazy { HealthConnectClient.getOrCreate(context) }
+    private val healthConnectClient: HealthConnectClient? by lazy {
+        try {
+            HealthConnectClient.getOrCreate(context)
+        } catch (e: Exception) {
+            null
+        }
+    }
 
     val requiredPermissions = setOf(
         HealthPermission.getReadPermission(StepsRecord::class),
@@ -60,17 +66,28 @@ class HealthConnectManager @Inject constructor(
     )
 
     suspend fun hasAllPermissions(): Boolean {
-        val granted = healthConnectClient.permissionController.getGrantedPermissions()
-        return granted.containsAll(requiredPermissions)
+        val client = healthConnectClient ?: return false
+        return try {
+            val granted = client.permissionController.getGrantedPermissions()
+            granted.containsAll(requiredPermissions)
+        } catch (e: Exception) {
+            false
+        }
     }
 
     suspend fun getGrantedPermissions(): Set<String> {
-        return healthConnectClient.permissionController.getGrantedPermissions()
+        val client = healthConnectClient ?: return emptySet()
+        return try {
+            client.permissionController.getGrantedPermissions()
+        } catch (e: Exception) {
+            emptySet()
+        }
     }
 
     suspend fun readDailySteps(startTime: Instant, endTime: Instant): Long {
+        val client = healthConnectClient ?: return 0L
         return try {
-            val response = healthConnectClient.aggregate(
+            val response = client.aggregate(
                 AggregateRequest(
                     metrics = setOf(StepsRecord.COUNT_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
@@ -83,12 +100,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readHeartRate(startTime: Instant, endTime: Instant): List<Long> {
-        // Since we want to let HC do calculations, we can still read raw for specific lists,
-        // but for snapshot we'll use an aggregate BPM_AVG if needed.
-        // Keeping this for now as it's used for averaging in Repository, 
-        // but adding an aggregate method too.
+        val client = healthConnectClient ?: return emptyList()
         return try {
-            val response = healthConnectClient.readRecords(
+            val response = client.readRecords(
                 ReadRecordsRequest(
                     HeartRateRecord::class,
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
@@ -103,8 +117,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readAvgHeartRate(startTime: Instant, endTime: Instant): Double {
+        val client = healthConnectClient ?: return 0.0
         return try {
-            val response = healthConnectClient.aggregate(
+            val response = client.aggregate(
                 AggregateRequest(
                     metrics = setOf(HeartRateRecord.BPM_AVG),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
@@ -117,8 +132,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readSleepDuration(startTime: Instant, endTime: Instant): Double {
+        val client = healthConnectClient ?: return 0.0
         return try {
-            val response = healthConnectClient.aggregate(
+            val response = client.aggregate(
                 AggregateRequest(
                     metrics = setOf(SleepSessionRecord.SLEEP_DURATION_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
@@ -132,8 +148,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readSleepSessions(startTime: Instant, endTime: Instant): List<SleepSessionRecord> {
+        val client = healthConnectClient ?: return emptyList()
         return try {
-            val response = healthConnectClient.readRecords(
+            val response = client.readRecords(
                 ReadRecordsRequest(
                     SleepSessionRecord::class,
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
@@ -146,8 +163,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readDailyCalories(startTime: Instant, endTime: Instant): Double {
+        val client = healthConnectClient ?: return 0.0
         return try {
-            val response = healthConnectClient.aggregate(
+            val response = client.aggregate(
                 AggregateRequest(
                     metrics = setOf(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
@@ -160,8 +178,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readDailyBasalCalories(startTime: Instant, endTime: Instant): Double {
+        val client = healthConnectClient ?: return 0.0
         return try {
-            val response = healthConnectClient.aggregate(
+            val response = client.aggregate(
                 AggregateRequest(
                     metrics = setOf(BasalMetabolicRateRecord.BASAL_CALORIES_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
@@ -174,8 +193,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readLatestWeight(): Double? {
+        val client = healthConnectClient ?: return null
         return try {
-            val response = healthConnectClient.readRecords(
+            val response = client.readRecords(
                 ReadRecordsRequest(
                     WeightRecord::class,
                     timeRangeFilter = TimeRangeFilter.before(Instant.now()),
@@ -190,8 +210,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readLatestHeight(): Double? {
+        val client = healthConnectClient ?: return null
         return try {
-            val response = healthConnectClient.readRecords(
+            val response = client.readRecords(
                 ReadRecordsRequest(
                     HeightRecord::class,
                     timeRangeFilter = TimeRangeFilter.before(Instant.now()),
@@ -206,32 +227,43 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun writeWeight(weightKg: Double) {
-        val now = Instant.now()
-        val zoneOffset = ZoneId.systemDefault().rules.getOffset(now)
-        val record = WeightRecord(
-            time = now,
-            zoneOffset = zoneOffset,
-            weight = Mass.kilograms(weightKg),
-            metadata = Metadata.manualEntry()
-        )
-        healthConnectClient.insertRecords(listOf(record))
+        val client = healthConnectClient ?: return
+        try {
+            val now = Instant.now()
+            val zoneOffset = ZoneId.systemDefault().rules.getOffset(now)
+            val record = WeightRecord(
+                time = now,
+                zoneOffset = zoneOffset,
+                weight = Mass.kilograms(weightKg),
+                metadata = Metadata.manualEntry()
+            )
+            client.insertRecords(listOf(record))
+        } catch (e: Exception) {
+            // handle gracefully
+        }
     }
 
     suspend fun writeHeight(heightMeters: Double) {
-        val now = Instant.now()
-        val zoneOffset = ZoneId.systemDefault().rules.getOffset(now)
-        val record = HeightRecord(
-            time = now,
-            zoneOffset = zoneOffset,
-            height = Length.meters(heightMeters),
-            metadata = Metadata.manualEntry()
-        )
-        healthConnectClient.insertRecords(listOf(record))
+        val client = healthConnectClient ?: return
+        try {
+            val now = Instant.now()
+            val zoneOffset = ZoneId.systemDefault().rules.getOffset(now)
+            val record = HeightRecord(
+                time = now,
+                zoneOffset = zoneOffset,
+                height = Length.meters(heightMeters),
+                metadata = Metadata.manualEntry()
+            )
+            client.insertRecords(listOf(record))
+        } catch (e: Exception) {
+            // handle gracefully
+        }
     }
 
     suspend fun readDailyHydration(startTime: Instant, endTime: Instant): Double {
+        val client = healthConnectClient ?: return 0.0
         return try {
-            val response = healthConnectClient.aggregate(
+            val response = client.aggregate(
                 AggregateRequest(
                     metrics = setOf(HydrationRecord.VOLUME_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
@@ -244,17 +276,22 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun writeHydration(liters: Double) {
-        val now = Instant.now()
-        val zoneOffset = java.time.ZoneId.systemDefault().rules.getOffset(now)
-        val record = HydrationRecord(
-            startTime = now,
-            startZoneOffset = zoneOffset,
-            endTime = now,
-            endZoneOffset = zoneOffset,
-            volume = Volume.liters(liters),
-            metadata = Metadata.manualEntry()
-        )
-        healthConnectClient.insertRecords(listOf(record))
+        val client = healthConnectClient ?: return
+        try {
+            val now = Instant.now()
+            val zoneOffset = java.time.ZoneId.systemDefault().rules.getOffset(now)
+            val record = HydrationRecord(
+                startTime = now,
+                startZoneOffset = zoneOffset,
+                endTime = now,
+                endZoneOffset = zoneOffset,
+                volume = Volume.liters(liters),
+                metadata = Metadata.manualEntry()
+            )
+            client.insertRecords(listOf(record))
+        } catch (e: Exception) {
+            // handle gracefully
+        }
     }
 
     suspend fun writeNutrition(
@@ -270,25 +307,30 @@ class HealthConnectManager @Inject constructor(
         caffeineMg: Double,
         timestamp: Instant = Instant.now()
     ) {
-        val zoneOffset = ZoneId.systemDefault().rules.getOffset(timestamp)
-        val record = NutritionRecord(
-            startTime = timestamp.minus(5, ChronoUnit.MINUTES),
-            startZoneOffset = zoneOffset,
-            endTime = timestamp,
-            endZoneOffset = zoneOffset,
-            metadata = Metadata.manualEntry(),
-            name = name,
-            mealType = mealType,
-            energy = Energy.kilocalories(calories),
-            protein = Mass.grams(proteinGrams),
-            totalCarbohydrate = Mass.grams(carbsGrams),
-            totalFat = Mass.grams(fatGrams),
-            dietaryFiber = Mass.grams(fiberGrams),
-            sugar = Mass.grams(sugarGrams),
-            sodium = Mass.milligrams(sodiumMg),
-            caffeine = Mass.milligrams(caffeineMg)
-        )
-        healthConnectClient.insertRecords(listOf(record))
+        val client = healthConnectClient ?: return
+        try {
+            val zoneOffset = ZoneId.systemDefault().rules.getOffset(timestamp)
+            val record = NutritionRecord(
+                startTime = timestamp.minus(5, ChronoUnit.MINUTES),
+                startZoneOffset = zoneOffset,
+                endTime = timestamp,
+                endZoneOffset = zoneOffset,
+                metadata = Metadata.manualEntry(),
+                name = name,
+                mealType = mealType,
+                energy = Energy.kilocalories(calories),
+                protein = Mass.grams(proteinGrams),
+                totalCarbohydrate = Mass.grams(carbsGrams),
+                totalFat = Mass.grams(fatGrams),
+                dietaryFiber = Mass.grams(fiberGrams),
+                sugar = Mass.grams(sugarGrams),
+                sodium = Mass.milligrams(sodiumMg),
+                caffeine = Mass.milligrams(caffeineMg)
+            )
+            client.insertRecords(listOf(record))
+        } catch (e: Exception) {
+            // handle gracefully
+        }
     }
 
     suspend fun writeWorkoutSession(
@@ -299,43 +341,49 @@ class HealthConnectManager @Inject constructor(
         calories: Double,
         distanceMeters: Double
     ) {
-        val zoneOffset = ZoneId.systemDefault().rules.getOffset(startTime)
-        val records = mutableListOf<androidx.health.connect.client.records.Record>()
-        records += ExerciseSessionRecord(
-            startTime = startTime,
-            endTime = endTime,
-            startZoneOffset = zoneOffset,
-            endZoneOffset = ZoneId.systemDefault().rules.getOffset(endTime),
-            exerciseType = exerciseType,
-            title = title,
-            metadata = Metadata.manualEntry()
-        )
-        if (calories > 0.0) {
-            records += ActiveCaloriesBurnedRecord(
+        val client = healthConnectClient ?: return
+        try {
+            val zoneOffset = ZoneId.systemDefault().rules.getOffset(startTime)
+            val records = mutableListOf<androidx.health.connect.client.records.Record>()
+            records += ExerciseSessionRecord(
                 startTime = startTime,
                 endTime = endTime,
                 startZoneOffset = zoneOffset,
                 endZoneOffset = ZoneId.systemDefault().rules.getOffset(endTime),
-                energy = Energy.kilocalories(calories),
+                exerciseType = exerciseType,
+                title = title,
                 metadata = Metadata.manualEntry()
             )
+            if (calories > 0.0) {
+                records += ActiveCaloriesBurnedRecord(
+                    startTime = startTime,
+                    endTime = endTime,
+                    startZoneOffset = zoneOffset,
+                    endZoneOffset = ZoneId.systemDefault().rules.getOffset(endTime),
+                    energy = Energy.kilocalories(calories),
+                    metadata = Metadata.manualEntry()
+                )
+            }
+            if (distanceMeters > 0.0) {
+                records += DistanceRecord(
+                    startTime = startTime,
+                    endTime = endTime,
+                    startZoneOffset = zoneOffset,
+                    endZoneOffset = ZoneId.systemDefault().rules.getOffset(endTime),
+                    distance = androidx.health.connect.client.units.Length.meters(distanceMeters),
+                    metadata = Metadata.manualEntry()
+                )
+            }
+            client.insertRecords(records)
+        } catch (e: Exception) {
+            // handle gracefully
         }
-        if (distanceMeters > 0.0) {
-            records += DistanceRecord(
-                startTime = startTime,
-                endTime = endTime,
-                startZoneOffset = zoneOffset,
-                endZoneOffset = ZoneId.systemDefault().rules.getOffset(endTime),
-                distance = androidx.health.connect.client.units.Length.meters(distanceMeters),
-                metadata = Metadata.manualEntry()
-            )
-        }
-        healthConnectClient.insertRecords(records)
     }
 
     suspend fun readExerciseSessions(startTime: Instant, endTime: Instant): List<ExerciseSessionRecord> {
+        val client = healthConnectClient ?: return emptyList()
         return try {
-            val response = healthConnectClient.readRecords(
+            val response = client.readRecords(
                 ReadRecordsRequest(
                     ExerciseSessionRecord::class,
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
@@ -348,8 +396,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readDistance(startTime: Instant, endTime: Instant): Double {
+        val client = healthConnectClient ?: return 0.0
         return try {
-            val response = healthConnectClient.aggregate(
+            val response = client.aggregate(
                 AggregateRequest(
                     metrics = setOf(DistanceRecord.DISTANCE_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
@@ -362,8 +411,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readHourlySteps(startTime: Instant, endTime: Instant): Map<Instant, Long> {
+        val client = healthConnectClient ?: return emptyMap()
         return try {
-            val response = healthConnectClient.aggregateGroupByDuration(
+            val response = client.aggregateGroupByDuration(
                 AggregateGroupByDurationRequest(
                     metrics = setOf(StepsRecord.COUNT_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
@@ -379,8 +429,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readHourlyHeartRate(startTime: Instant, endTime: Instant): Map<Instant, Double> {
+        val client = healthConnectClient ?: return emptyMap()
         return try {
-            val response = healthConnectClient.aggregateGroupByDuration(
+            val response = client.aggregateGroupByDuration(
                 AggregateGroupByDurationRequest(
                     metrics = setOf(HeartRateRecord.BPM_AVG),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
@@ -396,8 +447,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readDailyNutrition(startTime: Instant, endTime: Instant): NutritionTotals {
+        val client = healthConnectClient ?: return NutritionTotals()
         return try {
-            val response = healthConnectClient.aggregate(
+            val response = client.aggregate(
                 AggregateRequest(
                     metrics = setOf(
                         NutritionRecord.ENERGY_TOTAL,
@@ -420,8 +472,9 @@ class HealthConnectManager @Inject constructor(
     }
 
     suspend fun readDailyExerciseMinutes(startTime: Instant, endTime: Instant): Double {
+        val client = healthConnectClient ?: return 0.0
         return try {
-            val response = healthConnectClient.aggregate(
+            val response = client.aggregate(
                 AggregateRequest(
                     metrics = setOf(ExerciseSessionRecord.EXERCISE_DURATION_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
