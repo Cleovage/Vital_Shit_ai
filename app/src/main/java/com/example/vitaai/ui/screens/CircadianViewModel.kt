@@ -11,6 +11,7 @@ import com.example.vitaai.data.local.VitaDao
 import com.example.vitaai.notifications.BedtimeAlarmScheduler
 import com.example.vitaai.tracking.SleepTrackingService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,6 +24,8 @@ data class CircadianUiState(
     val circadianDisruptionScore: Int = 0,
     val targetBedtimeHour: Int = 22,
     val targetBedtimeMinute: Int = 30,
+    val targetWakeHour: Int = 6,
+    val targetWakeMinute: Int = 30,
     val recentSleepSessions: List<SleepSessionEntity> = emptyList(),
     val todayLightLogs: List<AmbientLightLogEntity> = emptyList()
 )
@@ -30,13 +33,27 @@ data class CircadianUiState(
 @HiltViewModel
 class CircadianViewModel @Inject constructor(
     private val sleepRepository: SleepRepository,
-    private val vitaDao: VitaDao
+    private val vitaDao: VitaDao,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CircadianUiState())
     val uiState: StateFlow<CircadianUiState> = _uiState.asStateFlow()
 
     init {
+        // Load targets from SharedPreferences
+        val prefs = context.getSharedPreferences("vita_circadian_prefs", Context.MODE_PRIVATE)
+        val bedtimeHour = prefs.getInt("sleep_target_bedtime_hour", 22)
+        val bedtimeMinute = prefs.getInt("sleep_target_bedtime_minute", 30)
+        val wakeHour = prefs.getInt("sleep_target_wake_hour", 6)
+        val wakeMinute = prefs.getInt("sleep_target_wake_minute", 30)
+        _uiState.value = _uiState.value.copy(
+            targetBedtimeHour = bedtimeHour,
+            targetBedtimeMinute = bedtimeMinute,
+            targetWakeHour = wakeHour,
+            targetWakeMinute = wakeMinute
+        )
+
         // Observe service running state
         viewModelScope.launch {
             SleepTrackingService.isServiceRunning.collect { isRunning ->
@@ -103,7 +120,15 @@ class CircadianViewModel @Inject constructor(
 
     fun updateBedtimeSchedule(context: Context, hour: Int, minute: Int) {
         _uiState.value = _uiState.value.copy(targetBedtimeHour = hour, targetBedtimeMinute = minute)
+        val prefs = context.getSharedPreferences("vita_circadian_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putInt("sleep_target_bedtime_hour", hour).putInt("sleep_target_bedtime_minute", minute).apply()
         val scheduler = BedtimeAlarmScheduler(context)
         scheduler.scheduleBedtimeAlarm(hour, minute)
+    }
+
+    fun updateWakeSchedule(hour: Int, minute: Int) {
+        _uiState.value = _uiState.value.copy(targetWakeHour = hour, targetWakeMinute = minute)
+        val prefs = context.getSharedPreferences("vita_circadian_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putInt("sleep_target_wake_hour", hour).putInt("sleep_target_wake_minute", minute).apply()
     }
 }

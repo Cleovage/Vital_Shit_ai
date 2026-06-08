@@ -44,6 +44,10 @@ class WorkoutRepository @Inject constructor(
 ) {
     fun observeTemplates(): Flow<List<WorkoutTemplateEntity>> = dao.observeWorkoutTemplates()
 
+    fun observeExerciseSets(sessionId: Long): Flow<List<com.example.vitaai.data.local.ExerciseSetEntity>> = dao.observeExerciseSets(sessionId)
+
+    fun observeRoutePoints(sessionId: Long): Flow<List<com.example.vitaai.data.local.RoutePointEntity>> = dao.observeRoutePoints(sessionId)
+
     fun observeRecentSessions(limit: Int = 8): Flow<List<WorkoutSessionEntity>> {
         return dao.observeRecentWorkoutSessions(limit).combine(flow {
             while (true) {

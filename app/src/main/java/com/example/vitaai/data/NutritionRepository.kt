@@ -207,6 +207,14 @@ class NutritionRepository @Inject constructor(
         runCatching { healthConnectManager.writeHydration(entry.hydrationMl / 1000.0) }
     }
 
+    suspend fun deleteFood(id: Long) {
+        dao.deleteFoodEntry(id)
+    }
+
+    suspend fun deleteDrink(id: Long) {
+        dao.deleteDrinkEntry(id)
+    }
+
     private fun buildSummary(foods: List<FoodEntryEntity>, drinks: List<DrinkEntryEntity>): NutritionSummary {
         return NutritionSummary(
             foods = foods,

@@ -3,6 +3,7 @@ package com.example.vitaai.ui.components
 import android.graphics.BlurMaskFilter
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vitaai.ui.theme.LocalVitaColors
@@ -21,14 +23,19 @@ import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
 
+enum class ActiveHandle { NONE, START, END }
+
 @Composable
 fun CircadianClockDial(
     modifier: Modifier = Modifier,
     sleepStartHour: Double = 23.0, // 11 PM
     sleepEndHour: Double = 7.0,    // 7 AM
-    currentHourOverride: Double? = null
+    currentHourOverride: Double? = null,
+    onSleepStartHourChanged: (Double) -> Unit = {},
+    onSleepEndHourChanged: (Double) -> Unit = {}
 ) {
     val vitaColors = LocalVitaColors.current
+    var activeHandle by remember { mutableStateOf(ActiveHandle.NONE) }
     
     // Get actual current time if no override
     val currentHour by produceState(initialValue = currentHourOverride ?: 12.0) {
@@ -64,7 +71,66 @@ fun CircadianClockDial(
         label = "SleepArcEntry"
     )
 
-    Canvas(modifier = modifier.aspectRatio(1f).fillMaxWidth()) {
+    Canvas(
+        modifier = modifier
+            .aspectRatio(1f)
+            .fillMaxWidth()
+            .pointerInput(sleepStartHour, sleepEndHour) {
+                detectDragGestures(
+                    onDragStart = { offset ->
+                        val startRad = hourToAngleRad(sleepStartHour)
+                        val startHandleCenter = Offset(
+                            x = size.width / 2f + ((size.width / 2f) * 0.65f) * cos(startRad).toFloat(),
+                            y = size.height / 2f + ((size.width / 2f) * 0.65f) * sin(startRad).toFloat()
+                        )
+
+                        val endRad = hourToAngleRad(sleepEndHour)
+                        val endHandleCenter = Offset(
+                            x = size.width / 2f + ((size.width / 2f) * 0.65f) * cos(endRad).toFloat(),
+                            y = size.height / 2f + ((size.width / 2f) * 0.65f) * sin(endRad).toFloat()
+                        )
+
+                        val distToStart = (offset - startHandleCenter).getDistance()
+                        val distToEnd = (offset - endHandleCenter).getDistance()
+
+                        val touchThreshold = 40.dp.toPx() // generous hit target
+                        activeHandle = when {
+                            distToStart < distToEnd && distToStart < touchThreshold -> ActiveHandle.START
+                            distToEnd < distToStart && distToEnd < touchThreshold -> ActiveHandle.END
+                            else -> ActiveHandle.NONE
+                        }
+                    },
+                    onDrag = { change, _ ->
+                        if (activeHandle != ActiveHandle.NONE) {
+                            change.consume()
+                            val touchPoint = change.position
+                            val center = Offset(size.width / 2f, size.height / 2f)
+                            val delta = touchPoint - center
+                            var angleRad = Math.atan2(delta.y.toDouble(), delta.x.toDouble())
+                            if (angleRad < 0) {
+                                angleRad += 2 * Math.PI
+                            }
+                            val angleDegrees = Math.toDegrees(angleRad)
+                            val hour = ((angleDegrees - 270.0 + 360.0) % 360.0) / 360.0 * 24.0
+                            val roundedHour = Math.round(hour * 12.0) / 12.0
+                            val finalHour = (roundedHour + 24.0) % 24.0
+
+                            if (activeHandle == ActiveHandle.START) {
+                                onSleepStartHourChanged(finalHour)
+                            } else if (activeHandle == ActiveHandle.END) {
+                                onSleepEndHourChanged(finalHour)
+                            }
+                        }
+                    },
+                    onDragEnd = {
+                        activeHandle = ActiveHandle.NONE
+                    },
+                    onDragCancel = {
+                        activeHandle = ActiveHandle.NONE
+                    }
+                )
+            }
+    ) {
         val width = size.width
         val height = size.height
         val center = Offset(width / 2, height / 2)
@@ -241,6 +307,78 @@ fun CircadianClockDial(
             radius = 4.dp.toPx(),
             center = pointerEnd
         )
+
+        // 7. Draw Bedtime (Moon) and Wake-time (Sun) handles
+        val startRad = hourToAngleRad(sleepStartHour)
+        val startHandleCenter = Offset(
+            x = center.x + outerRadius * cos(startRad).toFloat(),
+            y = center.y + outerRadius * sin(startRad).toFloat()
+        )
+        
+        // Bedtime handle (Moon)
+        drawCircle(
+            color = Color.White,
+            radius = 16.dp.toPx(),
+            center = startHandleCenter
+        )
+        drawCircle(
+            color = Color(0xFFFFB300), // Moon color
+            radius = 8.dp.toPx(),
+            center = startHandleCenter
+        )
+        drawCircle(
+            color = Color.White,
+            radius = 8.dp.toPx(),
+            center = Offset(startHandleCenter.x - 3.dp.toPx(), startHandleCenter.y - 1.dp.toPx())
+        )
+        drawCircle(
+            color = vitaColors.glassBorderDark.copy(alpha = 0.4f),
+            radius = 16.dp.toPx(),
+            center = startHandleCenter,
+            style = Stroke(width = 1.5.dp.toPx())
+        )
+
+        val endRad = hourToAngleRad(sleepEndHour)
+        val endHandleCenter = Offset(
+            x = center.x + outerRadius * cos(endRad).toFloat(),
+            y = center.y + outerRadius * sin(endRad).toFloat()
+        )
+        
+        // Wake-time handle (Sun)
+        drawCircle(
+            color = Color.White,
+            radius = 16.dp.toPx(),
+            center = endHandleCenter
+        )
+        drawCircle(
+            color = Color(0xFFFF5722), // Orange/Sun color
+            radius = 6.dp.toPx(),
+            center = endHandleCenter
+        )
+        for (i in 0 until 8) {
+            val rayAngle = Math.toRadians(i * 45.0)
+            val rayStart = Offset(
+                x = endHandleCenter.x + 7.dp.toPx() * cos(rayAngle).toFloat(),
+                y = endHandleCenter.y + 7.dp.toPx() * sin(rayAngle).toFloat()
+            )
+            val rayEnd = Offset(
+                x = endHandleCenter.x + 10.dp.toPx() * cos(rayAngle).toFloat(),
+                y = endHandleCenter.y + 10.dp.toPx() * sin(rayAngle).toFloat()
+            )
+            drawLine(
+                color = Color(0xFFFF5722),
+                start = rayStart,
+                end = rayEnd,
+                strokeWidth = 1.5.dp.toPx(),
+                cap = StrokeCap.Round
+            )
+        }
+        drawCircle(
+            color = vitaColors.glassBorderDark.copy(alpha = 0.4f),
+            radius = 16.dp.toPx(),
+            center = endHandleCenter,
+            style = Stroke(width = 1.5.dp.toPx())
+        )
     }
 }
 
@@ -248,19 +386,10 @@ private fun OnColorFallback(vitaColors: com.example.vitaai.ui.theme.VitaColors):
     return Color(0xFF4A493B)
 }
 
-/**
- * Maps hour (0.0 to 24.0) to Radian.
- * Midnight (0:00) is at -90 degrees (270 degrees) = -PI/2.
- */
 private fun hourToAngleRad(hour: Double): Double {
     return Math.toRadians(hourToAngleDegrees(hour))
 }
 
-/**
- * Maps hour (0.0 to 24.0) to degrees.
- * Midnight (0:00) is at 270 degrees (Top).
- * Midday (12:00) is at 90 degrees (Bottom).
- */
 private fun hourToAngleDegrees(hour: Double): Double {
     return (270.0 + (hour / 24.0) * 360.0) % 360.0
 }

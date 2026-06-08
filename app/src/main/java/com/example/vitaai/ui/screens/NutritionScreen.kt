@@ -15,11 +15,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocalDrink
-import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.WaterDrop
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -42,6 +38,8 @@ import com.example.vitaai.ui.components.GlassCard
 import com.example.vitaai.ui.components.GlassCardGlow
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.components.LuminousDonutChart
+import com.example.vitaai.ui.components.SloshingWaterCapsule
+import com.example.vitaai.ui.components.MacroTargetFaders
 import com.example.vitaai.ui.theme.*
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -50,6 +48,27 @@ import kotlin.math.roundToInt
 fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf("ALL") }
+
+    val filteredFoods = remember(state.foods, searchQuery, selectedCategory) {
+        state.foods.filter { food ->
+            val matchesSearch = food.name.contains(searchQuery, ignoreCase = true)
+            val matchesCategory = when (selectedCategory) {
+                "PROTEIN" -> listOf("Eggs", "Chicken Breast", "Paneer", "Greek Yogurt", "Whey Protein").contains(food.name)
+                "CARBS" -> listOf("Dal", "Rice", "Banana", "Oats", "Peanut Butter").contains(food.name)
+                else -> true
+            }
+            matchesSearch && matchesCategory
+        }
+    }
+
+    val filteredDrinks = remember(state.drinks, searchQuery) {
+        state.drinks.filter { drink ->
+            drink.name.contains(searchQuery, ignoreCase = true)
+        }
+    }
+
     // Dialog / Modal sheets visibility states
     var selectedFoodDetail by remember { mutableStateOf<FoodCatalogItem?>(null) }
     var selectedDrinkDetail by remember { mutableStateOf<DrinkCatalogItem?>(null) }
@@ -187,11 +206,34 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
             }
 
             item {
-                NutritionSummaryCard(state.summary)
+                NutritionSummaryCard(
+                    summary = state.summary,
+                    targetCalories = state.targetCalories,
+                    targetProtein = state.targetProtein,
+                    targetCarbs = state.targetCarbs,
+                    targetFat = state.targetFat
+                )
             }
 
             item {
-                HydrationCommand(state.summary, onQuickLog = { ml -> viewModel.addDrinkDirect("Water", ml) })
+                MacroTargetFaders(
+                    initialCalories = state.targetCalories,
+                    initialProteinGrams = state.targetProtein,
+                    initialCarbsGrams = state.targetCarbs,
+                    initialFatGrams = state.targetFat,
+                    onMacrosChanged = { calories, proteinPercent, carbsPercent, fatPercent ->
+                        viewModel.updateTargetMacros(calories, proteinPercent, carbsPercent, fatPercent)
+                    }
+                )
+            }
+
+            item {
+                HydrationCommand(
+                    summary = state.summary,
+                    targetWaterMl = state.targetWaterMl,
+                    onWaterGoalChanged = { viewModel.updateTargetWater(it) },
+                    onQuickLog = { ml -> viewModel.addDrinkDirect("Water", ml) }
+                )
             }
 
             item {
@@ -200,6 +242,49 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
                     summary = state.summary,
                     onMealSelected = viewModel::setMeal
                 )
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        modifier = Modifier.weight(1f),
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Primary) },
+                        placeholder = { Text("Search blueprints...", style = MaterialTheme.typography.bodySmall, color = Color.Black.copy(alpha = 0.45f)) },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Primary,
+                            unfocusedBorderColor = Color.Black.copy(alpha = 0.08f),
+                            focusedContainerColor = Color.White.copy(alpha = 0.78f)
+                        )
+                    )
+                    
+                    listOf("ALL", "PROTEIN", "CARBS").forEach { cat ->
+                        val isSel = selectedCategory == cat
+                        val color = if (isSel) Primary else Color.Black.copy(alpha = 0.04f)
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(color)
+                                .border(1.dp, if (isSel) Primary else Color.Black.copy(alpha = 0.07f), RoundedCornerShape(8.dp))
+                                .clickable { selectedCategory = cat }
+                                .padding(horizontal = 10.dp, vertical = 6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = cat,
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
+                                color = if (isSel) Color.White else Color.Black.copy(alpha = 0.5f)
+                            )
+                        }
+                    }
+                }
             }
 
             item {
@@ -214,7 +299,6 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Blueprint Creator card
                     item {
                         GlassCardGlow(
                             modifier = Modifier
@@ -250,7 +334,7 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
                         }
                     }
 
-                    items(state.foods) { food ->
+                    items(filteredFoods) { food ->
                         FoodCard(food = food, onClick = { selectedFoodDetail = food })
                     }
                 }
@@ -269,14 +353,18 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
                 )
                 Spacer(Modifier.height(10.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(state.drinks) { drink ->
+                    items(filteredDrinks) { drink ->
                         DrinkCard(drink = drink, onClick = { selectedDrinkDetail = drink })
                     }
                 }
             }
 
             item {
-                LogHistory(summary = state.summary)
+                LogHistory(
+                    summary = state.summary,
+                    onDeleteFood = viewModel::deleteFood,
+                    onDeleteDrink = viewModel::deleteDrink
+                )
             }
             
             item { Spacer(Modifier.height(24.dp)) }
@@ -285,12 +373,13 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
 }
 
 @Composable
-private fun NutritionSummaryCard(summary: NutritionSummary) {
-    val targetCalories = 2300.0
-    val targetProtein = 140.0
-    val targetCarbs = 275.0
-    val targetFat = 75.0
-
+private fun NutritionSummaryCard(
+    summary: NutritionSummary,
+    targetCalories: Double,
+    targetProtein: Double,
+    targetCarbs: Double,
+    targetFat: Double
+) {
     val remainingKcal = (targetCalories - summary.calories).roundToInt()
 
     val remainingText = if (remainingKcal >= 0) {
@@ -376,8 +465,14 @@ private fun NutritionSummaryCard(summary: NutritionSummary) {
 }
 
 @Composable
-private fun HydrationCommand(summary: NutritionSummary, onQuickLog: (Double) -> Unit) {
-    val progress = (summary.hydrationMl / 3000.0).toFloat().coerceIn(0f, 1f)
+private fun HydrationCommand(
+    summary: NutritionSummary,
+    targetWaterMl: Double,
+    onWaterGoalChanged: (Double) -> Unit,
+    onQuickLog: (Double) -> Unit
+) {
+    var editingWaterGoal by remember { mutableStateOf(false) }
+    val progress = (summary.hydrationMl / targetWaterMl).toFloat().coerceIn(0f, 1f)
     val animatedProgress by animateFloatAsState(targetValue = progress, label = "hydrationLevelProgress")
     val hydrationColor = Color(0xFF00B8D4) // Keep distinct visual color coded hydration
     
@@ -389,33 +484,13 @@ private fun HydrationCommand(summary: NutritionSummary, onQuickLog: (Double) -> 
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Highly interactive fluid capsule with smooth glide animation
-            Box(
+            // Highly interactive fluid capsule with smooth sloshing sinus wave animation
+            SloshingWaterCapsule(
+                progress = animatedProgress,
                 modifier = Modifier
-                    .width(32.dp)
+                    .width(36.dp)
                     .height(110.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color.Black.copy(alpha = 0.3f))
-                    .border(1.dp, Primary.copy(alpha = 0.4f), RoundedCornerShape(16.dp))
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(animatedProgress)
-                        .align(Alignment.BottomCenter)
-                        .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp, topStart = 4.dp, topEnd = 4.dp))
-                        .background(hydrationColor)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(3.dp)
-                            .align(Alignment.CenterStart)
-                            .padding(start = 2.dp)
-                            .background(Color.White.copy(alpha = 0.4f))
-                    )
-                }
-            }
+            )
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -426,11 +501,50 @@ private fun HydrationCommand(summary: NutritionSummary, onQuickLog: (Double) -> 
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = "${(summary.hydrationMl / 1000.0).roundToOne()}L / 3.0L",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black),
-                    color = Color(0xFF0F172A)
-                )
+                
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "${(summary.hydrationMl / 1000.0).roundToOne()}L / ${String.format(Locale.US, "%.1f", targetWaterMl / 1000.0)}L",
+                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black),
+                        color = Color(0xFF0F172A),
+                        modifier = Modifier.clickable { editingWaterGoal = !editingWaterGoal }
+                    )
+                    IconButton(
+                        onClick = { editingWaterGoal = !editingWaterGoal },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (editingWaterGoal) Icons.Default.CheckCircle else Icons.Default.Edit,
+                            contentDescription = "Edit Goal",
+                            tint = Primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+                
+                if (editingWaterGoal) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "ADJUST DAILY GOAL",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Black.copy(alpha = 0.45f)
+                    )
+                    Slider(
+                        value = targetWaterMl.toFloat(),
+                        onValueChange = { onWaterGoalChanged(it.toDouble()) },
+                        valueRange = 1000f..5000f,
+                        steps = 7, // 500ml steps: 1L, 1.5L, 2L, 2.5L, 3L, 3.5L, 4L, 4.5L, 5L
+                        colors = SliderDefaults.colors(
+                            thumbColor = hydrationColor,
+                            activeTrackColor = hydrationColor,
+                            inactiveTrackColor = Color.Black.copy(alpha = 0.05f)
+                        )
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Fast hydration injector buttons
@@ -779,7 +893,11 @@ private fun MacroInput(label: String, value: String, onChange: (String) -> Unit,
 }
 
 @Composable
-private fun LogHistory(summary: NutritionSummary) {
+private fun LogHistory(
+    summary: NutritionSummary,
+    onDeleteFood: (Long) -> Unit,
+    onDeleteDrink: (Long) -> Unit
+) {
     GlassCard(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -803,20 +921,21 @@ private fun LogHistory(summary: NutritionSummary) {
                     )
                 }
             }
-            summary.foods.take(5).forEach {
+            summary.foods.forEach { food ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFF1E1F2E).copy(alpha = 0.6f))
-                        .border(1.dp, Primary.copy(alpha = 0.25f), RoundedCornerShape(12.dp))
+                        .background(Color.Black.copy(alpha = 0.03f))
+                        .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(12.dp))
                         .padding(horizontal = 14.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Restaurant,
@@ -826,38 +945,55 @@ private fun LogHistory(summary: NutritionSummary) {
                         )
                         Column {
                             Text(
-                                text = it.name.uppercase(),
-                                color = Color.White,
+                                text = food.name.uppercase(),
+                                color = Color(0xFF0F172A),
                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold)
                             )
                             Text(
-                                text = "${it.meal.uppercase()} | ${it.servingMultiplier} SERVINGS",
-                                color = OnSurfaceVariant,
+                                text = "${food.meal.uppercase()} | ${food.servingMultiplier} SERVINGS",
+                                color = Color.Black.copy(alpha = 0.5f),
                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp)
                             )
                         }
                     }
-                    Text(
-                        text = "+${it.calories.roundToInt()} KCAL",
-                        color = Primary,
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "+${food.calories.roundToInt()} KCAL",
+                            color = Primary,
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        )
+                        IconButton(
+                            onClick = { onDeleteFood(food.id) },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete entry",
+                                tint = Error.copy(alpha = 0.7f),
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
                 }
             }
-            summary.drinks.take(5).forEach {
+            summary.drinks.forEach { drink ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFF1E1F2E).copy(alpha = 0.6f))
-                        .border(1.dp, Color(0xFF00ACC1).copy(alpha = 0.25f), RoundedCornerShape(12.dp))
+                        .background(Color.Black.copy(alpha = 0.03f))
+                        .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(12.dp))
                         .padding(horizontal = 14.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
                     ) {
                         Icon(
                             imageVector = Icons.Default.WaterDrop,
@@ -867,22 +1003,38 @@ private fun LogHistory(summary: NutritionSummary) {
                         )
                         Column {
                             Text(
-                                text = it.name.uppercase(),
-                                color = Color.White,
+                                text = drink.name.uppercase(),
+                                color = Color(0xFF0F172A),
                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold)
                             )
                             Text(
                                 text = "FLUID SYNCED",
-                                color = OnSurfaceVariant,
+                                color = Color.Black.copy(alpha = 0.5f),
                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp)
                             )
                         }
                     }
-                    Text(
-                        text = "+${it.volumeMl.roundToInt()} ML",
-                        color = Color(0xFF00ACC1),
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "+${drink.volumeMl.roundToInt()} ML",
+                            color = Color(0xFF00ACC1),
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        )
+                        IconButton(
+                            onClick = { onDeleteDrink(drink.id) },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete entry",
+                                tint = Error.copy(alpha = 0.7f),
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
                 }
             }
         }

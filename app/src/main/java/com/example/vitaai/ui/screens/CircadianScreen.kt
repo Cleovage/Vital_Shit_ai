@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -60,31 +61,44 @@ fun CircadianScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
                     onClick = { navController.popBackStack() },
                     modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.Black.copy(alpha = 0.03f))
-                        .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(12.dp))
+                        .size(44.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(vitaColors.glassFill.copy(alpha = 0.6f))
+                        .border(1.dp, vitaColors.glassBorderDark.copy(alpha = 0.1f), RoundedCornerShape(14.dp))
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color(0xFF0F172A)
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "Circadian Alignment",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp
-                    ),
-                    color = Color(0xFF0F172A)
-                )
+                Column {
+                    Text(
+                        text = "Circadian Alignment",
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 24.sp,
+                            letterSpacing = (-0.5).sp
+                        ),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Sleep · Light · Rhythm",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 11.sp,
+                            letterSpacing = 0.8.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -95,27 +109,36 @@ fun CircadianScreen(
                 title = "Biological Phase Clock"
             ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     CircadianClockDial(
                         modifier = Modifier
-                            .size(240.dp)
-                            .padding(vertical = 12.dp),
+                            .size(260.dp)
+                            .padding(vertical = 8.dp),
                         sleepStartHour = uiState.targetBedtimeHour.toDouble() + (uiState.targetBedtimeMinute.toDouble() / 60.0),
-                        sleepEndHour = (uiState.targetBedtimeHour.toDouble() + 8.0) % 24.0 // Nominally 8 hours later
+                        sleepEndHour = uiState.targetWakeHour.toDouble() + (uiState.targetWakeMinute.toDouble() / 60.0),
+                        onSleepStartHourChanged = { hour ->
+                            viewModel.updateBedtimeSchedule(context, hour.toInt(), ((hour % 1.0) * 60.0).toInt())
+                        },
+                        onSleepEndHourChanged = { hour ->
+                            viewModel.updateWakeSchedule(hour.toInt(), ((hour % 1.0) * 60.0).toInt())
+                        }
                     )
                     
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // Sleep tracking controls
-                    GlowButton(
+                    // Premium sleep tracking CTA
+                    GlowPrimaryButton(
                         text = if (uiState.isTrackingSleep) "Stop Sleep Tracker" else "Start Sleep Tracker",
                         onClick = { viewModel.toggleSleepTracking(context) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
+                        glowColor = if (uiState.isTrackingSleep) Color(0xFFD32F2F) else Primary,
+                        modifier = Modifier.fillMaxWidth()
                     )
+                    
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
 
@@ -202,13 +225,31 @@ fun CircadianScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            // Circadian Energy Dynamics Section
+            ApexCard(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                title = "Circadian Energy Dynamics"
+            ) {
+                CircadianEnergyCurve(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 8.dp),
+                    wakeHour = uiState.targetWakeHour.toDouble() + (uiState.targetWakeMinute.toDouble() / 60.0),
+                    sleepHour = uiState.targetBedtimeHour.toDouble() + (uiState.targetBedtimeMinute.toDouble() / 60.0)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Light Exposure Timeline Section
             ApexCard(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 title = "Light Exposure Timeline"
             ) {
                 LuminousLuxTimeline(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 4.dp),
                     lightLogs = uiState.todayLightLogs
                 )
             }
@@ -218,61 +259,162 @@ fun CircadianScreen(
             // Target Bedtime Scheduler Card
             ApexCard(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                title = "Bedtime Reminder Schedule"
+                title = "Bedtime Reminder"
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column {
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(
                             text = "Target Bedtime",
-                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurface
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = FontWeight.Medium,
+                                letterSpacing = 0.5.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
                         )
                         Text(
                             text = String.format("%02d:%02d", uiState.targetBedtimeHour, uiState.targetBedtimeMinute),
-                            style = MaterialTheme.typography.headlineLarge.copy(
+                            style = MaterialTheme.typography.displaySmall.copy(
                                 fontWeight = FontWeight.Bold,
-                                color = vitaColors.accentAmber
+                                color = vitaColors.accentAmber,
+                                letterSpacing = (-1).sp
                             )
                         )
                     }
 
-                    // Simple controls to adjust bedtime
+                    // Bedtime adjustment controls
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        IconButton(
-                            onClick = {
-                                var h = uiState.targetBedtimeHour - 1
-                                if (h < 0) h = 23
-                                viewModel.updateBedtimeSchedule(context, h, uiState.targetBedtimeMinute)
-                            },
+                        Box(
                             modifier = Modifier
-                                .size(40.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Color.Black.copy(alpha = 0.03f))
-                                .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(8.dp))
+                                .size(48.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(vitaColors.glassFill.copy(alpha = 0.6f))
+                                .border(1.dp, vitaColors.glassBorderDark.copy(alpha = 0.1f), RoundedCornerShape(14.dp))
+                                .clickable {
+                                    var h = uiState.targetBedtimeHour - 1
+                                    if (h < 0) h = 23
+                                    viewModel.updateBedtimeSchedule(context, h, uiState.targetBedtimeMinute)
+                                },
+                            contentAlignment = Alignment.Center
                         ) {
-                            Text("-1h", color = Color(0xFF0F172A), fontWeight = FontWeight.Bold)
+                            Text(
+                                "-1h",
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
                         }
 
-                        IconButton(
-                            onClick = {
-                                var h = uiState.targetBedtimeHour + 1
-                                if (h > 23) h = 0
-                                viewModel.updateBedtimeSchedule(context, h, uiState.targetBedtimeMinute)
-                            },
+                        Box(
                             modifier = Modifier
-                                .size(40.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Color.Black.copy(alpha = 0.03f))
-                                .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(8.dp))
+                                .size(48.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(vitaColors.accentAmber.copy(alpha = 0.12f))
+                                .border(1.dp, vitaColors.accentAmber.copy(alpha = 0.3f), RoundedCornerShape(14.dp))
+                                .clickable {
+                                    var h = uiState.targetBedtimeHour + 1
+                                    if (h > 23) h = 0
+                                    viewModel.updateBedtimeSchedule(context, h, uiState.targetBedtimeMinute)
+                                },
+                            contentAlignment = Alignment.Center
                         ) {
-                            Text("+1h", color = Color(0xFF0F172A), fontWeight = FontWeight.Bold)
+                            Text(
+                                "+1h",
+                                color = vitaColors.accentAmber,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Target Wake-up Scheduler Card
+            ApexCard(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                title = "Wake-up Schedule"
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(
+                            text = "Target Wake-up",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = FontWeight.Medium,
+                                letterSpacing = 0.5.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                        )
+                        Text(
+                            text = String.format("%02d:%02d", uiState.targetWakeHour, uiState.targetWakeMinute),
+                            style = MaterialTheme.typography.displaySmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = Primary,
+                                letterSpacing = (-1).sp
+                            )
+                        )
+                    }
+
+                    // Wake-up adjustment controls
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(vitaColors.glassFill.copy(alpha = 0.6f))
+                                .border(1.dp, vitaColors.glassBorderDark.copy(alpha = 0.1f), RoundedCornerShape(14.dp))
+                                .clickable {
+                                    var h = uiState.targetWakeHour - 1
+                                    if (h < 0) h = 23
+                                    viewModel.updateWakeSchedule(h, uiState.targetWakeMinute)
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "-1h",
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(Primary.copy(alpha = 0.12f))
+                                .border(1.dp, Primary.copy(alpha = 0.35f), RoundedCornerShape(14.dp))
+                                .clickable {
+                                    var h = uiState.targetWakeHour + 1
+                                    if (h > 23) h = 0
+                                    viewModel.updateWakeSchedule(h, uiState.targetWakeMinute)
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "+1h",
+                                color = Primary,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
                         }
                     }
                 }
@@ -333,19 +475,21 @@ private fun BentoStatCard(
     color: Color,
     modifier: Modifier = Modifier
 ) {
-    val shape = RoundedCornerShape(20.dp)
+    val vitaColors = LocalVitaColors.current
+    val shape = RoundedCornerShape(24.dp)
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(Color.White.copy(alpha = 0.78f))
+            .background(vitaColors.glassFill.copy(alpha = 0.72f))
             .border(
                 width = 1.dp,
-                color = Color.Black.copy(alpha = 0.07f),
+                color = vitaColors.glassBorderDark.copy(alpha = 0.09f),
                 shape = shape
             )
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -354,86 +498,131 @@ private fun BentoStatCard(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
-                color = Color.Black.copy(alpha = 0.5f)
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 11.sp,
+                    letterSpacing = 0.3.sp
+                ),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                maxLines = 1
             )
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = color,
-                modifier = Modifier.size(20.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(color.copy(alpha = 0.12f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = color,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
-        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = value,
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-            color = Color(0xFF0F172A)
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold,
+                letterSpacing = (-0.5).sp
+            ),
+            color = MaterialTheme.colorScheme.onSurface
         )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = statusText,
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-            color = color
-        )
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(6.dp))
+                .background(color.copy(alpha = 0.1f))
+                .padding(horizontal = 6.dp, vertical = 2.dp)
+        ) {
+            Text(
+                text = statusText,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 10.sp
+                ),
+                color = color
+            )
+        }
     }
 }
 
 @Composable
 private fun SleepSessionRow(session: SleepSessionEntity) {
     val vitaColors = LocalVitaColors.current
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(20.dp)
     val sdf = remember { SimpleDateFormat("EEE, MMM d", Locale.getDefault()) }
     val dateText = remember(session.startTimeMillis) { sdf.format(Date(session.startTimeMillis)) }
+    val qualityColor = when {
+        session.sleepQualityScore >= 80 -> Color(0xFF4CAF50)
+        session.sleepQualityScore >= 60 -> Color(0xFFFF9800)
+        else -> Color(0xFFD32F2F)
+    }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .clip(shape)
-            .background(Color.Black.copy(alpha = 0.03f))
-            .border(1.dp, Color.Black.copy(alpha = 0.07f), shape)
-            .padding(14.dp),
+            .background(vitaColors.glassFill.copy(alpha = 0.65f))
+            .border(1.dp, vitaColors.glassBorderDark.copy(alpha = 0.09f), shape)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Column {
+        Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
             Text(
                 text = dateText,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                color = Color(0xFF0F172A)
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                ),
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "${session.durationMinutes / 60}h ${session.durationMinutes % 60}m duration • ${session.source}",
-                style = MaterialTheme.typography.labelSmall,
-                color = Color.Black.copy(alpha = 0.5f)
+                text = "${session.durationMinutes / 60}h ${session.durationMinutes % 60}m  ·  ${session.source}",
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             )
             session.notes?.let {
                 Text(
                     text = it,
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                    color = Color.Black.copy(alpha = 0.45f)
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                 )
             }
         }
 
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(
-                    if (session.sleepQualityScore >= 80) Color(0xFF4CAF50).copy(alpha = 0.15f)
-                    else if (session.sleepQualityScore >= 60) Color(0xFFFF9800).copy(alpha = 0.15f)
-                    else Color(0xFFD32F2F).copy(alpha = 0.15f)
-                )
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = "${session.sleepQualityScore} Quality",
-                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                color = if (session.sleepQualityScore >= 80) Color(0xFF4CAF50)
-                else if (session.sleepQualityScore >= 60) Color(0xFFFF9800)
-                else Color(0xFFD32F2F)
+                text = "${session.sleepQualityScore}",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = qualityColor
+                )
             )
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(qualityColor.copy(alpha = 0.12f))
+                    .padding(horizontal = 8.dp, vertical = 3.dp)
+            ) {
+                Text(
+                    text = when {
+                        session.sleepQualityScore >= 80 -> "Great"
+                        session.sleepQualityScore >= 60 -> "Good"
+                        else -> "Poor"
+                    },
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 10.sp
+                    ),
+                    color = qualityColor
+                )
+            }
         }
     }
 }

@@ -142,6 +142,10 @@ class ActivityViewModel @Inject constructor(
             workoutRepository.saveTemplate(newTemplate)
         }
     }
+
+    fun getExerciseSets(sessionId: Long): kotlinx.coroutines.flow.Flow<List<com.example.vitaai.data.local.ExerciseSetEntity>> {
+        return workoutRepository.observeExerciseSets(sessionId)
+    }
 }
 
 sealed class ActivityUiState {

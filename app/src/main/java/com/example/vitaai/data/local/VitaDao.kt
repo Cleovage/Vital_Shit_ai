@@ -94,4 +94,10 @@ interface VitaDao {
 
     @Query("SELECT * FROM screen_state_events WHERE timestampMillis BETWEEN :startMillis AND :endMillis ORDER BY timestampMillis ASC")
     suspend fun getScreenStateEvents(startMillis: Long, endMillis: Long): List<ScreenStateEventEntity>
+
+    @Query("DELETE FROM food_entries WHERE id = :id")
+    suspend fun deleteFoodEntry(id: Long)
+
+    @Query("DELETE FROM drink_entries WHERE id = :id")
+    suspend fun deleteDrinkEntry(id: Long)
 }

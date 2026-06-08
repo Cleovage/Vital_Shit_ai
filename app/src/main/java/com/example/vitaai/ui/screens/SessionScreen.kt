@@ -91,77 +91,263 @@ fun SessionScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            // --- CENTRAL PROGRESS & TIMER ---
+            // --- CENTRAL PROGRESS & TIMER OR REST COUNTDOWN ---
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f),
                 contentAlignment = Alignment.Center
             ) {
-                // Progress Ring Background
-                ProgressRing(
-                    progress = (state.elapsedSeconds % 60 / 60f),
-                    size = 280.dp,
-                    strokeWidth = 8.dp,
-                    glowWidth = 12.dp,
-                    colors = listOf(Primary, Secondary),
-                    glowColor = Primary.copy(alpha = 0.3f)
-                )
+                if (state.restRemainingSeconds > 0) {
+                    val totalRestSeconds = state.template?.defaultRestSeconds?.coerceAtLeast(1) ?: 60
+                    val progress = state.restRemainingSeconds.toFloat() / totalRestSeconds
+                    
+                    ProgressRing(
+                        progress = progress,
+                        size = 280.dp,
+                        strokeWidth = 8.dp,
+                        glowWidth = 12.dp,
+                        colors = listOf(Color(0xFFFFB300), Color(0xFFFF5722)),
+                        glowColor = Color(0xFFFFB300).copy(alpha = 0.3f)
+                    )
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = formatTime(state.elapsedSeconds),
-                        style = androidx.compose.ui.text.TextStyle(
-                            fontSize = 64.sp,
-                            fontWeight = FontWeight.Light,
-                            color = Color(0xFF0F172A),
-                            fontFamily = FontFamily.Monospace
-                        )
-                    )
-                    Text(
-                        text = "ELAPSED TRAINING TIME",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.Black.copy(alpha = 0.5f),
-                        letterSpacing = 1.sp
-                    )
-                    if (state.restRemainingSeconds > 0) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "REST: ${formatTime(state.restRemainingSeconds.toLong())}",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = Secondary,
-                            modifier = Modifier.padding(top = 8.dp)
+                            text = state.restRemainingSeconds.toString(),
+                            style = androidx.compose.ui.text.TextStyle(
+                                fontSize = 80.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color(0xFFFF9800),
+                                fontFamily = FontFamily.Monospace
+                            )
+                        )
+                        Text(
+                            text = "REST REMAINING",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Black.copy(alpha = 0.5f),
+                            letterSpacing = 1.sp
+                        )
+                    }
+
+                    // Haptic Countdown Ticks
+                    val context = LocalContext.current
+                    LaunchedEffect(state.restRemainingSeconds) {
+                        val remaining = state.restRemainingSeconds
+                        val vibrator = context.getSystemService(android.content.Context.VIBRATOR_SERVICE) as? android.os.Vibrator
+                        if (vibrator != null && vibrator.hasVibrator()) {
+                            if (remaining in 1..3) {
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                    vibrator.vibrate(android.os.VibrationEffect.createOneShot(50, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
+                                } else {
+                                    vibrator.vibrate(50)
+                                }
+                            } else if (remaining == 0) {
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                    vibrator.vibrate(android.os.VibrationEffect.createWaveform(longArrayOf(0, 150, 100, 150), -1))
+                                } else {
+                                    vibrator.vibrate(longArrayOf(0, 150, 100, 150), -1)
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    ProgressRing(
+                        progress = (state.elapsedSeconds % 60 / 60f),
+                        size = 280.dp,
+                        strokeWidth = 8.dp,
+                        glowWidth = 12.dp,
+                        colors = listOf(Primary, Secondary),
+                        glowColor = Primary.copy(alpha = 0.3f)
+                    )
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = formatTime(state.elapsedSeconds),
+                            style = androidx.compose.ui.text.TextStyle(
+                                fontSize = 64.sp,
+                                fontWeight = FontWeight.Light,
+                                color = Color(0xFF0F172A),
+                                fontFamily = FontFamily.Monospace
+                            )
+                        )
+                        Text(
+                            text = "ELAPSED TRAINING TIME",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Black.copy(alpha = 0.5f),
+                            letterSpacing = 1.sp
                         )
                     }
                 }
             }
 
+            Spacer(Modifier.height(24.dp))
+
             // --- SECONDARY METRICS GRID ---
             val isStrength = state.template?.category == "strength" || state.template?.category == "bodyweight"
             
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                HUDStatTile(
-                    label = "HEART RATE",
-                    value = if (state.liveHeartRate > 0) state.liveHeartRate.toString() else "--",
-                    unit = "BPM",
-                    modifier = Modifier.weight(1f),
-                    icon = Icons.Default.Favorite
-                )
-                if (isStrength) {
+            if (isStrength) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                     HUDStatTile(
-                        label = "REPS",
-                        value = state.currentReps.toString(),
-                        unit = "CUR",
+                        label = "HEART RATE",
+                        value = if (state.liveHeartRate > 0) state.liveHeartRate.toString() else "--",
+                        unit = "BPM",
+                        modifier = Modifier.weight(1f),
+                        icon = Icons.Default.Favorite
+                    )
+                    HUDStatTile(
+                        label = "COMPLETED SETS",
+                        value = state.completedSets.toString(),
+                        unit = "SETS",
                         modifier = Modifier.weight(1f),
                         icon = Icons.Default.FitnessCenter
                     )
-                } else {
-                    HUDStatTile(
-                        label = "CALORIES",
-                        value = (state.elapsedSeconds * 0.15).roundToInt().toString(),
-                        unit = "KCAL",
-                        modifier = Modifier.weight(1f),
-                        icon = Icons.Default.Whatshot
-                    )
+                }
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        HUDStatTile(
+                            label = "HEART RATE",
+                            value = if (state.liveHeartRate > 0) state.liveHeartRate.toString() else "--",
+                            unit = "BPM",
+                            modifier = Modifier.weight(1f),
+                            icon = Icons.Default.Favorite
+                        )
+                        HUDStatTile(
+                            label = "CALORIES",
+                            value = state.calories.roundToInt().toString(),
+                            unit = "KCAL",
+                            modifier = Modifier.weight(1f),
+                            icon = Icons.Default.Whatshot
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        HUDStatTile(
+                            label = "DISTANCE",
+                            value = String.format(Locale.US, "%.2f", state.distanceMeters / 1000.0),
+                            unit = "KM",
+                            modifier = Modifier.weight(1f),
+                            icon = Icons.Default.DirectionsRun
+                        )
+                        HUDStatTile(
+                            label = "CURRENT PACE",
+                            value = state.currentPace,
+                            unit = "",
+                            modifier = Modifier.weight(1f),
+                            icon = Icons.Default.Timer
+                        )
+                    }
+                }
+            }
+
+            if (isStrength) {
+                Spacer(modifier = Modifier.height(16.dp))
+                GlassCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = 16.dp
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "SET EDITING PANEL",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Primary,
+                            letterSpacing = 1.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("WEIGHT", style = MaterialTheme.typography.labelSmall, color = Color.Black.copy(alpha = 0.5f))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    IconButton(
+                                        onClick = { viewModel.adjustWeight(-2.5) },
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .background(Color.Black.copy(alpha = 0.03f), CircleShape)
+                                            .border(1.dp, Color.Black.copy(alpha = 0.07f), CircleShape)
+                                    ) {
+                                        Text("-2.5", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp))
+                                    }
+                                    Text(
+                                        text = "${state.currentWeightKg} kg",
+                                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                                        color = Color(0xFF0F172A)
+                                    )
+                                    IconButton(
+                                        onClick = { viewModel.adjustWeight(2.5) },
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .background(Color.Black.copy(alpha = 0.03f), CircleShape)
+                                            .border(1.dp, Color.Black.copy(alpha = 0.07f), CircleShape)
+                                    ) {
+                                        Text("+2.5", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp))
+                                    }
+                                }
+                            }
+
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("REPS", style = MaterialTheme.typography.labelSmall, color = Color.Black.copy(alpha = 0.5f))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    IconButton(
+                                        onClick = { viewModel.adjustReps(-1) },
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .background(Color.Black.copy(alpha = 0.03f), CircleShape)
+                                            .border(1.dp, Color.Black.copy(alpha = 0.07f), CircleShape)
+                                    ) {
+                                        Icon(Icons.Default.Remove, contentDescription = "Minus", modifier = Modifier.size(16.dp))
+                                    }
+                                    Text(
+                                        text = "${state.currentReps}",
+                                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                                        color = Color(0xFF0F172A)
+                                    )
+                                    IconButton(
+                                        onClick = { viewModel.adjustReps(1) },
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .background(Color.Black.copy(alpha = 0.03f), CircleShape)
+                                            .border(1.dp, Color.Black.copy(alpha = 0.07f), CircleShape)
+                                    ) {
+                                        Icon(Icons.Default.Add, contentDescription = "Plus", modifier = Modifier.size(16.dp))
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        GlowButton(
+                            text = "COMPLETE SET #${state.completedSets + 1}",
+                            onClick = { viewModel.completeSet() },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
 
@@ -179,18 +365,6 @@ fun SessionScreen(
                     modifier = Modifier.weight(1f)
                 )
 
-                if (isStrength) {
-                    Button(
-                        onClick = { viewModel.addRep() },
-                        modifier = Modifier.size(64.dp),
-                        shape = CircleShape,
-                        colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = OnPrimary),
-                        contentPadding = PaddingValues(0.dp)
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = "Add Rep")
-                    }
-                }
-
                 IconButton(
                     onClick = { viewModel.save("Manual training protocol completed via VitaAI HUD.") },
                     modifier = Modifier
@@ -198,7 +372,7 @@ fun SessionScreen(
                         .background(Color.Black.copy(alpha = 0.03f), CircleShape)
                         .border(1.dp, Color.Black.copy(alpha = 0.07f), CircleShape)
                 ) {
-                    Icon(Icons.Default.Save, contentDescription = "Save", tint = Color(0xFF0F172A))
+                    Icon(Icons.Default.Check, contentDescription = "Save", tint = Color(0xFF0F172A))
                 }
             }
         }
