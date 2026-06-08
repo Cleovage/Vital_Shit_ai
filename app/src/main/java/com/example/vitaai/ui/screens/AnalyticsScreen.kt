@@ -638,9 +638,8 @@ private fun AnalyticsCard(
     )
 
     GlassCardGlow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
         glowColor = metricColor
     ) {
         Box(modifier = Modifier.fillMaxWidth().heightIn(min = 220.dp)) {
@@ -886,9 +885,8 @@ private fun CircadianNavigationCard(onClick: () -> Unit) {
     )
 
     GlassCardGlow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
         glowColor = accentAmberColor
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {

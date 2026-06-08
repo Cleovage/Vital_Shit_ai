@@ -102,8 +102,21 @@ class WorkoutRepository @Inject constructor(
     }
 
     suspend fun seedDefaultTemplatesIfNeeded() {
-        if (dao.templateCount() > 0) return
-        dao.insertWorkoutTemplates(defaultTemplates())
+        val count = dao.templateCount()
+        if (count == 0) {
+            dao.insertWorkoutTemplates(defaultTemplates())
+        } else {
+            if (dao.getWorkoutTemplate("adaptive_strength") == null) {
+                dao.insertWorkoutTemplates(listOf(
+                    WorkoutTemplateEntity("adaptive_strength", "Adaptive Strength", "Strength", androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING, TRACKING_STRENGTH, false, 90, "AI-adjusted strength protocol targeted for current fatigue profile.", "sets")
+                ))
+            }
+            if (dao.getWorkoutTemplate("mobility_recovery") == null) {
+                dao.insertWorkoutTemplates(listOf(
+                    WorkoutTemplateEntity("mobility_recovery", "Recovery Mobility", "Mobility", androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_YOGA, TRACKING_MOBILITY, false, 0, "Guided mobility routine emphasizing breathing, hips, and shoulders.", "time")
+                ))
+            }
+        }
     }
 
     suspend fun saveWorkoutSession(
@@ -214,7 +227,9 @@ class WorkoutRepository @Inject constructor(
             template("kettlebell_flow", "Kettlebell Flow", "Strength", ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING, TRACKING_STRENGTH, false, 90, "Dynamic kettlebell circuits combining strength and coordination.", "sets"),
             template("pilates_core", "Pilates Core", "Mobility", ExerciseSessionRecord.EXERCISE_TYPE_PILATES, TRACKING_MOBILITY, false, 45, "Mat-based core stability and structural alignment drills.", "time"),
             template("swim_interval", "Swim Intervals", "Swimming", ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL, TRACKING_CARDIO, false, 60, "Pool laps with timed interval rests and target pacing.", "time"),
-            template("tabata_protocol", "Tabata Protocol", "HIIT", ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING, TRACKING_BODYWEIGHT, false, 10, "Ultra-short recovery intervals: 20s effort, 10s rest.", "rounds")
+            template("tabata_protocol", "Tabata Protocol", "HIIT", ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING, TRACKING_BODYWEIGHT, false, 10, "Ultra-short recovery intervals: 20s effort, 10s rest.", "rounds"),
+            template("adaptive_strength", "Adaptive Strength", "Strength", ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING, TRACKING_STRENGTH, false, 90, "AI-adjusted strength protocol targeted for current fatigue profile.", "sets"),
+            template("mobility_recovery", "Recovery Mobility", "Mobility", ExerciseSessionRecord.EXERCISE_TYPE_YOGA, TRACKING_MOBILITY, false, 0, "Guided mobility routine emphasizing breathing, hips, and shoulders.", "time")
         )
     }
 

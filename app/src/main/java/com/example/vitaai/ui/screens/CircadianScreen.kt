@@ -132,22 +132,24 @@ fun CircadianScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(IntrinsicSize.Max)
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Sleep Regularity Index Card
-                Box(modifier = Modifier.weight(1f)) {
+                Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
                     BentoStatCard(
                         title = "Sleep Regularity",
                         value = "${uiState.sleepRegularityIndex}%",
                         statusText = getSRIStatus(uiState.sleepRegularityIndex),
                         icon = Icons.Default.Bedtime,
-                        color = Color(0xFF3F51B5)
+                        color = Color(0xFF3F51B5),
+                        modifier = Modifier.fillMaxHeight()
                     )
                 }
                 
                 // Sleep Debt Card
-                Box(modifier = Modifier.weight(1f)) {
+                Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
                     val debtText = if (uiState.sleepDebtHours <= 0) {
                         "${String.format("%.1f", Math.abs(uiState.sleepDebtHours))}h surplus"
                     } else {
@@ -158,7 +160,8 @@ fun CircadianScreen(
                         value = debtText,
                         statusText = if (uiState.sleepDebtHours > 2.0) "High Deficit" else "Optimal",
                         icon = Icons.Default.Alarm,
-                        color = if (uiState.sleepDebtHours > 2.0) Color(0xFFD32F2F) else Color(0xFF4CAF50)
+                        color = if (uiState.sleepDebtHours > 2.0) Color(0xFFD32F2F) else Color(0xFF4CAF50),
+                        modifier = Modifier.fillMaxHeight()
                     )
                 }
             }
@@ -168,28 +171,31 @@ fun CircadianScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(IntrinsicSize.Max)
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Social Jetlag Card
-                Box(modifier = Modifier.weight(1f)) {
+                Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
                     BentoStatCard(
                         title = "Social Jetlag",
                         value = "${String.format("%.1f", uiState.socialJetlagHours)}h",
                         statusText = if (uiState.socialJetlagHours > 1.0) "Irregular" else "Optimal",
                         icon = Icons.Default.Schedule,
-                        color = Color(0xFFE91E63)
+                        color = Color(0xFFE91E63),
+                        modifier = Modifier.fillMaxHeight()
                     )
                 }
                 
                 // Circadian Disruption Score
-                Box(modifier = Modifier.weight(1f)) {
+                Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
                     BentoStatCard(
                         title = "Circadian Disruption",
                         value = "${uiState.circadianDisruptionScore}/100",
                         statusText = getCDSStatus(uiState.circadianDisruptionScore),
                         icon = Icons.Default.LightMode,
-                        color = if (uiState.circadianDisruptionScore > 30) Color(0xFFFF9800) else Color(0xFF00BCD4)
+                        color = if (uiState.circadianDisruptionScore > 30) Color(0xFFFF9800) else Color(0xFF00BCD4),
+                        modifier = Modifier.fillMaxHeight()
                     )
                 }
             }
@@ -274,6 +280,13 @@ fun CircadianScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            ChronotypeInsightCard(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                bedtimeHour = uiState.targetBedtimeHour
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Recent Sleep Sessions List
             Text(
                 text = "Recent Sleep History",
@@ -317,12 +330,13 @@ private fun BentoStatCard(
     value: String,
     statusText: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    color: Color
+    color: Color,
+    modifier: Modifier = Modifier
 ) {
     val shape = RoundedCornerShape(20.dp)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(shape)
             .background(Color.White.copy(alpha = 0.78f))

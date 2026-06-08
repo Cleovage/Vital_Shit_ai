@@ -2,6 +2,7 @@ package com.example.vitaai.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -22,6 +23,7 @@ fun GlassCard(
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 30.dp,
     contentPadding: Dp = 20.dp,
+    onClick: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(cornerRadius)
@@ -36,6 +38,13 @@ fun GlassCard(
                 spotColor = Color.Black.copy(alpha = 0.055f)
             )
             .clip(shape)
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(onClick = onClick)
+                } else {
+                    Modifier
+                }
+            )
             .background(Color.White.copy(alpha = 0.78f))
             .border(
                 width = 1.dp,
@@ -56,6 +65,7 @@ fun GlassCardGlow(
     glowColor: Color = Color(0xFF06B6D4), // Cyan 500
     cornerRadius: Dp = 30.dp,
     contentPadding: Dp = 20.dp,
+    onClick: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(cornerRadius)
@@ -70,6 +80,13 @@ fun GlassCardGlow(
                 spotColor = glowColor.copy(alpha = 0.08f)
             )
             .clip(shape)
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(onClick = onClick)
+                } else {
+                    Modifier
+                }
+            )
             .background(Color.White.copy(alpha = 0.78f))
             .border(
                 width = 1.dp,
@@ -80,4 +97,5 @@ fun GlassCardGlow(
         content = content
     )
 }
+
 

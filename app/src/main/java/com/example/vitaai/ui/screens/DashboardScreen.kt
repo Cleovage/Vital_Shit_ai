@@ -341,7 +341,7 @@ private fun DashboardHeader() {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = "HEALTH COMPANION",
                 style = MaterialTheme.typography.labelSmall.copy(
@@ -413,7 +413,8 @@ private fun MetricCard(
     }
 
     GlassCard(
-        modifier = modifier.clickable { onClick() }
+        modifier = modifier,
+        onClick = onClick
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -474,7 +475,8 @@ private fun TipCard(
     }
 
     GlassCard(
-        modifier = modifier.clickable { onClick() }
+        modifier = modifier,
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

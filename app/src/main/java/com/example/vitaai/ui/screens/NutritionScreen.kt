@@ -591,9 +591,8 @@ private fun MealSelector(
 private fun FoodCard(food: FoodCatalogItem, onClick: () -> Unit) {
     val glowColor = Primary
     GlassCardGlow(
-        modifier = Modifier
-            .size(width = 160.dp, height = 130.dp)
-            .clickable(onClick = onClick),
+        modifier = Modifier.size(width = 160.dp, height = 130.dp),
+        onClick = onClick,
         glowColor = glowColor,
         cornerRadius = 16.dp
     ) {
@@ -649,9 +648,8 @@ private fun FoodCard(food: FoodCatalogItem, onClick: () -> Unit) {
 private fun DrinkCard(drink: DrinkCatalogItem, onClick: () -> Unit) {
     val drinkColor = Color(0xFF00ACC1)
     GlassCardGlow(
-        modifier = Modifier
-            .size(width = 160.dp, height = 130.dp)
-            .clickable(onClick = onClick),
+        modifier = Modifier.size(width = 160.dp, height = 130.dp),
+        onClick = onClick,
         glowColor = drinkColor,
         cornerRadius = 16.dp
     ) {

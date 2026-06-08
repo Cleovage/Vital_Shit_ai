@@ -302,14 +302,17 @@ private fun WorkoutHome(
                         val segmentCount = 8
                         val segmentsActive = (stepsPercent * segmentCount).roundToInt().coerceIn(0, segmentCount)
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(24.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             for (i in 0 until segmentCount) {
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .height(6.dp)
+                                        .height(8.dp)
                                         .clip(CircleShape)
                                         .background(if (i < segmentsActive) stepsGlow else stepsGlow.copy(alpha = 0.12f))
                                 )
@@ -463,12 +466,12 @@ private fun WorkoutHome(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(28.dp),
+                                .height(24.dp),
                             horizontalArrangement = Arrangement.spacedBy(3.dp),
                             verticalAlignment = Alignment.Bottom
                         ) {
                             ecgHeights.forEach { height ->
-                                val finalHeight = height * ecgBounceMultiplier
+                                val finalHeight = (height * 0.8f) * ecgBounceMultiplier
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)

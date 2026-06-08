@@ -68,7 +68,7 @@ fun CircadianClockDial(
         val width = size.width
         val height = size.height
         val center = Offset(width / 2, height / 2)
-        val outerRadius = (width / 2) * 0.68f
+        val outerRadius = (width / 2) * 0.65f
         val innerRadius = outerRadius * 0.88f
         
         // 1. Draw Dial Ring Backing
@@ -184,7 +184,7 @@ fun CircadianClockDial(
             
             // Labels positions: Midnight (top), Noon (bottom), 6 AM (right), 6 PM (left)
             canvas.nativeCanvas.drawText("12 AM", center.x, center.y - outerRadius - 12.dp.toPx(), paint)
-            canvas.nativeCanvas.drawText("12 PM", center.x, center.y + outerRadius + 20.dp.toPx(), paint)
+            canvas.nativeCanvas.drawText("12 PM", center.x, center.y + outerRadius + 16.dp.toPx(), paint)
             
             paint.textAlign = android.graphics.Paint.Align.LEFT
             canvas.nativeCanvas.drawText("6 AM", center.x + outerRadius + 8.dp.toPx(), center.y + 4.dp.toPx(), paint)
