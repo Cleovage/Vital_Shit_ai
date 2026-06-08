@@ -4,6 +4,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -68,6 +69,9 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.55")
     kapt("com.google.dagger:hilt-compiler:2.55")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+    implementation("androidx.hilt:hilt-work:1.1.0")
+    kapt("androidx.hilt:hilt-compiler:1.1.0")
 
     // Health Connect
     implementation("androidx.health.connect:connect-client:1.1.0")
@@ -76,6 +80,7 @@ dependencies {
     implementation("androidx.room:room-runtime:2.7.0-alpha13")
     implementation("androidx.room:room-ktx:2.7.0-alpha13")
     kapt("androidx.room:room-compiler:2.7.0-alpha13")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     // Charts (Vico)
     implementation("com.patrykandpatrick.vico:compose-m3:1.14.0")
@@ -89,7 +94,12 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+    implementation("com.google.android.gms:play-services-auth:21.1.0")
+
+    // Image loading (Compose-native)
+    implementation("io.coil-kt:coil-compose:2.6.0")
 
     // Glance for App Widget
     implementation("androidx.glance:glance-appwidget:1.0.0")

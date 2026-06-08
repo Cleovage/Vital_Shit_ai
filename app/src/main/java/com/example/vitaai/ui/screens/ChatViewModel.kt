@@ -35,12 +35,12 @@ class ChatViewModel @Inject constructor(
                 // Fetch health context for the AI
                 val aiResponse = runCatching {
                     val snapshot = repository.getDailySnapshot()
-                    repository.getAiInsight(snapshot)
+                    repository.getChatbotResponse(text, snapshot)
                 }.getOrElse { e ->
                     "I'm sorry, I encountered an issue retrieving your health snapshot: ${e.localizedMessage ?: "Unknown error"}"
                 }
 
-                _messages.value += Message("Based on your data: $aiResponse", false)
+                _messages.value += Message(aiResponse, false)
             } finally {
                 _isThinking.value = false
             }

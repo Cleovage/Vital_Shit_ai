@@ -2,6 +2,8 @@ package com.example.vitaai.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Embedded
+import androidx.room.Relation
 
 @Entity(tableName = "food_entries")
 data class FoodEntryEntity(
@@ -121,4 +123,13 @@ data class ScreenStateEventEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val timestampMillis: Long,
     val eventType: String // "SCREEN_ON", "SCREEN_OFF"
+)
+
+data class WorkoutSessionWithSets(
+    @Embedded val session: WorkoutSessionEntity,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "sessionId"
+    )
+    val sets: List<ExerciseSetEntity>
 )

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "867362317050",
+    "project_id": "wellbeing-app-45862",
+    "storage_bucket": "wellbeing-app-45862.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:867362317050:android:91e1e2f8d9a92925839f43",
+        "android_client_info": {
+          "package_name": "com.example.vitaai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCReR35SLbUAh2KQfyrgV54KbmwZdDw7yY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

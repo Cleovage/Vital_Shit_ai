@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,12 +42,22 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.health.connect.client.PermissionController
 
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
+fun ProfileScreen(navController: androidx.navigation.NavController, viewModel: ProfileViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     var showEditDialog by remember { mutableStateOf(false) }
     var showAchievementsDialog by remember { mutableStateOf(false) }
     var showSyncDialog by remember { mutableStateOf(false) }
+    var showLinkDialog by remember { mutableStateOf(false) }
+    var showNameDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    val firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+    val isAnonymous = firebaseUser?.isAnonymous == true
+    // Prefer the resolved displayName from the ViewModel (Firestore + Auth),
+    // then fall back to the legacy email/guest placeholder.
+    val userDisplayName = state.displayName.ifBlank {
+        if (isAnonymous) "Guest Mode" else firebaseUser?.email ?: "Tap to set name"
+    }
 
     val healthConnectLauncher = rememberLauncherForActivityResult(
         contract = PermissionController.createRequestPermissionResultContract()
@@ -96,22 +107,33 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                             )
                         }
                         
-                        // Right side: Name and Sync info
-                        Column {
+                        // Right side: Name and Sync info (tappable to rename)
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { showNameDialog = true }
+                        ) {
                             Text(
-                                text = "Alex",
+                                text = userDisplayName,
                                 style = MaterialTheme.typography.displaySmall.copy(
-                                    fontSize = 28.sp,
+                                    fontSize = 20.sp, // Reduced font size to accommodate email addresses nicely
                                     fontWeight = FontWeight.SemiBold,
-                                    letterSpacing = (-1.12).sp
+                                    letterSpacing = (-0.8).sp
                                 ),
                                 color = Color(0xFF0F172A)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = if (state.permissionsGranted) 
+                                text = "Tap to edit name",
+                                color = Color(0xFF06B6D4),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = if (state.permissionsGranted)
                                     "Health Connect synced • Premium trial"
-                                else 
+                                else
                                     "Health Connect pending • Premium trial",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color.Black.copy(alpha = 0.5f)
@@ -168,6 +190,30 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                         subtitle = String.format(Locale.US, "%.1f L daily target", hydrationGoal),
                         onClick = {
                             showEditDialog = true
+                        }
+                    )
+
+                    if (isAnonymous) {
+                        ActionRow(
+                            icon = Icons.Default.Link,
+                            title = "Link Email Account",
+                            subtitle = "Link email & password to save progress",
+                            onClick = {
+                                showLinkDialog = true
+                            }
+                        )
+                    }
+
+                    ActionRow(
+                        icon = Icons.Default.ExitToApp,
+                        title = "LOG OUT",
+                        subtitle = "Sign out and wipe all local records",
+                        onClick = {
+                            viewModel.logout {
+                                navController.navigate("auth") {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }
                         }
                     )
                 }
@@ -412,6 +458,25 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
             onDismiss = { showSyncDialog = false }
         )
     }
+
+    if (showLinkDialog) {
+        LinkAccountDialog(
+            viewModel = viewModel,
+            onDismiss = { showLinkDialog = false }
+        )
+    }
+
+    if (showNameDialog) {
+        EditDisplayNameDialog(
+            currentName = state.displayName.ifBlank { userDisplayName },
+            isSaving = state.isSaving,
+            onConfirm = { newName ->
+                viewModel.setDisplayName(newName)
+                showNameDialog = false
+            },
+            onDismiss = { showNameDialog = false }
+        )
+    }
 }
 
 @Composable
@@ -620,6 +685,207 @@ fun HealthConnectSyncDialog(
                 ) {
                     Text(if (isSyncing) "SYNCING..." else "SYNC NOW", color = Color.White)
                 }
+            }
+        },
+        containerColor = Color.White,
+        shape = RoundedCornerShape(24.dp)
+    )
+}
+
+@Composable
+fun LinkAccountDialog(
+    viewModel: ProfileViewModel,
+    onDismiss: () -> Unit
+) {
+    var emailInput by remember { mutableStateOf("") }
+    var passwordInput by remember { mutableStateOf("") }
+    var confirmPasswordInput by remember { mutableStateOf("") }
+    var errorMsg by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                "Link Email Account",
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF0F172A),
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    "This links your current guest data to an email and password, enabling cloud backup and multi-device access.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Black.copy(alpha = 0.55f),
+                    lineHeight = 18.sp
+                )
+
+                OutlinedTextField(
+                    value = emailInput,
+                    onValueChange = { emailInput = it; errorMsg = null },
+                    label = { Text("Email address") },
+                    shape = RoundedCornerShape(12.dp),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = passwordInput,
+                    onValueChange = { passwordInput = it; errorMsg = null },
+                    label = { Text("Password") },
+                    shape = RoundedCornerShape(12.dp),
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = confirmPasswordInput,
+                    onValueChange = { confirmPasswordInput = it; errorMsg = null },
+                    label = { Text("Confirm Password") },
+                    shape = RoundedCornerShape(12.dp),
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                if (errorMsg != null) {
+                    Text(
+                        text = errorMsg ?: "",
+                        color = Color(0xFFEF4444),
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+
+                if (isLoading) {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = Primary)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                TextButton(onClick = onDismiss) {
+                    Text("CANCEL", color = Color.Black.copy(alpha = 0.5f))
+                }
+                Button(
+                    onClick = {
+                        if (emailInput.isBlank() || passwordInput.isBlank()) {
+                            errorMsg = "Email and password cannot be empty."
+                        } else if (passwordInput != confirmPasswordInput) {
+                            errorMsg = "Passwords do not match."
+                        } else {
+                            isLoading = true
+                            errorMsg = null
+                            viewModel.linkAccount(
+                                email = emailInput,
+                                password = passwordInput,
+                                onSuccess = {
+                                    isLoading = false
+                                    Toast.makeText(context, "Account linked successfully!", Toast.LENGTH_SHORT).show()
+                                    onDismiss()
+                                },
+                                onError = { err ->
+                                    isLoading = false
+                                    errorMsg = err
+                                }
+                            )
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !isLoading
+                ) {
+                    Text("LINK", color = Color.White)
+                }
+            }
+        },
+        containerColor = Color.White,
+        shape = RoundedCornerShape(24.dp)
+    )
+}
+
+@Composable
+private fun EditDisplayNameDialog(
+    currentName: String,
+    isSaving: Boolean,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var input by remember { mutableStateOf(currentName) }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    AlertDialog(
+        onDismissRequest = { if (!isSaving) onDismiss() },
+        title = {
+            Text(
+                "Your name",
+                style = MaterialTheme.typography.titleLarge,
+                color = Color(0xFF0F172A)
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    "This is how Vita will greet you across the app. Synced to your account.",
+                    color = Color.Black.copy(alpha = 0.6f),
+                    fontSize = 13.sp
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = input,
+                    onValueChange = { input = it.take(40); error = null },
+                    label = { Text("Display name") },
+                    singleLine = true,
+                    isError = error != null,
+                    supportingText = error?.let { { Text(it, color = Color(0xFFEF4444)) } },
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val trimmed = input.trim()
+                    if (trimmed.isEmpty()) {
+                        error = "Name can't be empty"
+                    } else {
+                        onConfirm(trimmed)
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                shape = RoundedCornerShape(12.dp),
+                enabled = !isSaving
+            ) {
+                if (isSaving) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(16.dp)
+                    )
+                } else {
+                    Text("SAVE", color = Color.White)
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, enabled = !isSaving) {
+                Text("CANCEL", color = Color.Black.copy(alpha = 0.5f))
             }
         },
         containerColor = Color.White,

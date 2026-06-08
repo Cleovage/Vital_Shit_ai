@@ -19,7 +19,7 @@ import com.example.vitaai.ui.theme.*
 fun StatChip(
     label: String,
     modifier: Modifier = Modifier,
-    color: Color = PrimaryContainer,
+    color: Color = Primary,
     textColor: Color = color
 ) {
     Box(

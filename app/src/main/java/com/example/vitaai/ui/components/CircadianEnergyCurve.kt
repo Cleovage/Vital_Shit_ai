@@ -40,6 +40,12 @@ fun CircadianEnergyCurve(
     val energyVal = getCircadianEnergy(activeDisplayHour)
     val pressureVal = getSleepPressure(activeDisplayHour, wakeHour, sleepHour)
 
+    val energyPath = remember { Path() }
+    val pressurePath = remember { Path() }
+    val fillPath = remember { Path() }
+    val textPaint = remember { android.graphics.Paint() }
+    val labelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -147,9 +153,9 @@ fun CircadianEnergyCurve(
                     strokeWidth = 1.dp.toPx()
                 )
 
-                // Build paths for Circadian Drive and Sleep Pressure
-                val energyPath = Path()
-                val pressurePath = Path()
+                // Build paths for Circadian Drive and Sleep Pressure using cached Path instances
+                energyPath.reset()
+                pressurePath.reset()
                 
                 for (i in 0..100) {
                     val pct = i / 100f
@@ -174,12 +180,12 @@ fun CircadianEnergyCurve(
                 }
 
                 // Draw energy fill gradient below the path (optional, nice visual polish)
-                val fillPath = Path().apply {
-                    addPath(energyPath)
-                    lineTo(width, graphHeight)
-                    lineTo(0f, graphHeight)
-                    close()
-                }
+                fillPath.reset()
+                fillPath.addPath(energyPath)
+                fillPath.lineTo(width, graphHeight)
+                fillPath.lineTo(0f, graphHeight)
+                fillPath.close()
+                
                 drawPath(
                     path = fillPath,
                     brush = Brush.verticalGradient(
@@ -202,11 +208,11 @@ fun CircadianEnergyCurve(
                     style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
                 )
 
-                // Draw horizontal time labels
+                // Draw horizontal time labels using cached paint
                 val fontScale = 10.sp.toPx()
-                val textPaint = android.graphics.Paint().apply {
+                textPaint.apply {
                     isAntiAlias = true
-                    color = Color.Black.copy(alpha = 0.4f).toArgb()
+                    color = labelColor.toArgb()
                     textSize = fontScale
                     textAlign = android.graphics.Paint.Align.CENTER
                 }

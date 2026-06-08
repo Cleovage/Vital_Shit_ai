@@ -11,6 +11,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+import androidx.compose.ui.draw.drawWithCache
+
 /**
  * Draws a glassmorphic double-border:
  * 1. An outer subtle dark border around the entire shape (simulates shadow edge)
@@ -23,7 +25,7 @@ fun Modifier.glassmorphicBorder(
     borderWidth: Dp = 1.dp,
     outerColor: Color = Color.Black.copy(alpha = 0.07f),
     innerHighlightColor: Color = Color.White.copy(alpha = 0.8f)
-): Modifier = this.drawBehind {
+): Modifier = this.drawWithCache {
     val r = cornerRadius.toPx()
     val w = borderWidth.toPx()
     val halfW = w / 2f
@@ -40,11 +42,6 @@ fun Modifier.glassmorphicBorder(
             )
         )
     }
-    drawPath(
-        path = outerPath,
-        color = outerColor,
-        style = Stroke(width = w)
-    )
 
     // --- Inner specular highlight: top-left arc path only ---
     val highlightPath = Path().apply {
@@ -63,9 +60,17 @@ fun Modifier.glassmorphicBorder(
             forceMoveTo = false
         )
     }
-    drawPath(
-        path = highlightPath,
-        color = innerHighlightColor,
-        style = Stroke(width = w)
-    )
+
+    onDrawBehind {
+        drawPath(
+            path = outerPath,
+            color = outerColor,
+            style = Stroke(width = w)
+        )
+        drawPath(
+            path = highlightPath,
+            color = innerHighlightColor,
+            style = Stroke(width = w)
+        )
+    }
 }

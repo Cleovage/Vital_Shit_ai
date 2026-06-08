@@ -51,6 +51,18 @@ fun FluidSloshingProgressBar(
 
     val shape = RoundedCornerShape(cornerRadius)
 
+    val clipPath = remember { Path() }
+    val wavePath = remember { Path() }
+
+    val liquidGradient = remember(liquidColor) {
+        Brush.verticalGradient(
+            colors = listOf(
+                liquidColor,
+                liquidColor.copy(alpha = 0.65f)
+            )
+        )
+    }
+
     Box(
         modifier = modifier
             .height(24.dp)
@@ -64,43 +76,38 @@ fun FluidSloshingProgressBar(
             val h = size.height
             val fillHeight = h * animatedProgress
             
-            val path = Path().apply {
-                addRoundRect(
-                    androidx.compose.ui.geometry.RoundRect(
-                        rect = androidx.compose.ui.geometry.Rect(0f, 0f, w, h),
-                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadius.toPx(), cornerRadius.toPx())
-                    )
+            clipPath.reset()
+            clipPath.addRoundRect(
+                androidx.compose.ui.geometry.RoundRect(
+                    rect = androidx.compose.ui.geometry.Rect(0f, 0f, w, h),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadius.toPx(), cornerRadius.toPx())
                 )
-            }
+            )
 
-            clipPath(path) {
+            clipPath(clipPath) {
                 if (animatedProgress > 0f) {
-                    val wavePath = Path().apply {
-                        moveTo(0f, h)
+                    wavePath.reset()
+                    wavePath.moveTo(0f, h)
+                    
+                    val frequency = 1.6f
+                    val amplitude = 5.dp.toPx() // Height of wave crests
+                    
+                    // Step by 4px to optimize performance in drawing loops
+                    val step = 4
+                    for (x in 0..w.toInt() step step) {
+                        val pct = x.toFloat() / w
+                        val waveY = (h - fillHeight) + 
+                                    sin(pct * frequency * 2 * Math.PI + phase).toFloat() * amplitude
                         
-                        val frequency = 1.6f
-                        val amplitude = 5.dp.toPx() // Height of wave crests
-                        
-                        for (x in 0..w.toInt()) {
-                            val pct = x.toFloat() / w
-                            val waveY = (h - fillHeight) + 
-                                        sin(pct * frequency * 2 * Math.PI + phase).toFloat() * amplitude
-                            
-                            lineTo(x.toFloat(), waveY.coerceIn(0f, h))
-                        }
-                        
-                        lineTo(w, h)
-                        close()
+                        wavePath.lineTo(x.toFloat(), waveY.coerceIn(0f, h))
                     }
+                    
+                    wavePath.lineTo(w, h)
+                    wavePath.close()
                     
                     drawPath(
                         path = wavePath,
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                liquidColor,
-                                liquidColor.copy(alpha = 0.65f)
-                            )
-                        )
+                        brush = liquidGradient
                     )
                 }
             }

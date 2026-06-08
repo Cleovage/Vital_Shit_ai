@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.vitaai.data.local.WorkoutSessionEntity
+import com.example.vitaai.data.local.WorkoutSessionWithSets
 import com.example.vitaai.ui.components.ApexCard
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.theme.Error
@@ -103,9 +104,9 @@ fun HistoryScreen(navController: NavController, viewModel: ActivityViewModel = h
                                 )
                             }
 
-                            items(state.sessions) { session ->
-                                WorkoutHistoryCard(session = session, viewModel = viewModel)
-                            }
+                             items(state.sessions) { sessionWithSets ->
+                                 WorkoutHistoryCard(sessionWithSets = sessionWithSets, viewModel = viewModel)
+                             }
                         }
                     }
                 }
@@ -121,12 +122,12 @@ fun HistoryScreen(navController: NavController, viewModel: ActivityViewModel = h
 
 @Composable
 fun WorkoutHistoryCard(
-    session: WorkoutSessionEntity,
+    sessionWithSets: WorkoutSessionWithSets,
     viewModel: ActivityViewModel
 ) {
+    val session = sessionWithSets.session
+    val sets = sessionWithSets.sets
     var expanded by remember { mutableStateOf(false) }
-    val setsFlow = remember(session.id) { viewModel.getExerciseSets(session.id) }
-    val sets by setsFlow.collectAsState(initial = emptyList())
 
     ApexCard(
         modifier = Modifier
@@ -273,14 +274,15 @@ fun StreakPipelineTimeline(
     }
 }
 
-private fun getWeeklyCompletion(sessions: List<WorkoutSessionEntity>): List<Boolean> {
+private fun getWeeklyCompletion(sessions: List<WorkoutSessionWithSets>): List<Boolean> {
     val completed = MutableList(7) { false }
     val now = java.time.LocalDate.now()
     val zone = java.time.ZoneId.systemDefault()
     
     val monday = now.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY))
     
-    sessions.forEach { session ->
+    sessions.forEach { sessionWithSets ->
+        val session = sessionWithSets.session
         val date = Instant.ofEpochMilli(session.startTimeMillis).atZone(zone).toLocalDate()
         if (!date.isBefore(monday) && !date.isAfter(now)) {
             val dayIndex = date.dayOfWeek.value - 1

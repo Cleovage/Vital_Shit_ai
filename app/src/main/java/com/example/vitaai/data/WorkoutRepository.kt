@@ -6,6 +6,7 @@ import com.example.vitaai.data.local.RoutePointEntity
 import com.example.vitaai.data.local.VitaDao
 import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.data.local.WorkoutTemplateEntity
+import com.example.vitaai.data.local.WorkoutSessionWithSets
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -47,6 +48,57 @@ class WorkoutRepository @Inject constructor(
     fun observeExerciseSets(sessionId: Long): Flow<List<com.example.vitaai.data.local.ExerciseSetEntity>> = dao.observeExerciseSets(sessionId)
 
     fun observeRoutePoints(sessionId: Long): Flow<List<com.example.vitaai.data.local.RoutePointEntity>> = dao.observeRoutePoints(sessionId)
+
+    fun observeRecentSessionsWithSets(limit: Int = 8): Flow<List<WorkoutSessionWithSets>> {
+        return dao.observeRecentWorkoutSessionsWithSets(limit).combine(flow {
+            while (true) {
+                if (healthConnectManager.hasAllPermissions()) {
+                    val now = Instant.now()
+                    val thirtyDaysAgo = now.minus(java.time.Duration.ofDays(30))
+                    
+                    val sessions = healthConnectManager.readExerciseSessions(thirtyDaysAgo, now)
+                        .sortedByDescending { it.startTime }
+                        .take(limit)
+                        .map { record ->
+                            WorkoutSessionWithSets(
+                                session = WorkoutSessionEntity(
+                                    id = 0L, 
+                                    templateId = "",
+                                    title = record.title ?: "Workout",
+                                    category = "HC",
+                                    startTimeMillis = record.startTime.toEpochMilli(),
+                                    endTimeMillis = record.endTime.toEpochMilli(),
+                                    durationSeconds = java.time.Duration.between(record.startTime, record.endTime).seconds,
+                                    totalSets = 0,
+                                    totalReps = 0,
+                                    calories = 0.0,
+                                    avgHeartRate = 0.0,
+                                    distanceMeters = 0.0,
+                                    notes = record.notes ?: "",
+                                    completed = true
+                                ),
+                                sets = emptyList()
+                            )
+                        }
+                    emit(sessions)
+                } else {
+                    emit(emptyList<WorkoutSessionWithSets>())
+                }
+                delay(20000)
+            }
+        }) { localSessions, hcSessions ->
+            val merged = localSessions.toMutableList()
+            for (hc in hcSessions) {
+                val alreadyExists = localSessions.any { local ->
+                    Math.abs(local.session.startTimeMillis - hc.session.startTimeMillis) < 60000
+                }
+                if (!alreadyExists) {
+                    merged.add(hc)
+                }
+            }
+            merged.sortedByDescending { it.session.startTimeMillis }.take(limit)
+        }
+    }
 
     fun observeRecentSessions(limit: Int = 8): Flow<List<WorkoutSessionEntity>> {
         return dao.observeRecentWorkoutSessions(limit).combine(flow {

@@ -79,6 +79,8 @@ class WorkoutSessionViewModel @Inject constructor(
 
     fun pause() {
         _uiState.value = _uiState.value.copy(running = false)
+        timerJob?.cancel()
+        locationJob?.cancel()
     }
 
     fun addRep() {

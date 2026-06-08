@@ -20,6 +20,10 @@ interface VitaDao {
     @Query("SELECT * FROM workout_sessions ORDER BY startTimeMillis DESC LIMIT :limit")
     fun observeRecentWorkoutSessions(limit: Int): Flow<List<WorkoutSessionEntity>>
 
+    @androidx.room.Transaction
+    @Query("SELECT * FROM workout_sessions ORDER BY startTimeMillis DESC LIMIT :limit")
+    fun observeRecentWorkoutSessionsWithSets(limit: Int): Flow<List<WorkoutSessionWithSets>>
+
     @Query("SELECT * FROM workout_sessions WHERE startTimeMillis BETWEEN :startMillis AND :endMillis ORDER BY startTimeMillis DESC")
     fun observeWorkoutSessions(startMillis: Long, endMillis: Long): Flow<List<WorkoutSessionEntity>>
 

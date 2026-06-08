@@ -862,7 +862,7 @@ private fun formatAxisValue(value: Float, unit: String): String {
 @Composable
 private fun CircadianNavigationCard(onClick: () -> Unit) {
     val vitaColors = LocalVitaColors.current
-    val accentAmberColor = Color(0xFFFFB300)
+    val accentAmberColor = com.example.vitaai.ui.theme.AccentAmber
 
     val infiniteTransition = rememberInfiniteTransition(label = "circBlob")
     val blobOpacity by infiniteTransition.animateFloat(

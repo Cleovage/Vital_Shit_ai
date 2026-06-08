@@ -6,6 +6,7 @@ import com.example.vitaai.data.CalorieCalculator
 import com.example.vitaai.data.WorkoutRepository
 import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.data.local.WorkoutTemplateEntity
+import com.example.vitaai.data.local.WorkoutSessionWithSets
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +37,7 @@ class ActivityViewModel @Inject constructor(
 
             combine(
                 workoutRepository.observeTemplates(),
-                workoutRepository.observeRecentSessions()
+                workoutRepository.observeRecentSessionsWithSets()
             ) { templates, sessions ->
                 ActivityUiState.Success(templates, sessions) as ActivityUiState
             }.collect { _uiState.value = it }
@@ -152,7 +153,7 @@ sealed class ActivityUiState {
     object Loading : ActivityUiState()
     data class Success(
         val templates: List<WorkoutTemplateEntity>,
-        val sessions: List<WorkoutSessionEntity>
+        val sessions: List<WorkoutSessionWithSets>
     ) : ActivityUiState()
     data class Error(val message: String) : ActivityUiState()
 }

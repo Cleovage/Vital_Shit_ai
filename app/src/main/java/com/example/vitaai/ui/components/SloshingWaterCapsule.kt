@@ -32,22 +32,24 @@ fun SloshingWaterCapsule(
         label = "waveOffset"
     )
 
+    val capsulePath = remember { Path() }
+    val waterPath = remember { Path() }
+
     Canvas(modifier = modifier) {
         val width = size.width
         val height = size.height
         
         // 1. Draw capsule shape path
-        val path = Path().apply {
-            addRoundRect(
-                androidx.compose.ui.geometry.RoundRect(
-                    rect = androidx.compose.ui.geometry.Rect(0f, 0f, width, height),
-                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(16.dp.toPx(), 16.dp.toPx())
-                )
+        capsulePath.reset()
+        capsulePath.addRoundRect(
+            androidx.compose.ui.geometry.RoundRect(
+                rect = androidx.compose.ui.geometry.Rect(0f, 0f, width, height),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(16.dp.toPx(), 16.dp.toPx())
             )
-        }
+        )
         
         // Clip to capsule shape
-        clipPath(path) {
+        clipPath(capsulePath) {
             // Draw background fill (semi-transparent dark)
             drawRect(color = Color.Black.copy(alpha = 0.04f))
             
@@ -56,19 +58,19 @@ fun SloshingWaterCapsule(
             val waveHeight = 4.dp.toPx()
             val waveFreq = (2 * Math.PI).toFloat() / width
             
-            val waterPath = Path().apply {
-                moveTo(0f, height)
-                if (progress > 0f) {
-                    val topY = height - waterHeight
-                    for (x in 0..width.toInt()) {
-                        val y = topY + waveHeight * sin(x * waveFreq + waveOffset)
-                        lineTo(x.toFloat(), y)
-                    }
-                    lineTo(width, topY) // line to top right
-                    lineTo(width, height)
+            waterPath.reset()
+            waterPath.moveTo(0f, height)
+            if (progress > 0f) {
+                val topY = height - waterHeight
+                val step = 4
+                for (x in 0..width.toInt() step step) {
+                    val y = topY + waveHeight * sin(x * waveFreq + waveOffset)
+                    waterPath.lineTo(x.toFloat(), y)
                 }
-                close()
+                waterPath.lineTo(width, topY) // line to top right
+                waterPath.lineTo(width, height)
             }
+            waterPath.close()
             
             drawPath(
                 path = waterPath,

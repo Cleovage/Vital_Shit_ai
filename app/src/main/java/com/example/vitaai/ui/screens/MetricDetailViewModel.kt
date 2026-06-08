@@ -6,6 +6,7 @@ import com.example.vitaai.data.HealthDataSource
 import com.example.vitaai.data.HealthMetricType
 import com.example.vitaai.data.HealthSnapshot
 import com.example.vitaai.data.HealthConnectManager
+import com.example.vitaai.data.GoalsRepository
 import com.example.vitaai.data.VitaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +48,8 @@ private data class ChartSeries(
 @HiltViewModel
 class MetricDetailViewModel @Inject constructor(
     private val repository: VitaRepository,
-    private val healthConnectManager: HealthConnectManager
+    private val healthConnectManager: HealthConnectManager,
+    private val goalsRepository: GoalsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MetricDetailUiState>(MetricDetailUiState.Loading)
@@ -197,7 +199,11 @@ class MetricDetailViewModel @Inject constructor(
 
         when (metric) {
             HealthMetricType.HYDRATION -> base.add("Goal Progress" to String.format(Locale.US, "%.0f%%", (snapshot.hydrationLiters / 2.5) * 100))
-            HealthMetricType.STEPS -> base.add("Goal Progress" to String.format(Locale.US, "%.0f%%", (snapshot.steps / 10000.0) * 100))
+            HealthMetricType.STEPS -> {
+                // Use the user's actual configured step goal, not the hard-coded 10000 default.
+                val goal = goalsRepository.goals.value.stepGoal.coerceAtLeast(1L)
+                base.add("Goal Progress" to String.format(Locale.US, "%.0f%%", (snapshot.steps / goal.toDouble()) * 100))
+            }
             HealthMetricType.SLEEP -> base.add("Recovery Target" to String.format(Locale.US, "%.0f%%", (snapshot.sleepDurationHours / 8.0) * 100))
             HealthMetricType.PROTEIN -> base.add("Nutrition Balance" to if (snapshot.proteinGrams >= 90) "On Track" else "Below Target")
             else -> Unit

@@ -29,6 +29,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -54,23 +60,42 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // Firebase guest anonymous login bypass fallback
-        auth?.let {
-            if (it.currentUser == null) {
-                it.signInAnonymously()
+        // Kick off a one-shot push+pull sync as soon as the activity starts.
+        // Best-effort; logs and continues on failure (offline is the common case).
+        val sync = (application as? dagger.hilt.android.HiltAndroidApp)
+        val coordinator: com.example.vitaai.data.SyncCoordinator? = try {
+            val entryPoint = dagger.hilt.android.EntryPointAccessors.fromApplication(
+                this.applicationContext,
+                SyncEntryPoint::class.java
+            )
+            entryPoint.syncCoordinator()
+        } catch (t: Throwable) {
+            android.util.Log.w("MainActivity", "could not get SyncCoordinator", t)
+            null
+        }
+        if (coordinator != null) {
+            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                coordinator.fullSync()
             }
         }
+        @Suppress("UNUSED_VARIABLE") val _ignored = sync
 
         setContent {
             VitaAITheme {
-                VitaApp()
+                VitaApp(auth = auth)
             }
         }
     }
 }
 
+@dagger.hilt.EntryPoint
+@dagger.hilt.InstallIn(dagger.hilt.components.SingletonComponent::class)
+private interface SyncEntryPoint {
+    fun syncCoordinator(): com.example.vitaai.data.SyncCoordinator
+}
+
 @Composable
-fun VitaApp() {
+fun VitaApp(auth: FirebaseAuth?) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -78,6 +103,7 @@ fun VitaApp() {
     // Define which routes hide the bottom navigation bar
     val shouldShowBottomBar = currentRoute != null &&
             currentRoute != "session" &&
+            currentRoute != "auth" &&
             !currentRoute.startsWith("workout/session")
 
     // Density and dimensions for translation Y calculation
@@ -128,9 +154,11 @@ fun VitaApp() {
                 }
             }
 
+            val startDest = if (auth?.currentUser == null) "auth" else "dashboard"
+
             NavHost(
                 navController = navController,
-                startDestination = "dashboard",
+                startDestination = startDest,
                 modifier = Modifier.fillMaxSize(),
                 enterTransition = {
                     val initialIndex = getRouteIndex(initialState.destination.route)
@@ -193,12 +221,36 @@ fun VitaApp() {
                     }
                 }
             ) {
+                composable("auth") {
+                    AuthScreen(
+                        onAuthSuccess = {
+                            // If the signed-in user has no displayName, route to the
+                            // first-run name picker; otherwise straight to dashboard.
+                            val current = auth?.currentUser
+                            val needsOnboarding = current != null &&
+                                current.displayName.isNullOrBlank()
+                            val nextRoute = if (needsOnboarding) "onboarding/name" else "dashboard"
+                            navController.navigate(nextRoute) {
+                                popUpTo("auth") { inclusive = true }
+                            }
+                        }
+                    )
+                }
+                composable("onboarding/name") {
+                    OnboardingNameScreen(
+                        onContinue = {
+                            navController.navigate("dashboard") {
+                                popUpTo("onboarding/name") { inclusive = true }
+                            }
+                        }
+                    )
+                }
                 composable("dashboard") { DashboardScreen(navController = navController) }
                 composable("activity") { ActivityScreen(navController = navController) }
                 composable("nutrition") { NutritionScreen() }
                 composable("chat") { ChatScreen() }
                 composable("analytics") { AnalyticsScreen(navController = navController) }
-                composable("profile") { ProfileScreen() }
+                composable("profile") { ProfileScreen(navController = navController) }
                 composable("circadian") { CircadianScreen(navController = navController) }
                 composable("session") { SessionScreen(navController = navController) }
                 composable("workout/start") { ActivityScreen(navController = navController) }
@@ -217,6 +269,8 @@ fun VitaApp() {
                     arguments = listOf(navArgument("exerciseId") { type = NavType.StringType })
                 ) { ActivityScreen(navController = navController) }
                 composable("history") { HistoryScreen(navController = navController) }
+                composable("meditation") { MeditationScreen(navController = navController) }
+                composable("hydration/detail") { HydrationDetailScreen(navController = navController) }
                 composable(
                     route = "metric/{metricRoute}",
                     arguments = listOf(navArgument("metricRoute") { type = NavType.StringType })

@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.blur
@@ -15,6 +16,8 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -86,32 +89,46 @@ fun Modifier.shimmerOverlay(
         label = "progress"
     )
     
+    val colors = remember(shimmerColor) {
+        listOf(
+            Color.Transparent,
+            shimmerColor.copy(alpha = 0.15f),
+            shimmerColor,
+            shimmerColor.copy(alpha = 0.15f),
+            Color.Transparent
+        )
+    }
+
+    val argbColors = remember(colors) {
+        colors.map { it.toArgb() }.toIntArray()
+    }
+    
+    val shaderBrush = remember(argbColors) {
+        object : ShaderBrush() {
+            override fun createShader(size: androidx.compose.ui.geometry.Size): android.graphics.Shader {
+                val w = size.width
+                val h = size.height
+                val xStart = w * progress
+                val yStart = h * (progress - 0.5f)
+                val xEnd = w * (progress + 0.5f)
+                val yEnd = h * (progress + 1.0f)
+                return android.graphics.LinearGradient(
+                    xStart, yStart,
+                    xEnd, yEnd,
+                    argbColors,
+                    null,
+                    android.graphics.Shader.TileMode.CLAMP
+                )
+            }
+        }
+    }
+
     this.drawBehind {
-        val w = size.width
-        val h = size.height
-        
         // Draw backing color
         drawRect(color = baseColor)
         
-        // Sweep coordinates offset
-        val xStart = w * progress
-        val yStart = h * (progress - 0.5f)
-        val xEnd = w * (progress + 0.5f)
-        val yEnd = h * (progress + 1.0f)
-        
-        val brush = Brush.linearGradient(
-            colors = listOf(
-                Color.Transparent,
-                shimmerColor.copy(alpha = 0.15f),
-                shimmerColor,
-                shimmerColor.copy(alpha = 0.15f),
-                Color.Transparent
-            ),
-            start = Offset(xStart, yStart),
-            end = Offset(xEnd, yEnd)
-        )
-        
-        drawRect(brush = brush)
+        // Draw shimmer using cached shader brush
+        drawRect(brush = shaderBrush)
     }
 }
 

@@ -132,6 +132,68 @@ class VitaRepository @Inject constructor(
         }
     }
 
+    suspend fun getChatbotResponse(prompt: String, snapshot: HealthSnapshot): String {
+        val query = prompt.lowercase(java.util.Locale.ROOT)
+        return when {
+            query.contains("step") || query.contains("walk") || query.contains("run") || query.contains("distance") -> {
+                val stepGoal = 10000
+                val diff = stepGoal - snapshot.steps
+                if (snapshot.steps >= stepGoal) {
+                    "Amazing job! You've crushed your step goal today with ${snapshot.steps} steps (${String.format("%.1f", snapshot.distanceMeters / 1000.0)} km). Keep up this fantastic momentum!"
+                } else {
+                    "You are currently at ${snapshot.steps} steps today. You need about $diff more steps to hit your 10,000 daily step goal. Try taking a brisk 15-minute walk after your next meal!"
+                }
+            }
+            query.contains("sleep") || query.contains("tired") || query.contains("rest") || query.contains("bed") -> {
+                if (snapshot.sleepDurationHours >= 7.0) {
+                    "You logged ${String.format("%.1f", snapshot.sleepDurationHours)} hours of sleep. That is within the healthy range (7-9 hours). Keep maintaining this healthy sleep hygiene!"
+                } else {
+                    "You only got ${String.format("%.1f", snapshot.sleepDurationHours)} hours of sleep. Sleep deprivation increases cortisol and slows recovery. Try to avoid blue light screens 1 hour before bed tonight."
+                }
+            }
+            query.contains("water") || query.contains("hydration") || query.contains("drink") || query.contains("dehydrated") -> {
+                val target = 2.5
+                val diff = target - snapshot.hydrationLiters
+                if (snapshot.hydrationLiters >= target) {
+                    "Excellent hydration! You've consumed ${String.format("%.1f", snapshot.hydrationLiters)} liters of water today, meeting your target. Your kidneys and muscles thank you!"
+                } else {
+                    "You have drank ${String.format("%.1f", snapshot.hydrationLiters)} liters today. You need another ${String.format("%.1f", diff)} L to hit your 2.5L target. Grab a glass of water right now!"
+                }
+            }
+            query.contains("heart") || query.contains("pulse") || query.contains("bpm") || query.contains("cardio") -> {
+                if (snapshot.avgHeartRate in 60.0..85.0) {
+                    "Your average heart rate today is ${snapshot.avgHeartRate.toInt()} BPM, which is in a very healthy resting range. This shows good cardiovascular efficiency!"
+                } else if (snapshot.avgHeartRate > 85.0) {
+                    "Your average heart rate is slightly elevated at ${snapshot.avgHeartRate.toInt()} BPM. This could be due to stress, caffeine, or active digestion. Try a 4-7-8 breathing exercise to calm your nervous system."
+                } else {
+                    "Your average heart rate today is ${snapshot.avgHeartRate.toInt()} BPM. Let me know if you want to log any specific exercise session."
+                }
+            }
+            query.contains("calorie") || query.contains("burn") || query.contains("metabolism") || query.contains("weight") -> {
+                "Today you have burned ${snapshot.calories.toInt()} active calories (total of ${(snapshot.calories + snapshot.basalCalories).toInt()} including basal metabolic rate). To support your goals, ensure you balance this with your nutrition intake."
+            }
+            query.contains("nutrition") || query.contains("eat") || query.contains("food") || query.contains("protein") || query.contains("carb") || query.contains("fat") || query.contains("diet") -> {
+                val totalMacros = snapshot.proteinGrams + snapshot.carbsGrams + snapshot.fatGrams
+                if (totalMacros > 0 && snapshot.caloriesIntake > 0) {
+                    val pPct = (snapshot.proteinGrams * 4 / snapshot.caloriesIntake * 100).toInt().coerceIn(0, 100)
+                    val cPct = (snapshot.carbsGrams * 4 / snapshot.caloriesIntake * 100).toInt().coerceIn(0, 100)
+                    val fPct = (snapshot.fatGrams * 9 / snapshot.caloriesIntake * 100).toInt().coerceIn(0, 100)
+                    "Today's Intake: ${snapshot.caloriesIntake.toInt()} kcal. Macros: Protein ${snapshot.proteinGrams.toInt()}g ($pPct%), Carbs ${snapshot.carbsGrams.toInt()}g ($cPct%), Fats ${snapshot.fatGrams.toInt()}g ($fPct%). Make sure you align this with your target goals!"
+                } else {
+                    "You haven't logged any food entries yet today. Logging your meals helps keep track of macronutrients. Let me know what you've eaten and I can estimate its profile!"
+                }
+            }
+            else -> {
+                "Hi! I'm your VitaAI Coach. Looking at your health snapshot today:\n" +
+                "- Steps: ${snapshot.steps} / 10000\n" +
+                "- Sleep: ${String.format("%.1f", snapshot.sleepDurationHours)} hrs\n" +
+                "- Hydration: ${String.format("%.1f", snapshot.hydrationLiters)} L\n" +
+                "- Heart Rate: ${snapshot.avgHeartRate.toInt()} BPM\n" +
+                "How can I help you optimize your wellness, nutrition, or workout schedule today?"
+            }
+        }
+    }
+
     suspend fun getMetricTrend(metric: HealthMetricType, days: Int): Map<LocalDate, Double> {
         val trend = linkedMapOf<LocalDate, Double>()
         val today = Instant.now().atZone(systemZone).toLocalDate()

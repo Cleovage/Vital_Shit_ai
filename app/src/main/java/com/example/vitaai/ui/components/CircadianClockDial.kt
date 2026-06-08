@@ -71,6 +71,47 @@ fun CircadianClockDial(
         label = "SleepArcEntry"
     )
 
+    val onSurface = MaterialTheme.colorScheme.onSurface
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    
+    val sleepBackingPaint = remember(density) {
+        androidx.compose.ui.graphics.Paint().asFrameworkPaint().apply {
+            isAntiAlias = true
+            style = android.graphics.Paint.Style.STROKE
+            strokeWidth = with(density) { 20.dp.toPx() }
+            strokeCap = android.graphics.Paint.Cap.ROUND
+            color = Color(0xFF3F51B5).copy(alpha = 0.25f).toArgb()
+            maskFilter = BlurMaskFilter(with(density) { 12.dp.toPx() }, BlurMaskFilter.Blur.NORMAL)
+        }
+    }
+    
+    val sleepForegroundBrush = remember {
+        Brush.sweepGradient(
+            colors = listOf(Color(0xFF3F51B5), Color(0xFF673AB7), Color(0xFF3F51B5))
+        )
+    }
+
+    val labelPaint = remember(onSurface, density) {
+        androidx.compose.ui.graphics.Paint().asFrameworkPaint().apply {
+            isAntiAlias = true
+            color = onSurface.toArgb()
+            textSize = with(density) { 12.sp.toPx() }
+            textAlign = android.graphics.Paint.Align.CENTER
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+        }
+    }
+
+    val glowPaint = remember(density) {
+        androidx.compose.ui.graphics.Paint().asFrameworkPaint().apply {
+            isAntiAlias = true
+            maskFilter = BlurMaskFilter(with(density) { 8.dp.toPx() }, BlurMaskFilter.Blur.NORMAL)
+        }
+    }
+
+    val dashPathEffect = remember {
+        PathEffect.dashPathEffect(floatArrayOf(6f, 6f), 0f)
+    }
+
     Canvas(
         modifier = modifier
             .aspectRatio(1f)
@@ -201,14 +242,6 @@ fun CircadianClockDial(
         // 4. Draw Sleep Zone Arc (Navy / Violet glass glow)
         // Draw backing glow via blur
         drawIntoCanvas { canvas ->
-            val paint = Paint().asFrameworkPaint().apply {
-                isAntiAlias = true
-                style = android.graphics.Paint.Style.STROKE
-                strokeWidth = 20.dp.toPx()
-                strokeCap = android.graphics.Paint.Cap.ROUND
-                color = Color(0xFF3F51B5).copy(alpha = 0.25f).toArgb()
-                maskFilter = BlurMaskFilter(12.dp.toPx(), BlurMaskFilter.Blur.NORMAL)
-            }
             val rect = android.graphics.RectF(
                 center.x - outerRadius,
                 center.y - outerRadius,
@@ -220,16 +253,13 @@ fun CircadianClockDial(
                 startSleepAngle.toFloat(),
                 sleepSweepDegrees.toFloat(),
                 false,
-                paint
+                sleepBackingPaint
             )
         }
 
         // Draw foreground sharp Sleep Zone arc
         drawArc(
-            brush = Brush.sweepGradient(
-                colors = listOf(Color(0xFF3F51B5), Color(0xFF673AB7), Color(0xFF3F51B5)),
-                center = center
-            ),
+            brush = sleepForegroundBrush,
             startAngle = startSleepAngle.toFloat(),
             sweepAngle = sleepSweepDegrees.toFloat(),
             useCenter = false,
@@ -240,23 +270,16 @@ fun CircadianClockDial(
 
         // 5. Draw Major Hour Labels (12 AM, 6 AM, 12 PM, 6 PM)
         drawIntoCanvas { canvas ->
-            val paint = Paint().asFrameworkPaint().apply {
-                isAntiAlias = true
-                color = Color(0xFF0F172A).toArgb() // Slate-900 label for high contrast
-                textSize = 12.sp.toPx()
-                textAlign = android.graphics.Paint.Align.CENTER
-                typeface = android.graphics.Typeface.DEFAULT_BOLD
-            }
-            
             // Labels positions: Midnight (top), Noon (bottom), 6 AM (right), 6 PM (left)
-            canvas.nativeCanvas.drawText("12 AM", center.x, center.y - outerRadius - 12.dp.toPx(), paint)
-            canvas.nativeCanvas.drawText("12 PM", center.x, center.y + outerRadius + 16.dp.toPx(), paint)
+            labelPaint.textAlign = android.graphics.Paint.Align.CENTER
+            canvas.nativeCanvas.drawText("12 AM", center.x, center.y - outerRadius - 12.dp.toPx(), labelPaint)
+            canvas.nativeCanvas.drawText("12 PM", center.x, center.y + outerRadius + 16.dp.toPx(), labelPaint)
             
-            paint.textAlign = android.graphics.Paint.Align.LEFT
-            canvas.nativeCanvas.drawText("6 AM", center.x + outerRadius + 8.dp.toPx(), center.y + 4.dp.toPx(), paint)
+            labelPaint.textAlign = android.graphics.Paint.Align.LEFT
+            canvas.nativeCanvas.drawText("6 AM", center.x + outerRadius + 8.dp.toPx(), center.y + 4.dp.toPx(), labelPaint)
             
-            paint.textAlign = android.graphics.Paint.Align.RIGHT
-            canvas.nativeCanvas.drawText("6 PM", center.x - outerRadius - 8.dp.toPx(), center.y + 4.dp.toPx(), paint)
+            labelPaint.textAlign = android.graphics.Paint.Align.RIGHT
+            canvas.nativeCanvas.drawText("6 PM", center.x - outerRadius - 8.dp.toPx(), center.y + 4.dp.toPx(), labelPaint)
         }
 
         // 6. Draw Current Time Indicator Hand
@@ -272,7 +295,7 @@ fun CircadianClockDial(
             start = center,
             end = pointerEnd,
             strokeWidth = 1.5.dp.toPx(),
-            pathEffect = PathEffect.dashPathEffect(floatArrayOf(6f, 6f), 0f)
+            pathEffect = dashPathEffect
         )
 
         // Draw center pivot node
@@ -289,11 +312,7 @@ fun CircadianClockDial(
 
         // Draw indicator node with glowing blur
         drawIntoCanvas { canvas ->
-            val glowPaint = Paint().asFrameworkPaint().apply {
-                isAntiAlias = true
-                color = vitaColors.accentAmber.copy(alpha = pulseAlpha).toArgb()
-                maskFilter = BlurMaskFilter(8.dp.toPx(), BlurMaskFilter.Blur.NORMAL)
-            }
+            glowPaint.color = vitaColors.accentAmber.copy(alpha = pulseAlpha).toArgb()
             canvas.nativeCanvas.drawCircle(pointerEnd.x, pointerEnd.y, 16.dp.toPx(), glowPaint)
         }
 

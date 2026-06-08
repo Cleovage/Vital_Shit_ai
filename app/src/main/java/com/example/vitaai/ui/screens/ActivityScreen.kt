@@ -38,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.vitaai.data.*
 import com.example.vitaai.data.local.WorkoutSessionEntity
+import com.example.vitaai.data.local.WorkoutSessionWithSets
 import com.example.vitaai.data.local.WorkoutTemplateEntity
 import com.example.vitaai.ui.components.ActionRow
 import com.example.vitaai.ui.components.GlassCard
@@ -106,7 +107,7 @@ fun ActivityScreen(
 private fun WorkoutHome(
     navController: NavController,
     templates: List<WorkoutTemplateEntity>,
-    sessions: List<WorkoutSessionEntity>,
+    sessions: List<WorkoutSessionWithSets>,
     query: String,
     onQueryChange: (String) -> Unit,
     snapshot: HealthSnapshot,
@@ -723,7 +724,7 @@ private fun WorkoutHome(
             }
         } else {
             items(sessions) { session ->
-                WorkoutSessionRow(session)
+                WorkoutSessionRow(session.session)
             }
         }
 
@@ -1090,6 +1091,8 @@ fun CustomProtocolDialog(
                                         selectedMode = mode
                                         if (mode == TRACKING_CARDIO) {
                                             gpsEnabled = true
+                                        } else {
+                                            gpsEnabled = false
                                         }
                                     }
                                     .padding(vertical = 8.dp),

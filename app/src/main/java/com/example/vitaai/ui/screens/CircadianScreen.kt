@@ -174,7 +174,7 @@ fun CircadianScreen(
                     GlowPrimaryButton(
                         text = if (uiState.isTrackingSleep) "Stop Sleep Tracker" else "Start Sleep Tracker",
                         onClick = { viewModel.toggleSleepTracking(context) },
-                        glowColor = if (uiState.isTrackingSleep) Color(0xFFD32F2F) else Primary,
+                        glowColor = if (uiState.isTrackingSleep) com.example.vitaai.ui.theme.Tertiary else Primary,
                         modifier = Modifier.fillMaxWidth()
                     )
                     
@@ -223,7 +223,7 @@ fun CircadianScreen(
                         value = debtText,
                         statusText = if (uiState.sleepDebtHours > 2.0) "High Deficit" else "Optimal",
                         icon = Icons.Default.Alarm,
-                        color = if (uiState.sleepDebtHours > 2.0) Color(0xFFD32F2F) else Color(0xFF4CAF50),
+                        color = if (uiState.sleepDebtHours > 2.0) com.example.vitaai.ui.theme.Tertiary else com.example.vitaai.ui.theme.AccentGreen,
                         modifier = Modifier.fillMaxHeight()
                     )
                 }
@@ -630,9 +630,9 @@ private fun SleepSessionRow(session: SleepSessionEntity) {
     val sdf = remember { SimpleDateFormat("EEE, MMM d", Locale.getDefault()) }
     val dateText = remember(session.startTimeMillis) { sdf.format(Date(session.startTimeMillis)) }
     val qualityColor = when {
-        session.sleepQualityScore >= 80 -> Color(0xFF4CAF50)
-        session.sleepQualityScore >= 60 -> Color(0xFFFF9800)
-        else -> Color(0xFFD32F2F)
+        session.sleepQualityScore >= 80 -> com.example.vitaai.ui.theme.AccentGreen
+        session.sleepQualityScore >= 60 -> com.example.vitaai.ui.theme.AccentAmber
+        else -> com.example.vitaai.ui.theme.Tertiary
     }
 
     Row(
