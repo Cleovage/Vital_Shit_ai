@@ -624,10 +624,12 @@ private fun WorkoutHome(
                         modifier = Modifier
                             .graphicsLayer {
                                 shadowElevation = 6f
+                                shape = RoundedCornerShape(12.dp)
                                 ambientShadowColor = Color.Black.copy(alpha = 0.06f)
                                 spotShadowColor = Color.Black.copy(alpha = 0.08f)
                             }
-                            .background(containerColor, RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(containerColor)
                             .border(1.dp, borderColor, RoundedCornerShape(12.dp))
                             .clickable { selectedCategory = category }
                             .padding(horizontal = 14.dp, vertical = 8.dp)
@@ -657,9 +659,8 @@ private fun WorkoutHome(
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 item {
                     GlassCardGlow(
-                        modifier = Modifier
-                            .size(width = 180.dp, height = 150.dp)
-                            .clickable { showCreateDialog = true },
+                        modifier = Modifier.size(width = 180.dp, height = 150.dp),
+                        onClick = { showCreateDialog = true },
                         glowColor = Primary,
                         cornerRadius = 16.dp
                     ) {
@@ -835,9 +836,8 @@ private fun WorkoutTemplateCard(template: WorkoutTemplateEntity, navController: 
     }
 
     GlassCardGlow(
-        modifier = Modifier
-            .size(width = 180.dp, height = 150.dp)
-            .clickable { navController.navigate("workout/session/${template.id}") },
+        modifier = Modifier.size(width = 180.dp, height = 150.dp),
+        onClick = { navController.navigate("workout/session/${template.id}") },
         glowColor = glowColor,
         cornerRadius = 16.dp
     ) {
@@ -993,10 +993,13 @@ fun CustomProtocolDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
+        containerColor = Color.Transparent,
+        tonalElevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth(0.92f)
-            .border(1.dp, Color.Black.copy(alpha = 0.08f), RoundedCornerShape(28.dp))
-            .background(Color.White.copy(alpha = 0.95f), RoundedCornerShape(28.dp)),
+            .clip(RoundedCornerShape(28.dp))
+            .background(Color.White.copy(alpha = 0.95f))
+            .border(1.dp, Color.Black.copy(alpha = 0.08f), RoundedCornerShape(28.dp)),
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -1080,7 +1083,8 @@ fun CustomProtocolDialog(
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .background(bgCol, RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(bgCol)
                                     .border(1.dp, borderCol, RoundedCornerShape(8.dp))
                                     .clickable {
                                         selectedMode = mode
@@ -1141,6 +1145,7 @@ fun CustomProtocolDialog(
                             .fillMaxWidth()
                             .graphicsLayer {
                                 shadowElevation = 8f
+                                shape = RoundedCornerShape(12.dp)
                                 ambientShadowColor = Color.Black.copy(alpha = 0.08f)
                                 spotShadowColor = Color.Black.copy(alpha = 0.10f)
                             }

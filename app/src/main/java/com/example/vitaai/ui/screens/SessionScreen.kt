@@ -420,6 +420,7 @@ private fun HUDStatTile(
     GlassCard(
         modifier = modifier.graphicsLayer {
             shadowElevation = 8f
+            shape = RoundedCornerShape(20.dp)
             ambientShadowColor = Color.Black.copy(alpha = 0.08f)
             spotShadowColor = Color.Black.copy(alpha = 0.10f)
         },

@@ -226,11 +226,12 @@ fun StreakPipelineTimeline(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .graphicsLayer {
-                shadowElevation = 8f
-                ambientShadowColor = Color.Black.copy(alpha = 0.08f)
+            .graphicsLayer(
+                shadowElevation = 8f,
+                shape = shape,
+                ambientShadowColor = Color.Black.copy(alpha = 0.08f),
                 spotShadowColor = Color.Black.copy(alpha = 0.10f)
-            }
+            )
             .clip(shape)
             .background(vitaColors.glassFill.copy(alpha = 0.72f))
             .border(1.dp, vitaColors.glassBorderDark.copy(alpha = 0.09f), shape)

@@ -484,6 +484,7 @@ fun CircadianScreen(
                         .padding(horizontal = 16.dp)
                         .graphicsLayer {
                             shadowElevation = 10f
+                            shape = RoundedCornerShape(24.dp)
                             ambientShadowColor = Color.Black.copy(alpha = 0.08f)
                             spotShadowColor = Color.Black.copy(alpha = 0.10f)
                         }
@@ -550,11 +551,12 @@ private fun BentoStatCard(
                 }
             }
             // Hardware-accelerated shadow layer
-            .graphicsLayer {
-                shadowElevation = 10f
-                ambientShadowColor = Color.Black.copy(alpha = 0.08f)
+            .graphicsLayer(
+                shadowElevation = 10f,
+                shape = shape,
+                ambientShadowColor = Color.Black.copy(alpha = 0.08f),
                 spotShadowColor = Color.Black.copy(alpha = 0.10f)
-            }
+            )
             .clip(shape)
             .background(vitaColors.glassFill.copy(alpha = 0.72f))
             .border(

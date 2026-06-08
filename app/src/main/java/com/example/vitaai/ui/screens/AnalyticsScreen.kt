@@ -580,8 +580,8 @@ private fun RangeSelectorPill(
                             Modifier.shadow(
                                 elevation = 6.dp,
                                 shape = pillShape,
-                                ambientColor = Color(0xFF0F172A).copy(alpha = 0.18f),
-                                spotColor = Color(0xFF0F172A).copy(alpha = 0.18f)
+                                ambientColor = Color.Black.copy(alpha = 0.18f),
+                                spotColor = Color.Black.copy(alpha = 0.18f)
                             )
                         } else Modifier
                     )

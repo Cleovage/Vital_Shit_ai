@@ -165,6 +165,7 @@ fun GlassSecondaryButton(
                 scaleX = scale
                 scaleY = scale
                 shadowElevation = if (isPressed) 2f else 6f
+                shape = RoundedCornerShape(20.dp)
             }
             .glassmorphicBorder(cornerRadius = 20.dp, borderWidth = 1.dp)
     ) {

@@ -169,6 +169,7 @@ fun NutritionScreen(viewModel: NutritionViewModel = hiltViewModel()) {
                             expanded = menuExpanded,
                             onDismissRequest = { menuExpanded = false },
                             modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
                                 .background(Color.White)
                                 .border(1.dp, Color.Black.copy(alpha = 0.08f), RoundedCornerShape(12.dp))
                         ) {
@@ -516,7 +517,7 @@ private fun HydrationCommand(
                         onClick = { editingWaterGoal = !editingWaterGoal },
                         modifier = Modifier
                             .size(24.dp)
-                            .graphicsLayer { shadowElevation = 6f }
+                            .shadow(6.dp, CircleShape)
                     ) {
                         Icon(
                             imageVector = if (editingWaterGoal) Icons.Default.CheckCircle else Icons.Default.Edit,
@@ -1072,10 +1073,13 @@ private fun FoodDetailDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
+        containerColor = Color.Transparent,
+        tonalElevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth(0.92f)
-            .border(1.dp, Primary.copy(alpha = 0.35f), RoundedCornerShape(24.dp))
-            .background(Color(0xFF121424).copy(alpha = 0.98f), RoundedCornerShape(24.dp)),
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color.White.copy(alpha = 0.95f))
+            .border(1.dp, Color.Black.copy(alpha = 0.08f), RoundedCornerShape(24.dp)),
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -1089,7 +1093,7 @@ private fun FoodDetailDialog(
                 Text(
                     text = food.name.uppercase(),
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
-                    color = Color.White,
+                    color = Color(0xFF0F172A),
                     fontWeight = FontWeight.Black
                 )
                 Text(
@@ -1098,7 +1102,7 @@ private fun FoodDetailDialog(
                     color = Color.Black.copy(alpha = 0.5f)
                 )
                 Spacer(Modifier.height(8.dp))
-                HorizontalDivider(color = Color.White.copy(alpha = 0.1f), thickness = 1.dp)
+                HorizontalDivider(color = Color.Black.copy(alpha = 0.06f), thickness = 1.dp)
             }
         },
         text = {
@@ -1126,8 +1130,9 @@ private fun FoodDetailDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.Black.copy(alpha = 0.3f))
-                        .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.Black.copy(alpha = 0.03f))
+                        .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(12.dp))
                         .padding(12.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
@@ -1174,7 +1179,7 @@ private fun FoodDetailDialog(
                           colors = SliderDefaults.colors(
                               thumbColor = Primary,
                               activeTrackColor = Primary,
-                              inactiveTrackColor = Color.White.copy(alpha = 0.1f)
+                              inactiveTrackColor = Color.Black.copy(alpha = 0.06f)
                           )
                       )
                   }
@@ -1211,10 +1216,13 @@ private fun DrinkDetailDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
+        containerColor = Color.Transparent,
+        tonalElevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth(0.92f)
-            .border(1.dp, Primary.copy(alpha = 0.35f), RoundedCornerShape(24.dp))
-            .background(Color(0xFF121424).copy(alpha = 0.98f), RoundedCornerShape(24.dp)),
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color.White.copy(alpha = 0.95f))
+            .border(1.dp, Color.Black.copy(alpha = 0.08f), RoundedCornerShape(24.dp)),
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -1228,7 +1236,7 @@ private fun DrinkDetailDialog(
                 Text(
                     text = drink.name.uppercase(),
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
-                    color = Color.White,
+                    color = Color(0xFF0F172A),
                     fontWeight = FontWeight.Black
                 )
                 Text(
@@ -1238,7 +1246,7 @@ private fun DrinkDetailDialog(
                     maxLines = 2
                 )
                 Spacer(Modifier.height(8.dp))
-                HorizontalDivider(color = Color.White.copy(alpha = 0.1f), thickness = 1.dp)
+                HorizontalDivider(color = Color.Black.copy(alpha = 0.06f), thickness = 1.dp)
             }
         },
         text = {
@@ -1266,8 +1274,9 @@ private fun DrinkDetailDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.Black.copy(alpha = 0.3f))
-                        .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.Black.copy(alpha = 0.03f))
+                        .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(12.dp))
                         .padding(12.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
@@ -1303,7 +1312,7 @@ private fun DrinkDetailDialog(
                         colors = SliderDefaults.colors(
                             thumbColor = Primary,
                             activeTrackColor = Primary,
-                            inactiveTrackColor = Color.White.copy(alpha = 0.1f)
+                            inactiveTrackColor = Color.Black.copy(alpha = 0.06f)
                         )
                     )
                 }
@@ -1341,13 +1350,26 @@ private fun CustomFoodDialog(
     var sugar by remember { mutableStateOf("") }
     var sodium by remember { mutableStateOf("") }
 
+    val tfColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = Primary,
+        unfocusedBorderColor = Color.Black.copy(alpha = 0.08f),
+        focusedLabelColor = Primary,
+        unfocusedLabelColor = OnSurfaceVariant,
+        cursorColor = Primary,
+        focusedTextColor = Color(0xFF0F172A),
+        unfocusedTextColor = Color(0xFF0F172A)
+    )
+
     AlertDialog(
         onDismissRequest = onDismiss,
         properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
+        containerColor = Color.Transparent,
+        tonalElevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth(0.92f)
-            .border(1.dp, Primary.copy(alpha = 0.35f), RoundedCornerShape(24.dp))
-            .background(Color(0xFF121424).copy(alpha = 0.98f), RoundedCornerShape(24.dp)),
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color.White.copy(alpha = 0.95f))
+            .border(1.dp, Color.Black.copy(alpha = 0.08f), RoundedCornerShape(24.dp)),
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -1364,7 +1386,7 @@ private fun CustomFoodDialog(
                     color = Color(0xFF0F172A)
                 )
                 Spacer(Modifier.height(8.dp))
-                HorizontalDivider(color = Color.White.copy(alpha = 0.1f), thickness = 1.dp)
+                HorizontalDivider(color = Color.Black.copy(alpha = 0.06f), thickness = 1.dp)
             }
         },
         text = {
@@ -1380,15 +1402,7 @@ private fun CustomFoodDialog(
                     label = { Text("FOOD NAME (e.g. Rice Bowl)", style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Primary,
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
-                        focusedLabelColor = Primary,
-                        unfocusedLabelColor = OnSurfaceVariant,
-                        cursorColor = Primary,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White
-                    )
+                    colors = tfColors
                 )
 
                 OutlinedTextField(
@@ -1397,15 +1411,7 @@ private fun CustomFoodDialog(
                     label = { Text("SERVING DESCRIPTION (e.g. 1 plate, 150g)", style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Primary,
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
-                        focusedLabelColor = Primary,
-                        unfocusedLabelColor = OnSurfaceVariant,
-                        cursorColor = Primary,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White
-                    )
+                    colors = tfColors
                 )
 
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -1416,15 +1422,7 @@ private fun CustomFoodDialog(
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Primary,
-                            unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
-                            focusedLabelColor = Primary,
-                            unfocusedLabelColor = OnSurfaceVariant,
-                            cursorColor = Primary,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
-                        )
+                        colors = tfColors
                     )
                     OutlinedTextField(
                         value = protein,
@@ -1433,15 +1431,7 @@ private fun CustomFoodDialog(
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Primary,
-                            unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
-                            focusedLabelColor = Primary,
-                            unfocusedLabelColor = OnSurfaceVariant,
-                            cursorColor = Primary,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
-                        )
+                        colors = tfColors
                     )
                 }
 
@@ -1453,15 +1443,7 @@ private fun CustomFoodDialog(
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Primary,
-                            unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
-                            focusedLabelColor = Primary,
-                            unfocusedLabelColor = OnSurfaceVariant,
-                            cursorColor = Primary,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
-                        )
+                        colors = tfColors
                     )
                     OutlinedTextField(
                         value = fat,
@@ -1470,15 +1452,7 @@ private fun CustomFoodDialog(
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Primary,
-                            unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
-                            focusedLabelColor = Primary,
-                            unfocusedLabelColor = OnSurfaceVariant,
-                            cursorColor = Primary,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
-                        )
+                        colors = tfColors
                     )
                 }
 
@@ -1490,15 +1464,7 @@ private fun CustomFoodDialog(
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Primary,
-                            unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
-                            focusedLabelColor = Primary,
-                            unfocusedLabelColor = OnSurfaceVariant,
-                            cursorColor = Primary,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
-                        )
+                        colors = tfColors
                     )
                     OutlinedTextField(
                         value = sodium,
@@ -1507,15 +1473,7 @@ private fun CustomFoodDialog(
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Primary,
-                            unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
-                            focusedLabelColor = Primary,
-                            unfocusedLabelColor = OnSurfaceVariant,
-                            cursorColor = Primary,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
-                        )
+                        colors = tfColors
                     )
                 }
             }
@@ -1568,10 +1526,13 @@ private fun DiagnosticDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
+        containerColor = Color.Transparent,
+        tonalElevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth(0.92f)
-            .border(1.dp, Primary.copy(alpha = 0.35f), RoundedCornerShape(24.dp))
-            .background(Color(0xFF121424).copy(alpha = 0.98f), RoundedCornerShape(24.dp)),
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color.White.copy(alpha = 0.95f))
+            .border(1.dp, Color.Black.copy(alpha = 0.08f), RoundedCornerShape(24.dp)),
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -1588,7 +1549,7 @@ private fun DiagnosticDialog(
                     color = Color(0xFF0F172A)
                 )
                 Spacer(Modifier.height(8.dp))
-                HorizontalDivider(color = Color.White.copy(alpha = 0.1f), thickness = 1.dp)
+                HorizontalDivider(color = Color.Black.copy(alpha = 0.06f), thickness = 1.dp)
             }
         },
         text = {
@@ -1621,8 +1582,9 @@ private fun DiagnosticItemRow(label: String, value: String, status: String, opti
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Black.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-            .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.Black.copy(alpha = 0.03f))
+            .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(12.dp))
             .padding(12.dp)
     ) {
         Row(
@@ -1638,7 +1600,7 @@ private fun DiagnosticItemRow(label: String, value: String, status: String, opti
             Text(
                 text = value,
                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.Black),
-                color = Color.White
+                color = Color(0xFF0F172A)
             )
         }
         Spacer(Modifier.height(4.dp))
@@ -1647,7 +1609,7 @@ private fun DiagnosticItemRow(label: String, value: String, status: String, opti
             style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 8.sp,
                 fontWeight = FontWeight.Black,
-                color = if (optimal) Color(0xFF81C784) else Color(0xFFFF8A80)
+                color = if (optimal) Color(0xFF2E7D32) else Color(0xFFC62828)
             )
         )
     }
@@ -1674,8 +1636,9 @@ private fun MacroValueColumn(label: String, value: String, color: Color) {
 private fun MicroDetailRow(label: String, value: String) {
     Row(
         modifier = Modifier
-            .background(Color.Black.copy(alpha = 0.3f), RoundedCornerShape(6.dp))
-            .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(6.dp))
+            .clip(RoundedCornerShape(6.dp))
+            .background(Color.Black.copy(alpha = 0.03f))
+            .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(6.dp))
             .padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -1688,7 +1651,7 @@ private fun MicroDetailRow(label: String, value: String) {
         Text(
             text = value,
             style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp, fontWeight = FontWeight.Bold),
-            color = Color.White
+            color = Color(0xFF0F172A)
         )
     }
 }

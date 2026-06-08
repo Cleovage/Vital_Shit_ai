@@ -66,8 +66,7 @@ fun LuminousLuxTimeline(
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .height(180.dp)
-                .background(vitaColors.glassFill.copy(alpha = 0.05f)),
+                .height(180.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(

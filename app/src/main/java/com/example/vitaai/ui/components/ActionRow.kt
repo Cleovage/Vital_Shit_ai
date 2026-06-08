@@ -32,9 +32,8 @@ fun ActionRow(
     onClick: () -> Unit
 ) {
     GlassCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

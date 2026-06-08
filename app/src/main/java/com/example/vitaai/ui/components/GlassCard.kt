@@ -58,11 +58,12 @@ fun GlassCard(
                 }
             }
             // Hardware-accelerated layer shadow for API 28+ devices
-            .graphicsLayer {
-                shadowElevation = 12f
-                ambientShadowColor = Color.Black.copy(alpha = 0.12f)
+            .graphicsLayer(
+                shadowElevation = 12f,
+                shape = shape,
+                ambientShadowColor = Color.Black.copy(alpha = 0.12f),
                 spotShadowColor = Color.Black.copy(alpha = 0.15f)
-            }
+            )
             .clip(shape)
             .then(
                 if (onClick != null) {
@@ -122,11 +123,12 @@ fun GlassCardGlow(
                 }
             }
             // Hardware-accelerated layer shadow with glow color
-            .graphicsLayer {
-                shadowElevation = 14f
-                ambientShadowColor = Color.Black.copy(alpha = 0.12f)
+            .graphicsLayer(
+                shadowElevation = 14f,
+                shape = shape,
+                ambientShadowColor = Color.Black.copy(alpha = 0.12f),
                 spotShadowColor = Color.Black.copy(alpha = 0.18f)
-            }
+            )
             .clip(shape)
             .then(
                 if (onClick != null) {

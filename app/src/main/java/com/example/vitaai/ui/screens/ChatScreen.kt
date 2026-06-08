@@ -349,8 +349,8 @@ private fun ChatBubble(message: Message) {
                     .shadow(
                         elevation = 6.dp,
                         shape = shape,
-                        ambientColor = Color(0xFF0F172A).copy(alpha = 0.18f),
-                        spotColor = Color(0xFF0F172A).copy(alpha = 0.18f)
+                        ambientColor = Color.Black.copy(alpha = 0.18f),
+                        spotColor = Color.Black.copy(alpha = 0.18f)
                     )
                     .clip(shape)
                     .background(Color(0xFF0F172A))

@@ -368,6 +368,7 @@ private fun DashboardHeader() {
             modifier = Modifier
                 .graphicsLayer {
                     shadowElevation = 8f
+                    shape = RoundedCornerShape(20.dp)
                     ambientShadowColor = Color.Black.copy(alpha = 0.08f)
                     spotShadowColor = Color.Black.copy(alpha = 0.10f)
                 }
@@ -789,16 +790,16 @@ private fun ReadinessScoreCard(
                     Box(
                         modifier = Modifier
                             .size(84.dp)
-                            .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.8f))
-                            .border(1.dp, Color.White.copy(alpha = 0.9f), CircleShape)
                             .shadow(
                                 elevation = 8.dp,
                                 shape = CircleShape,
                                 clip = false,
                                 ambientColor = Color.Black.copy(alpha = 0.08f),
                                 spotColor = Color.Black.copy(alpha = 0.08f)
-                            ),
+                            )
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.8f))
+                            .border(1.dp, Color.White.copy(alpha = 0.9f), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -818,6 +819,7 @@ private fun ReadinessScoreCard(
                     .fillMaxWidth()
                     .graphicsLayer {
                         shadowElevation = 8f
+                        shape = RoundedCornerShape(20.dp)
                         ambientShadowColor = Color.Black.copy(alpha = 0.08f)
                         spotShadowColor = Color.Black.copy(alpha = 0.10f)
                     }

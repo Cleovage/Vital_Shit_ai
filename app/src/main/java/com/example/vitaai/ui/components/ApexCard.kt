@@ -3,6 +3,7 @@ package com.example.vitaai.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,7 +39,7 @@ import androidx.compose.ui.unit.sp
 fun ApexCard(
     modifier: Modifier = Modifier,
     title: String? = null,
-    shape: Shape = MaterialTheme.shapes.large,
+    shape: Shape = RoundedCornerShape(24.dp),
     containerColor: Color = Color.White.copy(alpha = 0.82f),
     elevation: Dp = 6.dp,
     content: @Composable BoxScope.() -> Unit
@@ -50,6 +51,11 @@ fun ApexCard(
         modifier = modifier
             // Gaussian drop shadow behind card
             .drawBehind {
+                val radiusPx = if (shape is RoundedCornerShape) {
+                    shape.topStart.toPx(size, this)
+                } else {
+                    24.dp.toPx()
+                }
                 val paint = Paint().apply {
                     asFrameworkPaint().apply {
                         isAntiAlias = true
@@ -63,8 +69,8 @@ fun ApexCard(
                         top = 0f,
                         right = size.width,
                         bottom = size.height,
-                        radiusX = 30.dp.toPx(),
-                        radiusY = 30.dp.toPx(),
+                        radiusX = radiusPx,
+                        radiusY = radiusPx,
                         paint = paint
                     )
                 }

@@ -459,6 +459,7 @@ fun AchievementsDialog(
                                 .fillMaxWidth()
                                 .graphicsLayer {
                                     shadowElevation = 6f
+                                    shape = RoundedCornerShape(12.dp)
                                     ambientShadowColor = Color.Black.copy(alpha = 0.06f)
                                     spotShadowColor = Color.Black.copy(alpha = 0.08f)
                                 }
