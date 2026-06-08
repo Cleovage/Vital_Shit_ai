@@ -192,3 +192,107 @@ fun GlassmorphicBentoCard(
         content = content
     )
 }
+
+/**
+ * Reusable empty state with icon, title, message, and optional action button.
+ * Rendered on a translucent glassmorphic surface.
+ */
+@Composable
+fun EmptyStateCard(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    message: String,
+    modifier: Modifier = Modifier,
+    actionText: String? = null,
+    onAction: (() -> Unit)? = null
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color.White.copy(alpha = 0.65f))
+            .glassmorphicBorder(cornerRadius = 24.dp)
+            .padding(32.dp),
+        contentAlignment = androidx.compose.ui.Alignment.Center
+    ) {
+        androidx.compose.foundation.layout.Column(
+            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color.Black.copy(alpha = 0.05f)),
+                contentAlignment = androidx.compose.ui.Alignment.Center
+            ) {
+                androidx.compose.material3.Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Color.Black.copy(alpha = 0.3f),
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+            androidx.compose.material3.Text(
+                text = title,
+                style = androidx.compose.material3.MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+                ),
+                color = Color.Black.copy(alpha = 0.65f),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            androidx.compose.material3.Text(
+                text = message,
+                style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                color = Color.Black.copy(alpha = 0.4f),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            if (actionText != null && onAction != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+                androidx.compose.material3.TextButton(onClick = onAction) {
+                    androidx.compose.material3.Text(
+                        text = actionText,
+                        style = androidx.compose.material3.MaterialTheme.typography.labelLarge.copy(
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Inline loading state card — shimmer surface with centered progress text.
+ */
+@Composable
+fun LoadingStateCard(
+    message: String = "Loading…",
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .shimmerOverlay()
+            .glassmorphicBorder(cornerRadius = 24.dp),
+        contentAlignment = androidx.compose.ui.Alignment.Center
+    ) {
+        androidx.compose.foundation.layout.Row(
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            androidx.compose.material3.CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 2.dp,
+                color = Color.Black.copy(alpha = 0.35f)
+            )
+            androidx.compose.material3.Text(
+                text = message,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                color = Color.Black.copy(alpha = 0.45f)
+            )
+        }
+    }
+}

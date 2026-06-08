@@ -76,12 +76,13 @@ fun LuminousLineChart(
     val rightPaddingPx = with(density) { 8.dp.toPx() }
     val topPaddingPx = with(density) { 8.dp.toPx() }
     val bottomPaddingPx = if (xAxisLabels.isNotEmpty()) {
-        with(density) { maxOf(20.dp.toPx(), labelTextSizePx * 2.2f) }
+        with(density) { maxOf(32.dp.toPx(), labelTextSizePx * 3.5f) }
     } else {
-        with(density) { 8.dp.toPx() }
+        with(density) { 12.dp.toPx() }
     }
     val dp8Px = with(density) { 8.dp.toPx() }
     val dp28Px = with(density) { 28.dp.toPx() }
+    val dp40Px = with(density) { 40.dp.toPx() }
 
     val maxVal = dataPoints.maxOrNull() ?: 0f
     val minVal = dataPoints.minOrNull() ?: 0f
@@ -98,13 +99,13 @@ fun LuminousLineChart(
         yTickValues.map(yAxisLabelFormatter)
     }
 
-    val leftPaddingPx = remember(yLabels, showAxes, labelTextSizePx, axisTickLengthPx, labelPaddingPx, dp8Px, dp28Px) {
+    val leftPaddingPx = remember(yLabels, showAxes, labelTextSizePx, axisTickLengthPx, labelPaddingPx, dp8Px, dp28Px, dp40Px) {
         val paint = Paint().apply {
             textSize = labelTextSizePx
         }
         val maxLabelWidth = if (yLabels.isNotEmpty()) yLabels.maxOf { paint.measureText(it) } else 0f
         if (showAxes || yLabels.isNotEmpty()) {
-            maxOf(dp28Px, maxLabelWidth + labelPaddingPx + axisTickLengthPx)
+            maxOf(dp40Px, maxLabelWidth + labelPaddingPx * 1.5f + axisTickLengthPx)
         } else {
             dp8Px
         }
@@ -185,16 +186,18 @@ fun LuminousLineChart(
             )
         }
 
-        val gridColor = axisColor.copy(alpha = 0.12f)
         if (showGrid) {
-            yTickValues.forEach { value ->
+            // Alternating major/minor grid lines for visual hierarchy
+            yTickValues.forEachIndexed { idx, value ->
                 val y = chartBottom - ((value - axisMin) / range) * chartHeight
+                val isMajor = idx % 2 == 0
                 drawLine(
-                    color = gridColor,
+                    color = axisColor.copy(alpha = if (isMajor) 0.10f else 0.05f),
                     start = Offset(chartLeft, y),
                     end = Offset(chartRight, y),
-                    strokeWidth = axisStroke,
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
+                    strokeWidth = if (isMajor) 1.5f else 0.8f,
+                    pathEffect = if (isMajor) PathEffect.dashPathEffect(floatArrayOf(12f, 8f), 0f)
+                                 else PathEffect.dashPathEffect(floatArrayOf(4f, 4f), 0f)
                 )
             }
 
@@ -207,11 +210,11 @@ fun LuminousLineChart(
                         chartLeft + index * xStep
                     }
                     drawLine(
-                        color = gridColor,
+                        color = axisColor.copy(alpha = 0.06f),
                         start = Offset(x, chartTop),
                         end = Offset(x, chartBottom),
-                        strokeWidth = axisStroke,
-                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
+                        strokeWidth = 0.8f,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 4f), 0f)
                     )
                 }
             }
@@ -282,10 +285,10 @@ fun LuminousLineChart(
 
         if (showAxes) {
             drawLine(
-                color = axisColor.copy(alpha = 0.4f),
+                color = axisColor.copy(alpha = 0.3f),
                 start = Offset(chartLeft, chartBottom),
                 end = Offset(chartRight, chartBottom),
-                strokeWidth = axisStroke
+                strokeWidth = 1.5f
             )
         }
         
@@ -388,8 +391,13 @@ fun LuminousLineChart(
                     textSize = labelTextSizePx
                 }
                 val xStep = if (xAxisLabels.size == dataPoints.size) stepX else chartWidth / (xAxisLabels.size - 1).coerceAtLeast(1)
-                
+                // Smart label skipping to avoid crowding
+                val estimatedLabelWidth = labelTextSizePx * 4f
+                val maxLabels = (chartWidth / estimatedLabelWidth).toInt().coerceAtLeast(2)
+                val skipStep = (xAxisLabels.size / maxLabels).coerceAtLeast(1)
+
                 xAxisLabels.forEachIndexed { index, label ->
+                    if (index % skipStep != 0 && index != xAxisLabels.lastIndex) return@forEachIndexed
                     val x = if (xAxisLabels.size == dataPoints.size) {
                         chartLeft + index * stepX
                     } else {
@@ -400,7 +408,7 @@ fun LuminousLineChart(
                         xAxisLabels.lastIndex -> Paint.Align.RIGHT
                         else -> Paint.Align.CENTER
                     }
-                    canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xLabelPaint)
+                    canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.8f, xLabelPaint)
                 }
             }
         }
@@ -445,12 +453,13 @@ fun LuminousBarChart(
     val rightPaddingPx = with(density) { 8.dp.toPx() }
     val topPaddingPx = with(density) { 8.dp.toPx() }
     val bottomPaddingPx = if (xAxisLabels.isNotEmpty()) {
-        with(density) { maxOf(20.dp.toPx(), labelTextSizePx * 2.2f) }
+        with(density) { maxOf(32.dp.toPx(), labelTextSizePx * 3.5f) }
     } else {
-        with(density) { 8.dp.toPx() }
+        with(density) { 12.dp.toPx() }
     }
     val dp8Px = with(density) { 8.dp.toPx() }
     val dp28Px = with(density) { 28.dp.toPx() }
+    val dp40Px = with(density) { 40.dp.toPx() }
 
     val maxVal = dataPoints.maxOrNull() ?: 0f
     val axisMax = if (maxVal <= 0f) 1f else maxVal
@@ -466,13 +475,13 @@ fun LuminousBarChart(
         yTickValues.map(yAxisLabelFormatter)
     }
 
-    val leftPaddingPx = remember(yLabels, showAxes, labelTextSizePx, axisTickLengthPx, labelPaddingPx, dp8Px, dp28Px) {
+    val leftPaddingPx = remember(yLabels, showAxes, labelTextSizePx, axisTickLengthPx, labelPaddingPx, dp8Px, dp28Px, dp40Px) {
         val paint = Paint().apply {
             textSize = labelTextSizePx
         }
         val maxLabelWidth = if (yLabels.isNotEmpty()) yLabels.maxOf { paint.measureText(it) } else 0f
         if (showAxes || yLabels.isNotEmpty()) {
-            maxOf(dp28Px, maxLabelWidth + labelPaddingPx + axisTickLengthPx)
+            maxOf(dp40Px, maxLabelWidth + labelPaddingPx * 1.5f + axisTickLengthPx)
         } else {
             dp8Px
         }
@@ -537,16 +546,17 @@ fun LuminousBarChart(
         val gap = totalBarWidth * barSpacing
         val barWidth = totalBarWidth - gap
 
-        val gridColor = axisColor.copy(alpha = 0.12f)
         if (showGrid) {
-            yTickValues.forEach { value ->
+            yTickValues.forEachIndexed { idx, value ->
                 val y = chartBottom - ((value - axisMin) / range) * chartHeight
+                val isMajor = idx % 2 == 0
                 drawLine(
-                    color = gridColor,
+                    color = axisColor.copy(alpha = if (isMajor) 0.10f else 0.05f),
                     start = Offset(chartLeft, y),
                     end = Offset(chartRight, y),
-                    strokeWidth = axisStroke,
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
+                    strokeWidth = if (isMajor) 1.5f else 0.8f,
+                    pathEffect = if (isMajor) PathEffect.dashPathEffect(floatArrayOf(12f, 8f), 0f)
+                                 else PathEffect.dashPathEffect(floatArrayOf(4f, 4f), 0f)
                 )
             }
 
@@ -559,11 +569,11 @@ fun LuminousBarChart(
                         chartLeft + index * xStep
                     }
                     drawLine(
-                        color = gridColor,
+                        color = axisColor.copy(alpha = 0.06f),
                         start = Offset(x, chartTop),
                         end = Offset(x, chartBottom),
-                        strokeWidth = axisStroke,
-                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
+                        strokeWidth = 0.8f,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 4f), 0f)
                     )
                 }
             }
@@ -594,10 +604,10 @@ fun LuminousBarChart(
 
         if (showAxes) {
             drawLine(
-                color = axisColor.copy(alpha = 0.4f),
+                color = axisColor.copy(alpha = 0.3f),
                 start = Offset(chartLeft, chartBottom),
                 end = Offset(chartRight, chartBottom),
-                strokeWidth = axisStroke
+                strokeWidth = 1.5f
             )
         }
         
@@ -691,8 +701,12 @@ fun LuminousBarChart(
                     textSize = labelTextSizePx
                 }
                 val xStep = if (xAxisLabels.size == dataPoints.size) totalBarWidth else chartWidth / (xAxisLabels.size - 1).coerceAtLeast(1)
-                
+                val estimatedLabelWidth = labelTextSizePx * 4f
+                val maxLabelsBar = (chartWidth / estimatedLabelWidth).toInt().coerceAtLeast(2)
+                val skipStepBar = (xAxisLabels.size / maxLabelsBar).coerceAtLeast(1)
+
                 xAxisLabels.forEachIndexed { index, label ->
+                    if (index % skipStepBar != 0 && index != xAxisLabels.lastIndex) return@forEachIndexed
                     val x = if (xAxisLabels.size == dataPoints.size) {
                         chartLeft + index * totalBarWidth + gap / 2 + barWidth / 2
                     } else {
@@ -703,7 +717,7 @@ fun LuminousBarChart(
                         xAxisLabels.lastIndex -> Paint.Align.RIGHT
                         else -> Paint.Align.CENTER
                     }
-                    canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xLabelPaint)
+                    canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.8f, xLabelPaint)
                 }
             }
         }
@@ -842,12 +856,13 @@ fun LuminousStackedBarChart(
     val rightPaddingPx = with(density) { 8.dp.toPx() }
     val topPaddingPx = with(density) { 8.dp.toPx() }
     val bottomPaddingPx = if (xAxisLabels.isNotEmpty()) {
-        with(density) { maxOf(20.dp.toPx(), labelTextSizePx * 2.2f) }
+        with(density) { maxOf(32.dp.toPx(), labelTextSizePx * 3.5f) }
     } else {
-        with(density) { 8.dp.toPx() }
+        with(density) { 12.dp.toPx() }
     }
     val dp8Px = with(density) { 8.dp.toPx() }
     val dp28Px = with(density) { 28.dp.toPx() }
+    val dp40Px = with(density) { 40.dp.toPx() }
 
     val maxVal = dataPoints.maxOfOrNull { it.first + it.second } ?: 0f
     val axisMax = if (maxVal <= 0f) 1f else maxVal
@@ -863,13 +878,13 @@ fun LuminousStackedBarChart(
         yTickValues.map(yAxisLabelFormatter)
     }
 
-    val leftPaddingPx = remember(yLabels, showAxes, labelTextSizePx, axisTickLengthPx, labelPaddingPx, dp8Px, dp28Px) {
+    val leftPaddingPx = remember(yLabels, showAxes, labelTextSizePx, axisTickLengthPx, labelPaddingPx, dp8Px, dp28Px, dp40Px) {
         val paint = Paint().apply {
             textSize = labelTextSizePx
         }
         val maxLabelWidth = if (yLabels.isNotEmpty()) yLabels.maxOf { paint.measureText(it) } else 0f
         if (showAxes || yLabels.isNotEmpty()) {
-            maxOf(dp28Px, maxLabelWidth + labelPaddingPx + axisTickLengthPx)
+            maxOf(dp40Px, maxLabelWidth + labelPaddingPx * 1.5f + axisTickLengthPx)
         } else {
             dp8Px
         }
@@ -934,16 +949,17 @@ fun LuminousStackedBarChart(
         val gap = totalBarWidth * barSpacing
         val barWidth = totalBarWidth - gap
 
-        val gridColor = axisColor.copy(alpha = 0.12f)
         if (showGrid) {
-            yTickValues.forEach { value ->
+            yTickValues.forEachIndexed { idx, value ->
                 val y = chartBottom - ((value - axisMin) / range) * chartHeight
+                val isMajor = idx % 2 == 0
                 drawLine(
-                    color = gridColor,
+                    color = axisColor.copy(alpha = if (isMajor) 0.10f else 0.05f),
                     start = Offset(chartLeft, y),
                     end = Offset(chartRight, y),
-                    strokeWidth = axisStroke,
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
+                    strokeWidth = if (isMajor) 1.5f else 0.8f,
+                    pathEffect = if (isMajor) PathEffect.dashPathEffect(floatArrayOf(12f, 8f), 0f)
+                                 else PathEffect.dashPathEffect(floatArrayOf(4f, 4f), 0f)
                 )
             }
 
@@ -956,11 +972,11 @@ fun LuminousStackedBarChart(
                         chartLeft + index * xStep
                     }
                     drawLine(
-                        color = gridColor,
+                        color = axisColor.copy(alpha = 0.06f),
                         start = Offset(x, chartTop),
                         end = Offset(x, chartBottom),
-                        strokeWidth = axisStroke,
-                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f)
+                        strokeWidth = 0.8f,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 4f), 0f)
                     )
                 }
             }
@@ -1004,10 +1020,10 @@ fun LuminousStackedBarChart(
 
         if (showAxes) {
             drawLine(
-                color = axisColor.copy(alpha = 0.4f),
+                color = axisColor.copy(alpha = 0.3f),
                 start = Offset(chartLeft, chartBottom),
                 end = Offset(chartRight, chartBottom),
-                strokeWidth = axisStroke
+                strokeWidth = 1.5f
             )
         }
         

@@ -177,3 +177,150 @@ fun GlassSecondaryButton(
         )
     }
 }
+
+/**
+ * Outline-style secondary button — transparent fill, Primary-colored border with subtle glow.
+ */
+@Composable
+fun GlowButtonSecondary(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    glowColor: Color = Primary,
+    isEnabled: Boolean = true
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.96f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMediumLow
+        ),
+        label = "scale"
+    )
+
+    val borderAlpha by animateFloatAsState(
+        targetValue = if (isPressed) 0.8f else 0.45f,
+        animationSpec = tween(durationMillis = 150),
+        label = "borderAlpha"
+    )
+
+    Button(
+        onClick = onClick,
+        enabled = isEnabled,
+        interactionSource = interactionSource,
+        shape = RoundedCornerShape(20.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = glowColor,
+            disabledContainerColor = Color.Transparent,
+            disabledContentColor = glowColor.copy(alpha = 0.4f)
+        ),
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp),
+        modifier = modifier
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .border(
+                width = 1.5.dp,
+                color = glowColor.copy(alpha = borderAlpha),
+                shape = RoundedCornerShape(20.dp)
+            )
+    ) {
+        Text(
+            text = text,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 0.3.sp
+        )
+    }
+}
+
+/**
+ * Danger/destructive button — red filled with bold glow on press.
+ */
+@Composable
+fun GlowButtonDanger(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean = true
+) {
+    val dangerColor = Color(0xFFDC2626)
+    val dangerGlow = Color(0xFFEF4444)
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "dangerScale"
+    )
+
+    val glowRadius by animateFloatAsState(
+        targetValue = if (isPressed) 30f else 16f,
+        animationSpec = tween(durationMillis = 180),
+        label = "dangerGlowRadius"
+    )
+
+    val glowAlpha by animateFloatAsState(
+        targetValue = if (isPressed) 0.5f else 0.25f,
+        animationSpec = tween(durationMillis = 180),
+        label = "dangerGlowAlpha"
+    )
+
+    val dangerGlowArgb = dangerGlow.copy(alpha = glowAlpha).toArgb()
+
+    Button(
+        onClick = onClick,
+        enabled = isEnabled,
+        interactionSource = interactionSource,
+        shape = RoundedCornerShape(20.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = dangerColor,
+            contentColor = Color.White,
+            disabledContainerColor = dangerColor.copy(alpha = 0.5f),
+            disabledContentColor = Color.White.copy(alpha = 0.5f)
+        ),
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+        modifier = modifier
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
+            .drawBehind {
+                val paint = Paint().apply {
+                    asFrameworkPaint().apply {
+                        isAntiAlias = true
+                        color = android.graphics.Color.TRANSPARENT
+                        setShadowLayer(glowRadius, 0f, 4f, dangerGlowArgb)
+                    }
+                }
+                drawIntoCanvas { canvas ->
+                    canvas.drawRoundRect(
+                        left = 0f,
+                        top = 0f,
+                        right = size.width,
+                        bottom = size.height,
+                        radiusX = 20.dp.toPx(),
+                        radiusY = 20.dp.toPx(),
+                        paint = paint
+                    )
+                }
+            }
+    ) {
+        Text(
+            text = text,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.5.sp
+        )
+    }
+}

@@ -154,3 +154,87 @@ fun GlassCardGlow(
 }
 
 
+/**
+ * Elevated GlassCard — higher elevation for prominent surfaces.
+ * Uses increased shadowLayer radius and border for more depth.
+ */
+@Composable
+fun GlassCardElevated(
+    modifier: Modifier = Modifier,
+    cornerRadius: Dp = 30.dp,
+    contentPadding: Dp = 24.dp,
+    onClick: (() -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val shape = RoundedCornerShape(cornerRadius)
+    val shadowColor = Color.Black.copy(alpha = 0.15f).toArgb()
+    val elevPx = 20f
+
+    Column(
+        modifier = modifier
+            .drawWithCache {
+                val paint = Paint().apply {
+                    asFrameworkPaint().apply {
+                        isAntiAlias = true
+                        color = android.graphics.Color.TRANSPARENT
+                        setShadowLayer(elevPx * 2.5f, 0f, elevPx * 1.2f, shadowColor)
+                    }
+                }
+                onDrawBehind {
+                    drawIntoCanvas { canvas ->
+                        canvas.drawRoundRect(
+                            left = 0f,
+                            top = 0f,
+                            right = size.width,
+                            bottom = size.height,
+                            radiusX = cornerRadius.toPx(),
+                            radiusY = cornerRadius.toPx(),
+                            paint = paint
+                        )
+                    }
+                }
+            }
+            .graphicsLayer(
+                shadowElevation = 24f,
+                shape = shape,
+                ambientShadowColor = Color.Black.copy(alpha = 0.15f),
+                spotShadowColor = Color.Black.copy(alpha = 0.20f)
+            )
+            .clip(shape)
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(onClick = onClick)
+                } else {
+                    Modifier
+                }
+            )
+            .background(Color.White.copy(alpha = 0.85f))
+            .border(
+                width = 1.5.dp,
+                color = Color.Black.copy(alpha = 0.08f),
+                shape = shape
+            )
+            .padding(contentPadding),
+        content = content
+    )
+}
+
+/**
+ * Compact GlassCard — smaller padding for tighter UI elements.
+ */
+@Composable
+fun GlassCardCompact(
+    modifier: Modifier = Modifier,
+    cornerRadius: Dp = 20.dp,
+    contentPadding: Dp = 16.dp,
+    onClick: (() -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    GlassCard(
+        modifier = modifier,
+        cornerRadius = cornerRadius,
+        contentPadding = contentPadding,
+        onClick = onClick,
+        content = content
+    )
+}

@@ -3,10 +3,12 @@ package com.example.vitaai.ui.screens
 import android.Manifest
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,6 +16,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +49,9 @@ import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.filled.TrendingFlat
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -328,6 +335,7 @@ private fun MetricCard(
     value: String,
     tone: String,
     modifier: Modifier = Modifier,
+    trendPercent: Float? = null, // positive = up, negative = down, null = no trend
     onClick: () -> Unit = {}
 ) {
     val (iconBgColor, iconColor) = when (tone) {
@@ -338,8 +346,20 @@ private fun MetricCard(
         else -> Color.Black.copy(alpha = 0.05f) to Color.Black.copy(alpha = 0.6f)
     }
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.96f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMediumLow
+        ),
+        label = "metricScale"
+    )
+
     GlassCard(
-        modifier = modifier,
+        modifier = modifier
+            .graphicsLayer { scaleX = scale; scaleY = scale },
         onClick = onClick
     ) {
         Row(
@@ -372,6 +392,32 @@ private fun MetricCard(
                     style = VitaTextStyles.metricCompact,
                     color = Color(0xFF0F172A)
                 )
+                // Trend indicator
+                if (trendPercent != null) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    val isUp = trendPercent >= 0f
+                    val trendColor = if (isUp) Color(0xFF059669) else Color(0xFFDC2626)
+                    val trendIcon = if (isUp) Icons.AutoMirrored.Filled.TrendingUp else Icons.AutoMirrored.Filled.TrendingDown
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Icon(
+                            imageVector = trendIcon,
+                            contentDescription = if (isUp) "Trending up" else "Trending down",
+                            tint = trendColor,
+                            modifier = Modifier.size(12.dp)
+                        )
+                        Text(
+                            text = "${if (isUp) "+" else ""}${"%.0f".format(trendPercent)}%",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.SemiBold
+                            ),
+                            color = trendColor
+                        )
+                    }
+                }
             }
         }
     }

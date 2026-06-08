@@ -94,10 +94,10 @@ fun CircadianClockDial(
     val labelPaint = remember(onSurface, density) {
         androidx.compose.ui.graphics.Paint().asFrameworkPaint().apply {
             isAntiAlias = true
-            color = onSurface.toArgb()
-            textSize = with(density) { 12.sp.toPx() }
+            color = onSurface.copy(alpha = 0.85f).toArgb()
+            textSize = with(density) { 13.sp.toPx() }
             textAlign = android.graphics.Paint.Align.CENTER
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
         }
     }
 
@@ -198,11 +198,11 @@ fun CircadianClockDial(
                 y = center.y + outerRadius * sin(angleRad).toFloat()
             )
             val isMajor = h % 6 == 0
-            val color = if (isMajor) vitaColors.accentAmber else OnColorFallback(vitaColors)
+            val tickColor = if (isMajor) vitaColors.accentAmber else onSurface.copy(alpha = 0.3f)
             val tickWidth = if (isMajor) 2.dp.toPx() else 1.dp.toPx()
             
             drawLine(
-                color = color.copy(alpha = if (isMajor) 0.8f else 0.3f),
+                color = tickColor.copy(alpha = if (isMajor) 0.8f else 0.3f),
                 start = tickStart,
                 end = tickEnd,
                 strokeWidth = tickWidth
@@ -402,7 +402,8 @@ fun CircadianClockDial(
 }
 
 private fun OnColorFallback(vitaColors: com.example.vitaai.ui.theme.VitaColors): Color {
-    return Color(0xFF4A493B)
+    // Use theme-aware border dark color for minor tick marks
+    return vitaColors.glassBorderDark.copy(alpha = 1f)
 }
 
 private fun hourToAngleRad(hour: Double): Double {

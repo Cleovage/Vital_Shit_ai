@@ -9,10 +9,12 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -20,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -40,6 +43,7 @@ import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.components.PageHeader
 import com.example.vitaai.ui.theme.*
 import java.util.Locale
+import kotlinx.coroutines.launch
 
 // ─── Blob colours ──────────────────────────────────────────────────────────────
 private val BlobCyan    = Color(0xFF06B6D4)
@@ -52,6 +56,31 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     val isThinking  by viewModel.isThinking.collectAsState()
     var inputText   by remember { mutableStateOf("") }
     val listState   = rememberLazyListState()
+    val scope       = rememberCoroutineScope()
+
+    // Derive scroll-to-bottom FAB visibility
+    val showScrollFab by remember {
+        derivedStateOf {
+            val lastVisibleIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            val totalCount = listState.layoutInfo.totalItemsCount
+            totalCount > 0 && lastVisibleIndex < totalCount - 1
+        }
+    }
+
+    val quickSuggestions = remember {
+        listOf(
+            "How am I doing today? 💪",
+            "Suggest a workout 🏋️",
+            "What should I eat? 🥗",
+            "Sleep tips for tonight 🌙"
+        )
+    }
+    // Show suggestions only when conversation is new or after the last AI message
+    val showSuggestions by remember {
+        derivedStateOf {
+            messages.isEmpty() || (!messages.last().isUser && !isThinking)
+        }
+    }
 
     // Auto-scroll to latest message (or thinking indicator)
     val itemCount = messages.size + if (isThinking) 1 else 0
@@ -62,98 +91,167 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     }
 
     AuraBackground {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
         ) {
-            // ─── Header ────────────────────────────────────────────────
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 8.dp)
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                PageHeader(title = "VitaAI", kicker = "Coach chat")
-            }
+                // ─── Header ────────────────────────────────────────────────
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 8.dp)
+                ) {
+                    PageHeader(title = "VitaAI", kicker = "Coach chat")
+                }
 
-            HorizontalDivider(
-                color = Color.Black.copy(alpha = 0.06f),
-                thickness = 1.dp,
-                modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 4.dp)
-            )
+                HorizontalDivider(
+                    color = Color.Black.copy(alpha = 0.06f),
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 4.dp)
+                )
 
-            // ─── Messages ──────────────────────────────────────────────
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 20.dp),
-                state = listState,
-                verticalArrangement = Arrangement.spacedBy(14.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                items(messages) { message ->
-                    AnimatedVisibility(
-                        visible = true,
-                        enter = fadeIn(tween(300)) + slideInVertically(
-                            animationSpec = tween(300),
-                            initialOffsetY = { it / 3 }
-                        )
-                    ) {
-                        Column {
-                            // Sender label above each bubble
-                            Text(
-                                text = if (message.isUser) "YOU" else "VITAAI",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = 1.5.sp
-                                ),
-                                color = Color.Black.copy(alpha = 0.45f),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        start = if (message.isUser) 0.dp else 4.dp,
-                                        end = if (message.isUser) 4.dp else 0.dp,
-                                        bottom = 6.dp
-                                    )
-                                    .wrapContentWidth(
-                                        if (message.isUser) Alignment.End else Alignment.Start
-                                    )
+                // ─── Messages ──────────────────────────────────────────────
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 20.dp),
+                    state = listState,
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                    contentPadding = PaddingValues(vertical = 16.dp)
+                ) {
+                    items(messages) { message ->
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn(tween(300)) + slideInVertically(
+                                animationSpec = tween(300),
+                                initialOffsetY = { it / 3 }
                             )
-                            ChatBubble(message)
+                        ) {
+                            Column {
+                                // Sender label above each bubble
+                                Text(
+                                    text = if (message.isUser) "YOU" else "VITAAI",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        letterSpacing = 1.5.sp
+                                    ),
+                                    color = Color.Black.copy(alpha = 0.45f),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            start = if (message.isUser) 0.dp else 4.dp,
+                                            end = if (message.isUser) 4.dp else 0.dp,
+                                            bottom = 6.dp
+                                        )
+                                        .wrapContentWidth(
+                                            if (message.isUser) Alignment.End else Alignment.Start
+                                        )
+                                )
+                                ChatBubble(message)
+                            }
+                        }
+                    }
+
+                    // Thinking indicator as a special last item
+                    item {
+                        AnimatedVisibility(
+                            visible = isThinking,
+                            enter = fadeIn(tween(300)) + slideInVertically(
+                                animationSpec = tween(300),
+                                initialOffsetY = { it / 3 }
+                            ),
+                            exit = fadeOut(tween(200)) + slideOutVertically(
+                                animationSpec = tween(200),
+                                targetOffsetY = { it / 3 }
+                            )
+                        ) {
+                            AnimatedBlobThinkingIndicator()
                         }
                     }
                 }
 
-                // Thinking indicator as a special last item
-                item {
-                    AnimatedVisibility(
-                        visible = isThinking,
-                        enter = fadeIn(tween(300)) + slideInVertically(
-                            animationSpec = tween(300),
-                            initialOffsetY = { it / 3 }
-                        ),
-                        exit = fadeOut(tween(200)) + slideOutVertically(
-                            animationSpec = tween(200),
-                            targetOffsetY = { it / 3 }
-                        )
+                // ─── Quick Suggestions ──────────────────────────────────
+                AnimatedVisibility(
+                    visible = showSuggestions,
+                    enter = fadeIn(tween(250)),
+                    exit = fadeOut(tween(200))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        AnimatedBlobThinkingIndicator()
+                        quickSuggestions.forEach { chip ->
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(Color.White.copy(alpha = 0.75f))
+                                    .border(1.dp, Color.Black.copy(alpha = 0.08f), RoundedCornerShape(20.dp))
+                                    .clickable {
+                                        viewModel.sendMessage(chip)
+                                    }
+                                    .padding(horizontal = 14.dp, vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = chip,
+                                    style = MaterialTheme.typography.labelMedium.copy(
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 13.sp
+                                    ),
+                                    color = Color.Black.copy(alpha = 0.65f)
+                                )
+                            }
+                        }
                     }
                 }
+
+                // ─── Input Area ────────────────────────────────────────────
+                ChatInput(
+                    text = inputText,
+                    onTextChange = { inputText = it },
+                    onSend = {
+                        if (inputText.isNotBlank()) {
+                            viewModel.sendMessage(inputText)
+                            inputText = ""
+                        }
+                    }
+                )
             }
 
-            // ─── Input Area ────────────────────────────────────────────
-            ChatInput(
-                text = inputText,
-                onTextChange = { inputText = it },
-                onSend = {
-                    if (inputText.isNotBlank()) {
-                        viewModel.sendMessage(inputText)
-                        inputText = ""
-                    }
+            // ─── Scroll to Bottom FAB ───────────────────────────────────
+            AnimatedVisibility(
+                visible = showScrollFab,
+                enter = fadeIn(tween(200)),
+                exit = fadeOut(tween(200)),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 100.dp)
+            ) {
+                SmallFloatingActionButton(
+                    onClick = {
+                        scope.launch {
+                            val total = listState.layoutInfo.totalItemsCount
+                            if (total > 0) listState.animateScrollToItem(total - 1)
+                        }
+                    },
+                    containerColor = Color(0xFF0F172A).copy(alpha = 0.85f),
+                    contentColor = Color.White,
+                    shape = CircleShape
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Scroll to bottom",
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
-            )
+            }
         }
     }
 }
