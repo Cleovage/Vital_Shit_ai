@@ -326,6 +326,11 @@ fun AnimatedBlobThinkingIndicator() {
 
 // ─── Chat Bubble ───────────────────────────────────────────────────────────────
 
+private fun formatMessageTime(timestamp: Long): String {
+    val sdf = java.text.SimpleDateFormat("h:mm a", java.util.Locale.getDefault())
+    return sdf.format(java.util.Date(timestamp))
+}
+
 @Composable
 private fun ChatBubble(message: Message) {
     val isUser    = message.isUser
@@ -343,7 +348,7 @@ private fun ChatBubble(message: Message) {
     ) {
         if (isUser) {
             // User bubble: Solid slate-900 with white text, shadow
-            Box(
+            Column(
                 modifier = Modifier
                     .widthIn(max = 290.dp)
                     .shadow(
@@ -354,7 +359,7 @@ private fun ChatBubble(message: Message) {
                     )
                     .clip(shape)
                     .background(Color(0xFF0F172A))
-                    .padding(horizontal = 16.dp, vertical = 14.dp)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 Text(
                     text = message.text,
@@ -365,10 +370,33 @@ private fun ChatBubble(message: Message) {
                     ),
                     color = Color.White
                 )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.align(Alignment.End),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = formatMessageTime(message.timestamp),
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
+                    Text(
+                        text = "✓✓",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color(0xFF34D399)
+                    )
+                }
             }
         } else {
             // AI bubble: Translucent Glass Card
-            Box(
+            Column(
                 modifier = Modifier
                     .widthIn(max = 290.dp)
                     .shadow(
@@ -384,7 +412,7 @@ private fun ChatBubble(message: Message) {
                         color = Color.Black.copy(alpha = 0.07f),
                         shape = shape
                     )
-                    .padding(horizontal = 16.dp, vertical = 14.dp)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 Text(
                     text = message.text,
@@ -394,6 +422,16 @@ private fun ChatBubble(message: Message) {
                         lineHeight = 22.sp
                     ),
                     color = Color(0xFF0F172A)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = formatMessageTime(message.timestamp),
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    color = Color.Black.copy(alpha = 0.4f),
+                    modifier = Modifier.align(Alignment.End)
                 )
             }
         }
@@ -413,9 +451,8 @@ private fun ChatInput(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-            .navigationBarsPadding()
-            .imePadding(),
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .windowInsetsPadding(WindowInsets.ime.union(WindowInsets.navigationBars)),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Standard Web-like input container (light white bg, black border, shadow)
@@ -456,7 +493,8 @@ private fun ChatInput(
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF0F172A)
                 ),
-                singleLine = true,
+                singleLine = false,
+                maxLines = 4,
                 cursorBrush = SolidColor(Primary),
                 decorationBox = { innerTextField ->
                     Box(contentAlignment = Alignment.CenterStart) {

@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
@@ -530,7 +531,7 @@ private fun BentoStatCard(
         modifier = modifier
             .fillMaxWidth()
             // Paint-based Gaussian shadow for real depth outside clip
-            .drawBehind {
+            .drawWithCache {
                 val paint = Paint().apply {
                     asFrameworkPaint().apply {
                         isAntiAlias = true
@@ -538,16 +539,18 @@ private fun BentoStatCard(
                         setShadowLayer(elevPx * 2.2f, 0f, elevPx * 0.8f, statShadowColor)
                     }
                 }
-                drawIntoCanvas { canvas ->
-                    canvas.drawRoundRect(
-                        left = 0f,
-                        top = 0f,
-                        right = size.width,
-                        bottom = size.height,
-                        radiusX = 24.dp.toPx(),
-                        radiusY = 24.dp.toPx(),
-                        paint = paint
-                    )
+                onDrawBehind {
+                    drawIntoCanvas { canvas ->
+                        canvas.drawRoundRect(
+                            left = 0f,
+                            top = 0f,
+                            right = size.width,
+                            bottom = size.height,
+                            radiusX = 24.dp.toPx(),
+                            radiusY = 24.dp.toPx(),
+                            paint = paint
+                        )
+                    }
                 }
             }
             // Hardware-accelerated shadow layer

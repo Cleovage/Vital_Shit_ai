@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class Message(val text: String, val isUser: Boolean)
+data class Message(val text: String, val isUser: Boolean, val timestamp: Long = System.currentTimeMillis())
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(

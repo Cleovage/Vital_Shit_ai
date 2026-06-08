@@ -20,7 +20,7 @@ fun StatChip(
     label: String,
     modifier: Modifier = Modifier,
     color: Color = Primary,
-    textColor: Color = color
+    textColor: Color = color.copy(alpha = 1f)
 ) {
     Box(
         modifier = modifier

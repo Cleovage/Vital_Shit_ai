@@ -62,6 +62,17 @@ fun LuminousLuxTimeline(
         )
     }
 
+    val linePath = remember { Path() }
+    val fillPath = remember { Path() }
+    val guideLabelPaint = remember { android.graphics.Paint().apply { textAlign = android.graphics.Paint.Align.RIGHT } }
+    val glowPaint = remember { android.graphics.Paint().apply {
+        isAntiAlias = true
+        style = android.graphics.Paint.Style.STROKE
+        strokeCap = android.graphics.Paint.Cap.ROUND
+        strokeJoin = android.graphics.Paint.Join.ROUND
+    } }
+    val bottomLabelPaint = remember { android.graphics.Paint().apply { textAlign = android.graphics.Paint.Align.CENTER } }
+
     if (lightLogs.isEmpty()) {
         Box(
             modifier = modifier
@@ -77,6 +88,8 @@ fun LuminousLuxTimeline(
         }
         return
     }
+
+    val density = androidx.compose.ui.platform.LocalDensity.current
 
     Column(modifier = modifier) {
         Canvas(
@@ -126,6 +139,13 @@ fun LuminousLuxTimeline(
             // Horizontal guides (e.g. 5 lux, 100 lux, 1000 lux)
             val guideLevels = listOf(5.0, 100.0, 1000.0)
             val guideLabels = listOf("5 lx", "100 lx", "1000 lx")
+            
+            val guideTextSize = 8.sp.toPx()
+            guideLabelPaint.apply {
+                color = Color(0xFF0F172A).copy(alpha = 0.4f).toArgb()
+                textSize = guideTextSize
+            }
+
             guideLevels.forEachIndexed { idx, level ->
                 val logL = Math.log(1.0 + level).coerceAtMost(maxLogLux)
                 val y = height - paddingBottom - ((logL / maxLogLux).toFloat() * chartHeight)
@@ -140,36 +160,30 @@ fun LuminousLuxTimeline(
 
                 // Labels
                 drawIntoCanvas { canvas ->
-                    val paint = Paint().asFrameworkPaint().apply {
-                        color = Color(0xFF0F172A).copy(alpha = 0.4f).toArgb()
-                        textSize = 8.sp.toPx()
-                        textAlign = android.graphics.Paint.Align.RIGHT
-                    }
-                    canvas.nativeCanvas.drawText(guideLabels[idx], paddingLeft - 4.dp.toPx(), y + 3.dp.toPx(), paint)
+                    canvas.nativeCanvas.drawText(guideLabels[idx], paddingLeft - 4.dp.toPx(), y + 3.dp.toPx(), guideLabelPaint)
                 }
             }
 
             // 2. Build Bezier Path
-            val path = Path()
+            linePath.reset()
             if (points.isNotEmpty()) {
-                path.moveTo(points[0].x, points[0].y)
+                linePath.moveTo(points[0].x, points[0].y)
                 for (i in 0 until points.size - 1) {
                     val p0 = points[i]
                     val p1 = points[i + 1]
                     val controlX = (p0.x + p1.x) / 2f
-                    path.quadraticBezierTo(controlX, p0.y, controlX, p1.y)
-                    path.lineTo(p1.x, p1.y)
+                    linePath.quadraticBezierTo(controlX, p0.y, controlX, p1.y)
+                    linePath.lineTo(p1.x, p1.y)
                 }
             }
 
             // 3. Draw Gradient Fill Area
             if (points.isNotEmpty()) {
-                val fillPath = Path().apply {
-                    addPath(path)
-                    lineTo(width - paddingRight, height - paddingBottom)
-                    lineTo(paddingLeft, height - paddingBottom)
-                    close()
-                }
+                fillPath.reset()
+                fillPath.addPath(linePath)
+                fillPath.lineTo(width - paddingRight, height - paddingBottom)
+                fillPath.lineTo(paddingLeft, height - paddingBottom)
+                fillPath.close()
                 
                 drawPath(
                     path = fillPath,
@@ -186,20 +200,16 @@ fun LuminousLuxTimeline(
 
             // 4. Draw Glowing Chart Line
             drawIntoCanvas { canvas ->
-                val glowPaint = Paint().asFrameworkPaint().apply {
-                    isAntiAlias = true
-                    style = android.graphics.Paint.Style.STROKE
+                glowPaint.apply {
                     strokeWidth = 4.dp.toPx()
-                    strokeCap = android.graphics.Paint.Cap.ROUND
-                    strokeJoin = android.graphics.Paint.Join.ROUND
                     color = vitaColors.accentAmber.copy(alpha = 0.4f).toArgb()
                     maskFilter = BlurMaskFilter(6.dp.toPx(), BlurMaskFilter.Blur.NORMAL)
                 }
-                canvas.nativeCanvas.drawPath(path.asAndroidPath(), glowPaint)
+                canvas.nativeCanvas.drawPath(linePath.asAndroidPath(), glowPaint)
             }
 
             drawPath(
-                path = path,
+                path = linePath,
                 color = vitaColors.accentAmber,
                 style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
             )
@@ -208,17 +218,18 @@ fun LuminousLuxTimeline(
             val labelHours = listOf(0, 6, 12, 18, 23)
             val labels = listOf("12 AM", "6 AM", "12 PM", "6 PM", "12 AM")
             
+            val bottomTextSize = 9.sp.toPx()
+            bottomLabelPaint.apply {
+                color = Color(0xFF0F172A).copy(alpha = 0.4f).toArgb()
+                textSize = bottomTextSize
+            }
+            
             labelHours.forEachIndexed { idx, hour ->
                 val x = paddingLeft + (hour / 23f) * chartWidth
                 val y = height - paddingBottom + 16.dp.toPx()
                 
                 drawIntoCanvas { canvas ->
-                    val paint = Paint().asFrameworkPaint().apply {
-                        color = Color(0xFF0F172A).copy(alpha = 0.4f).toArgb()
-                        textSize = 9.sp.toPx()
-                        textAlign = android.graphics.Paint.Align.CENTER
-                    }
-                    canvas.nativeCanvas.drawText(labels[idx], x, y, paint)
+                    canvas.nativeCanvas.drawText(labels[idx], x, y, bottomLabelPaint)
                 }
             }
         }

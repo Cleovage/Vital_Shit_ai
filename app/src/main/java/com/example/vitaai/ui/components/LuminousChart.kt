@@ -63,6 +63,8 @@ fun LuminousLineChart(
     val linePath = remember { Path() }
     val fillPath = remember { Path() }
     val textPaint = remember { Paint() }
+    val yLabelPaint = remember { Paint().apply { textAlign = Paint.Align.RIGHT } }
+    val xLabelPaint = remember { Paint() }
     val tooltipTextPaint = remember { Paint() }
     val tooltipBgPaint = remember { Paint() }
     val tooltipBorderPaint = remember { Paint() }
@@ -367,16 +369,24 @@ fun LuminousLineChart(
                 textSize = labelTextSizePx
             }
             if (yLabels.isNotEmpty()) {
-                val yPaint = Paint(textPaint).apply { textAlign = Paint.Align.RIGHT }
+                yLabelPaint.apply {
+                    isAntiAlias = true
+                    color = labelColor.toArgb()
+                    textSize = labelTextSizePx
+                }
                 yLabels.forEachIndexed { index, label ->
                     val value = yTickValues[index]
                     val y = chartBottom - ((value - axisMin) / range) * chartHeight
-                    canvas.nativeCanvas.drawText(label, chartLeft - labelPaddingPx, y + labelTextSizePx * 0.35f, yPaint)
+                    canvas.nativeCanvas.drawText(label, chartLeft - labelPaddingPx, y + labelTextSizePx * 0.35f, yLabelPaint)
                 }
             }
 
             if (xAxisLabels.isNotEmpty()) {
-                val xPaint = Paint(textPaint).apply { textAlign = Paint.Align.CENTER }
+                xLabelPaint.apply {
+                    isAntiAlias = true
+                    color = labelColor.toArgb()
+                    textSize = labelTextSizePx
+                }
                 val xStep = if (xAxisLabels.size == dataPoints.size) stepX else chartWidth / (xAxisLabels.size - 1).coerceAtLeast(1)
                 
                 xAxisLabels.forEachIndexed { index, label ->
@@ -385,12 +395,12 @@ fun LuminousLineChart(
                     } else {
                         chartLeft + index * xStep
                     }
-                    xPaint.textAlign = when (index) {
+                    xLabelPaint.textAlign = when (index) {
                         0 -> Paint.Align.LEFT
                         xAxisLabels.lastIndex -> Paint.Align.RIGHT
                         else -> Paint.Align.CENTER
                     }
-                    canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xPaint)
+                    canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xLabelPaint)
                 }
             }
         }
@@ -422,6 +432,8 @@ fun LuminousBarChart(
     var selectedIndex by remember { mutableStateOf<Int?>(null) }
 
     val textPaint = remember { Paint() }
+    val yLabelPaint = remember { Paint().apply { textAlign = Paint.Align.RIGHT } }
+    val xLabelPaint = remember { Paint() }
     val tooltipTextPaint = remember { Paint() }
     val tooltipBgPaint = remember { Paint() }
     val tooltipBorderPaint = remember { Paint() }
@@ -660,16 +672,24 @@ fun LuminousBarChart(
                 textSize = labelTextSizePx
             }
             if (yLabels.isNotEmpty()) {
-                val yPaint = Paint(textPaint).apply { textAlign = Paint.Align.RIGHT }
+                yLabelPaint.apply {
+                    isAntiAlias = true
+                    color = labelColor.toArgb()
+                    textSize = labelTextSizePx
+                }
                 yLabels.forEachIndexed { index, label ->
                     val value = yTickValues[index]
                     val y = chartBottom - ((value - axisMin) / range) * chartHeight
-                    canvas.nativeCanvas.drawText(label, chartLeft - labelPaddingPx, y + labelTextSizePx * 0.35f, yPaint)
+                    canvas.nativeCanvas.drawText(label, chartLeft - labelPaddingPx, y + labelTextSizePx * 0.35f, yLabelPaint)
                 }
             }
 
             if (xAxisLabels.isNotEmpty()) {
-                val xPaint = Paint(textPaint).apply { textAlign = Paint.Align.CENTER }
+                xLabelPaint.apply {
+                    isAntiAlias = true
+                    color = labelColor.toArgb()
+                    textSize = labelTextSizePx
+                }
                 val xStep = if (xAxisLabels.size == dataPoints.size) totalBarWidth else chartWidth / (xAxisLabels.size - 1).coerceAtLeast(1)
                 
                 xAxisLabels.forEachIndexed { index, label ->
@@ -678,12 +698,12 @@ fun LuminousBarChart(
                     } else {
                         chartLeft + index * xStep
                     }
-                    xPaint.textAlign = when (index) {
+                    xLabelPaint.textAlign = when (index) {
                         0 -> Paint.Align.LEFT
                         xAxisLabels.lastIndex -> Paint.Align.RIGHT
                         else -> Paint.Align.CENTER
                     }
-                    canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xPaint)
+                    canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xLabelPaint)
                 }
             }
         }
@@ -808,6 +828,8 @@ fun LuminousStackedBarChart(
     var selectedIndex by remember { mutableStateOf<Int?>(null) }
 
     val textPaint = remember { Paint() }
+    val yLabelPaint = remember { Paint().apply { textAlign = Paint.Align.RIGHT } }
+    val xLabelPaint = remember { Paint() }
     val tooltipTextPaint = remember { Paint() }
     val detailTextPaint = remember { Paint() }
     val tooltipBgPaint = remember { Paint() }
@@ -1075,16 +1097,24 @@ fun LuminousStackedBarChart(
                 textSize = labelTextSizePx
             }
             if (yLabels.isNotEmpty()) {
-                val yPaint = Paint(textPaint).apply { textAlign = Paint.Align.RIGHT }
+                yLabelPaint.apply {
+                    isAntiAlias = true
+                    color = labelColor.toArgb()
+                    textSize = labelTextSizePx
+                }
                 yLabels.forEachIndexed { index, label ->
                     val value = yTickValues[index]
                     val y = chartBottom - ((value - axisMin) / range) * chartHeight
-                    canvas.nativeCanvas.drawText(label, chartLeft - labelPaddingPx, y + labelTextSizePx * 0.35f, yPaint)
+                    canvas.nativeCanvas.drawText(label, chartLeft - labelPaddingPx, y + labelTextSizePx * 0.35f, yLabelPaint)
                 }
             }
 
             if (xAxisLabels.isNotEmpty()) {
-                val xPaint = Paint(textPaint).apply { textAlign = Paint.Align.CENTER }
+                xLabelPaint.apply {
+                    isAntiAlias = true
+                    color = labelColor.toArgb()
+                    textSize = labelTextSizePx
+                }
                 val xStep = if (xAxisLabels.size == dataPoints.size) totalBarWidth else chartWidth / (xAxisLabels.size - 1).coerceAtLeast(1)
                 
                 xAxisLabels.forEachIndexed { index, label ->
@@ -1093,12 +1123,12 @@ fun LuminousStackedBarChart(
                     } else {
                         chartLeft + index * xStep
                     }
-                    xPaint.textAlign = when (index) {
+                    xLabelPaint.textAlign = when (index) {
                         0 -> Paint.Align.LEFT
                         xAxisLabels.lastIndex -> Paint.Align.RIGHT
                         else -> Paint.Align.CENTER
                     }
-                    canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xPaint)
+                    canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xLabelPaint)
                 }
             }
         }

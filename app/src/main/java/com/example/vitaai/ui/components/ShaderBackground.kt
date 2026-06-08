@@ -18,6 +18,8 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.toArgb
@@ -130,75 +132,94 @@ private fun CanvasFallbackLayer(intensity: Float, colors: ShaderColors) {
         }
     }
 
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        val w = size.width
-        val h = size.height
-        val t = time * 0.25f
+    val alphaScale = intensity.coerceIn(0f, 1f) * 0.10f
 
-        // 3 metaballs
-        val c1 = Offset(
-            x = (0.30f + 0.20f * kotlin.math.sin(t * 0.9f)) * w,
-            y = (0.25f + 0.18f * kotlin.math.cos(t * 0.7f)) * h
-        )
-        val c2 = Offset(
-            x = (0.75f + 0.18f * kotlin.math.cos(t * 1.1f)) * w,
-            y = (0.30f + 0.20f * kotlin.math.sin(t * 0.6f)) * h
-        )
-        val c3 = Offset(
-            x = (0.50f + 0.25f * kotlin.math.sin(t * 0.5f)) * w,
-            y = (0.80f + 0.12f * kotlin.math.cos(t * 0.8f)) * h
-        )
-        val radiusBase = (minOf(w, h)) * 0.55f
+    Spacer(
+        modifier = Modifier
+            .fillMaxSize()
+            .drawWithCache {
+                val w = size.width
+                val h = size.height
+                val radiusBase = minOf(w, h) * 0.55f
 
-        val alphaScale = intensity.coerceIn(0f, 1f) * 0.10f
+                val brush1 = Brush.radialGradient(
+                    colors = listOf(colors.topLeft.copy(alpha = alphaScale), Color.Transparent),
+                    center = Offset.Zero,
+                    radius = radiusBase
+                )
+                val brush2 = Brush.radialGradient(
+                    colors = listOf(colors.topRight.copy(alpha = alphaScale), Color.Transparent),
+                    center = Offset.Zero,
+                    radius = radiusBase
+                )
+                val brush3 = Brush.radialGradient(
+                    colors = listOf(colors.bottomCenter.copy(alpha = alphaScale * 0.8f), Color.Transparent),
+                    center = Offset.Zero,
+                    radius = radiusBase * 1.2f
+                )
+                val verticalGradient = Brush.verticalGradient(
+                    colors = listOf(Color.Transparent, Color(0xFFF1F5F9).copy(alpha = 0.45f)),
+                    startY = 0f,
+                    endY = h * 0.3f
+                )
 
-        drawCircle(
-            brush = Brush.radialGradient(
-                colors = listOf(
-                    colors.topLeft.copy(alpha = alphaScale),
-                    Color.Transparent
-                ),
-                center = c1,
-                radius = radiusBase
-            ),
-            center = c1,
-            radius = radiusBase
-        )
-        drawCircle(
-            brush = Brush.radialGradient(
-                colors = listOf(
-                    colors.topRight.copy(alpha = alphaScale),
-                    Color.Transparent
-                ),
-                center = c2,
-                radius = radiusBase
-            ),
-            center = c2,
-            radius = radiusBase
-        )
-        drawCircle(
-            brush = Brush.radialGradient(
-                colors = listOf(
-                    colors.bottomCenter.copy(alpha = alphaScale * 0.8f),
-                    Color.Transparent
-                ),
-                center = c3,
-                radius = radiusBase * 1.2f
-            ),
-            center = c3,
-            radius = radiusBase * 1.2f
-        )
+                onDrawBehind {
+                    val t = time * 0.25f
 
-        // bottom warm gradient
-        drawRect(
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    Color.Transparent,
-                    Color(0xFFF1F5F9).copy(alpha = 0.45f)
-                ),
-                startY = h * 0.7f,
-                endY = h
-            )
-        )
-    }
+                    // 3 metaballs
+                    val c1 = Offset(
+                        x = (0.30f + 0.20f * kotlin.math.sin(t * 0.9f)) * w,
+                        y = (0.25f + 0.18f * kotlin.math.cos(t * 0.7f)) * h
+                    )
+                    val c2 = Offset(
+                        x = (0.75f + 0.18f * kotlin.math.cos(t * 1.1f)) * w,
+                        y = (0.30f + 0.20f * kotlin.math.sin(t * 0.6f)) * h
+                    )
+                    val c3 = Offset(
+                        x = (0.50f + 0.25f * kotlin.math.sin(t * 0.5f)) * w,
+                        y = (0.80f + 0.12f * kotlin.math.cos(t * 0.8f)) * h
+                    )
+
+                    // Draw metaball 1
+                    drawContext.canvas.save()
+                    drawContext.canvas.translate(c1.x, c1.y)
+                    drawCircle(
+                        brush = brush1,
+                        radius = radiusBase,
+                        center = Offset.Zero
+                    )
+                    drawContext.canvas.restore()
+
+                    // Draw metaball 2
+                    drawContext.canvas.save()
+                    drawContext.canvas.translate(c2.x, c2.y)
+                    drawCircle(
+                        brush = brush2,
+                        radius = radiusBase,
+                        center = Offset.Zero
+                    )
+                    drawContext.canvas.restore()
+
+                    // Draw metaball 3
+                    drawContext.canvas.save()
+                    drawContext.canvas.translate(c3.x, c3.y)
+                    drawCircle(
+                        brush = brush3,
+                        radius = radiusBase * 1.2f,
+                        center = Offset.Zero
+                    )
+                    drawContext.canvas.restore()
+
+                    // bottom warm gradient
+                    drawContext.canvas.save()
+                    drawContext.canvas.translate(0f, h * 0.7f)
+                    drawRect(
+                        brush = verticalGradient,
+                        topLeft = Offset.Zero,
+                        size = androidx.compose.ui.geometry.Size(w, h * 0.3f)
+                    )
+                    drawContext.canvas.restore()
+                }
+            }
+    )
 }

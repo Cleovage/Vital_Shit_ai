@@ -13,6 +13,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -103,32 +104,34 @@ fun Modifier.shimmerOverlay(
         colors.map { it.toArgb() }.toIntArray()
     }
     
-    val shaderBrush = remember(argbColors) {
-        object : ShaderBrush() {
-            override fun createShader(size: androidx.compose.ui.geometry.Size): android.graphics.Shader {
-                val w = size.width
-                val h = size.height
-                val xStart = w * progress
-                val yStart = h * (progress - 0.5f)
-                val xEnd = w * (progress + 0.5f)
-                val yEnd = h * (progress + 1.0f)
-                return android.graphics.LinearGradient(
-                    xStart, yStart,
-                    xEnd, yEnd,
-                    argbColors,
-                    null,
-                    android.graphics.Shader.TileMode.CLAMP
-                )
-            }
-        }
-    }
-
-    this.drawBehind {
-        // Draw backing color
-        drawRect(color = baseColor)
+    this.drawWithCache {
+        val w = size.width
+        val h = size.height
         
-        // Draw shimmer using cached shader brush
-        drawRect(brush = shaderBrush)
+        val shader = android.graphics.LinearGradient(
+            0f, 0f,
+            w * 0.5f, h * 1.5f,
+            argbColors,
+            null,
+            android.graphics.Shader.TileMode.CLAMP
+        )
+        val matrix = android.graphics.Matrix()
+        val brush = ShaderBrush(shader)
+        
+        onDrawBehind {
+            // Draw backing color
+            drawRect(color = baseColor)
+            
+            // Translate matrix based on progress
+            matrix.reset()
+            val dx = w * progress
+            val dy = h * (progress - 0.5f)
+            matrix.setTranslate(dx, dy)
+            shader.setLocalMatrix(matrix)
+            
+            // Draw shimmer using cached shader brush
+            drawRect(brush = brush)
+        }
     }
 }
 

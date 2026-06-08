@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
@@ -37,7 +38,7 @@ fun GlassCard(
     Column(
         modifier = modifier
             // Paint-based Gaussian shadow — renders OUTSIDE the clip boundary for real depth
-            .drawBehind {
+            .drawWithCache {
                 val paint = Paint().apply {
                     asFrameworkPaint().apply {
                         isAntiAlias = true
@@ -45,16 +46,18 @@ fun GlassCard(
                         setShadowLayer(elevPx * 2.2f, 0f, elevPx * 0.8f, shadowColor)
                     }
                 }
-                drawIntoCanvas { canvas ->
-                    canvas.drawRoundRect(
-                        left = 0f,
-                        top = 0f,
-                        right = size.width,
-                        bottom = size.height,
-                        radiusX = cornerRadius.toPx(),
-                        radiusY = cornerRadius.toPx(),
-                        paint = paint
-                    )
+                onDrawBehind {
+                    drawIntoCanvas { canvas ->
+                        canvas.drawRoundRect(
+                            left = 0f,
+                            top = 0f,
+                            right = size.width,
+                            bottom = size.height,
+                            radiusX = cornerRadius.toPx(),
+                            radiusY = cornerRadius.toPx(),
+                            paint = paint
+                        )
+                    }
                 }
             }
             // Hardware-accelerated layer shadow for API 28+ devices
@@ -102,7 +105,7 @@ fun GlassCardGlow(
     Column(
         modifier = modifier
             // Paint-based Gaussian shadow with glow tint — renders outside clip boundary
-            .drawBehind {
+            .drawWithCache {
                 val paint = Paint().apply {
                     asFrameworkPaint().apply {
                         isAntiAlias = true
@@ -110,16 +113,18 @@ fun GlassCardGlow(
                         setShadowLayer(elevPx * 2.2f, 0f, elevPx * 0.8f, shadowColor)
                     }
                 }
-                drawIntoCanvas { canvas ->
-                    canvas.drawRoundRect(
-                        left = 0f,
-                        top = 0f,
-                        right = size.width,
-                        bottom = size.height,
-                        radiusX = cornerRadius.toPx(),
-                        radiusY = cornerRadius.toPx(),
-                        paint = paint
-                    )
+                onDrawBehind {
+                    drawIntoCanvas { canvas ->
+                        canvas.drawRoundRect(
+                            left = 0f,
+                            top = 0f,
+                            right = size.width,
+                            bottom = size.height,
+                            radiusX = cornerRadius.toPx(),
+                            radiusY = cornerRadius.toPx(),
+                            paint = paint
+                        )
+                    }
                 }
             }
             // Hardware-accelerated layer shadow with glow color
