@@ -68,7 +68,7 @@ fun CircadianClockDial(
         val width = size.width
         val height = size.height
         val center = Offset(width / 2, height / 2)
-        val outerRadius = (width / 2) * 0.85f
+        val outerRadius = (width / 2) * 0.68f
         val innerRadius = outerRadius * 0.88f
         
         // 1. Draw Dial Ring Backing

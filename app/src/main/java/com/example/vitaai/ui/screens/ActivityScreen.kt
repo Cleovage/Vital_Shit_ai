@@ -174,12 +174,18 @@ private fun WorkoutHome(
         // --- 2. WEB UI: STEPS & HEART RATE SIDE-BY-SIDE CARD ROWS ---
         item {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Steps Card (Left Column)
                 val stepsGlow = Color(0xFF06B6D4)
-                Box(modifier = Modifier.weight(1f)) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                ) {
                     // Ambient glow blob
                     Box(
                         modifier = Modifier
@@ -199,7 +205,9 @@ private fun WorkoutHome(
                     )
 
                     GlassCard(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
                     ) {
                         val stepsPercent = (snapshot.steps.toFloat() / 10000f).coerceIn(0f, 1f)
                         Row(
@@ -265,31 +273,16 @@ private fun WorkoutHome(
                                 modifier = Modifier.size(52.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Canvas(modifier = Modifier.fillMaxSize()) {
-                                    val strokeW = 4.dp.toPx()
-                                    val arcSize = Size(size.width - strokeW, size.height - strokeW)
-                                    val topLeft = Offset(strokeW / 2f, strokeW / 2f)
-
-                                    drawArc(
-                                        color = stepsGlow.copy(alpha = 0.12f),
-                                        startAngle = -90f,
-                                        sweepAngle = 360f,
-                                        useCenter = false,
-                                        topLeft = topLeft,
-                                        size = arcSize,
-                                        style = Stroke(width = strokeW)
-                                    )
-
-                                    drawArc(
-                                        color = stepsGlow,
-                                        startAngle = -90f,
-                                        sweepAngle = stepsPercent * 360f,
-                                        useCenter = false,
-                                        topLeft = topLeft,
-                                        size = arcSize,
-                                        style = Stroke(width = strokeW, cap = StrokeCap.Round)
-                                    )
-                                }
+                                ProgressRing(
+                                    progress = stepsPercent,
+                                    size = 52.dp,
+                                    strokeWidth = 4.dp,
+                                    glowWidth = 8.dp,
+                                    colors = listOf(stepsGlow, stepsGlow.copy(alpha = 0.5f)),
+                                    glowColor = stepsGlow,
+                                    startAngle = -90f,
+                                    sweepAngle = 360f
+                                )
                                 Icon(
                                     imageVector = Icons.Default.DirectionsRun,
                                     contentDescription = null,
@@ -327,7 +320,11 @@ private fun WorkoutHome(
 
                 // Heart Rate Card (Right Column)
                 val hrGlow = Color(0xFFF43F5E)
-                Box(modifier = Modifier.weight(1f)) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                ) {
                     // Ambient glow blob
                     Box(
                         modifier = Modifier
@@ -347,7 +344,9 @@ private fun WorkoutHome(
                     )
 
                     GlassCard(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -530,7 +529,7 @@ private fun WorkoutHome(
                     title = "Start adaptive session",
                     subtitle = "20 min full-body strength"
                 ) {
-                    Toast.makeText(context, "Preparing your adaptive session...", Toast.LENGTH_SHORT).show()
+                    navController.navigate("workout/session/adaptive_strength")
                 }
 
                 ActionRow(
@@ -538,7 +537,7 @@ private fun WorkoutHome(
                     title = "Recovery mobility",
                     subtitle = "Breathing, hips, shoulders"
                 ) {
-                    Toast.makeText(context, "Loading mobility exercises...", Toast.LENGTH_SHORT).show()
+                    navController.navigate("workout/session/mobility_recovery")
                 }
 
                 ActionRow(
@@ -554,7 +553,7 @@ private fun WorkoutHome(
                     title = "Macro coach",
                     subtitle = "Balanced targets for training days"
                 ) {
-                    Toast.makeText(context, "Your macros are currently optimized for a training day.", Toast.LENGTH_SHORT).show()
+                    navController.navigate("nutrition")
                 }
             }
         }

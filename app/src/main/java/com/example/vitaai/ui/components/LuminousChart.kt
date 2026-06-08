@@ -381,7 +381,10 @@ fun LuminousLineChart(
                     tooltipX = chartRight - textWidth / 2 - paddingX
                 }
                 
-                val tooltipY = point.y - 32.dp.toPx()
+                var tooltipY = point.y - 32.dp.toPx()
+                if (tooltipY - tooltipTextPaint.textSize - paddingY < 0f) {
+                    tooltipY = point.y + 40.dp.toPx()
+                }
                 val bgRect = android.graphics.RectF(
                     tooltipX - textWidth / 2 - paddingX,
                     tooltipY - tooltipTextPaint.textSize - paddingY,
@@ -421,9 +424,11 @@ fun LuminousLineChart(
                     } else {
                         chartLeft + index * xStep
                     }
-                    val isEdge = index == 0 || index == xAxisLabels.lastIndex
-                    if (!isEdge && index % xLabelStep != 0) return@forEachIndexed
-                    
+                    xPaint.textAlign = when (index) {
+                        0 -> Paint.Align.LEFT
+                        xAxisLabels.lastIndex -> Paint.Align.RIGHT
+                        else -> Paint.Align.CENTER
+                    }
                     canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xPaint)
                 }
             }
@@ -706,7 +711,10 @@ fun LuminousBarChart(
                     tooltipX = chartRight - textWidth / 2 - paddingX
                 }
                 
-                val tooltipY = y - 32.dp.toPx()
+                var tooltipY = y - 32.dp.toPx()
+                if (tooltipY - tooltipTextPaint.textSize - paddingY < 0f) {
+                    tooltipY = y + 40.dp.toPx()
+                }
                 val bgRect = android.graphics.RectF(
                     tooltipX - textWidth / 2 - paddingX,
                     tooltipY - tooltipTextPaint.textSize - paddingY,
@@ -746,9 +754,11 @@ fun LuminousBarChart(
                     } else {
                         chartLeft + index * xStep
                     }
-                    val isEdge = index == 0 || index == xAxisLabels.lastIndex
-                    if (!isEdge && index % xLabelStep != 0) return@forEachIndexed
-                    
+                    xPaint.textAlign = when (index) {
+                        0 -> Paint.Align.LEFT
+                        xAxisLabels.lastIndex -> Paint.Align.RIGHT
+                        else -> Paint.Align.CENTER
+                    }
                     canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xPaint)
                 }
             }
@@ -1153,7 +1163,10 @@ fun LuminousStackedBarChart(
                     tooltipX = chartRight - textWidth / 2 - paddingX
                 }
                 
-                val tooltipY = y - 42.dp.toPx()
+                var tooltipY = y - 42.dp.toPx()
+                if (tooltipY - tooltipTextPaint.textSize - paddingY < 0f) {
+                    tooltipY = y + 50.dp.toPx()
+                }
                 val bgRect = android.graphics.RectF(
                     tooltipX - textWidth / 2 - paddingX,
                     tooltipY - tooltipTextPaint.textSize - paddingY,
@@ -1194,9 +1207,11 @@ fun LuminousStackedBarChart(
                     } else {
                         chartLeft + index * xStep
                     }
-                    val isEdge = index == 0 || index == xAxisLabels.lastIndex
-                    if (!isEdge && index % xLabelStep != 0) return@forEachIndexed
-                    
+                    xPaint.textAlign = when (index) {
+                        0 -> Paint.Align.LEFT
+                        xAxisLabels.lastIndex -> Paint.Align.RIGHT
+                        else -> Paint.Align.CENTER
+                    }
                     canvas.nativeCanvas.drawText(label, x, chartBottom + labelTextSizePx * 1.6f, xPaint)
                 }
             }

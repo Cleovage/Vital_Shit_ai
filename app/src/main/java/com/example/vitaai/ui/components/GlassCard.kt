@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 fun GlassCard(
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 30.dp,
+    contentPadding: Dp = 20.dp,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(cornerRadius)
@@ -41,7 +42,7 @@ fun GlassCard(
                 color = Color.Black.copy(alpha = 0.07f),
                 shape = shape
             )
-            .padding(20.dp),
+            .padding(contentPadding),
         content = content
     )
 }
@@ -54,6 +55,7 @@ fun GlassCardGlow(
     modifier: Modifier = Modifier,
     glowColor: Color = Color(0xFF06B6D4), // Cyan 500
     cornerRadius: Dp = 30.dp,
+    contentPadding: Dp = 20.dp,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(cornerRadius)
@@ -74,7 +76,8 @@ fun GlassCardGlow(
                 color = glowColor.copy(alpha = 0.2f),
                 shape = shape
             )
-            .padding(20.dp),
+            .padding(contentPadding),
         content = content
     )
 }
+

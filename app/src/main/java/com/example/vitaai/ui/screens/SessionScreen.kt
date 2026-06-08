@@ -242,7 +242,7 @@ private fun HUDStatTile(
     modifier: Modifier = Modifier,
     icon: ImageVector
 ) {
-    GlassCard(modifier = modifier) {
+    GlassCard(modifier = modifier, contentPadding = 12.dp) {
         Column {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(icon, contentDescription = null, tint = Primary.copy(alpha = 0.5f), modifier = Modifier.size(14.dp))

@@ -36,12 +36,22 @@ import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.health.connect.client.PermissionController
 
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     var showEditDialog by remember { mutableStateOf(false) }
+    var showAchievementsDialog by remember { mutableStateOf(false) }
+    var showSyncDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    val healthConnectLauncher = rememberLauncherForActivityResult(
+        contract = PermissionController.createRequestPermissionResultContract()
+    ) {
+        viewModel.loadProfile()
+    }
 
     val currentWeight = state.weightKg
     val currentHeight = state.heightMeters
@@ -121,7 +131,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                         title = "Achievements",
                         subtitle = "8 streaks, 3 nutrition badges",
                         onClick = { 
-                            Toast.makeText(context, "You're in the top 5% of users this week!", Toast.LENGTH_SHORT).show()
+                            showAchievementsDialog = true
                         }
                     )
                     
@@ -133,7 +143,11 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                         else 
                             "Permissions pending setup",
                         onClick = {
-                            Toast.makeText(context, "Health Connect sync is active.", Toast.LENGTH_SHORT).show()
+                            if (!state.permissionsGranted) {
+                                healthConnectLauncher.launch(viewModel.getRequestedPermissions())
+                            } else {
+                                showSyncDialog = true
+                            }
                         }
                     )
                     
@@ -152,7 +166,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                         title = "Hydration goal",
                         subtitle = String.format(Locale.US, "%.1f L daily target", hydrationGoal),
                         onClick = {
-                            Toast.makeText(context, "Water logged! Hydration target is up to date.", Toast.LENGTH_SHORT).show()
+                            showEditDialog = true
                         }
                     )
                 }
@@ -384,5 +398,225 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
             shape = RoundedCornerShape(24.dp)
         )
     }
+
+    if (showAchievementsDialog) {
+        AchievementsDialog(onDismiss = { showAchievementsDialog = false })
+    }
+
+    if (showSyncDialog) {
+        HealthConnectSyncDialog(
+            lastSyncStatus = state.lastSyncStatus,
+            isSyncing = state.isSaving,
+            onSyncTrigger = { viewModel.syncToCloud() },
+            onDismiss = { showSyncDialog = false }
+        )
+    }
+}
+
+@Composable
+fun AchievementsDialog(
+    onDismiss: () -> Unit
+) {
+    val badges = listOf(
+        Triple("Sleep Master", "Sleep > 8 hours for 5 consecutive days", Icons.Default.ModeNight to Color(0xFF3B82F6)),
+        Triple("Hydration Champion", "Met daily water target of 2.5L", Icons.Default.WaterDrop to Color(0xFF06B6D4)),
+        Triple("Strength Elite", "Completed 10 custom strength workouts", Icons.Default.FitnessCenter to Color(0xFF6366F1)),
+        Triple("Circadian Sync", "Maintained regular bedtime alignment", Icons.Default.AccessTime to Color(0xFFF59E0B))
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                "Earned Achievements",
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF0F172A),
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    "Your milestones are tracked in real-time. Gray badges indicate achievements currently in-progress.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Black.copy(alpha = 0.55f),
+                    lineHeight = 18.sp
+                )
+
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    badges.forEachIndexed { index, badge ->
+                        // Simulate earned vs unearned (e.g., first two earned, last two grayscale)
+                        val isEarned = index < 2
+                        val (title, desc, iconColorPair) = badge
+                        val (icon, color) = iconColorPair
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    if (isEarned) color.copy(alpha = 0.05f) else Color.Black.copy(alpha = 0.02f),
+                                    RoundedCornerShape(12.dp)
+                                )
+                                .border(
+                                    1.dp,
+                                    if (isEarned) color.copy(alpha = 0.15f) else Color.Black.copy(alpha = 0.06f),
+                                    RoundedCornerShape(12.dp)
+                                )
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .background(
+                                        if (isEarned) color.copy(alpha = 0.12f) else Color.Black.copy(alpha = 0.05f),
+                                        RoundedCornerShape(10.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = title,
+                                    tint = if (isEarned) color else Color.Black.copy(alpha = 0.3f),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = title,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = if (isEarned) Color(0xFF0F172A) else Color.Black.copy(alpha = 0.4f)
+                                )
+                                Text(
+                                    text = desc,
+                                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                                    color = if (isEarned) Color.Black.copy(alpha = 0.5f) else Color.Black.copy(alpha = 0.35f)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("CLOSE", color = Primary, fontWeight = FontWeight.Bold)
+            }
+        },
+        containerColor = Color.White,
+        shape = RoundedCornerShape(24.dp)
+    )
+}
+
+@Composable
+fun HealthConnectSyncDialog(
+    lastSyncStatus: String?,
+    isSyncing: Boolean,
+    onSyncTrigger: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                "Health Connect Status",
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF0F172A),
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Connection Status", style = MaterialTheme.typography.bodyMedium, color = Color.Black.copy(alpha = 0.55f))
+                    Box(
+                        modifier = Modifier
+                            .background(Color(0xFFECFDF5), RoundedCornerShape(20.dp))
+                            .border(1.dp, Color(0xFFA7F3D0), RoundedCornerShape(20.dp))
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            "ACTIVE & SECURE",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = Color(0xFF047857)
+                        )
+                    }
+                }
+
+                HorizontalDivider(color = Color.Black.copy(alpha = 0.08f))
+
+                Text(
+                    "Synced Data Sources",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = Color.Black.copy(alpha = 0.45f)
+                )
+
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf(
+                        "Samsung Health" to "Steps, sleep, calories",
+                        "Google Health / Fitbit" to "Heart rate, distance",
+                        "VitaAI Local DB" to "Water logs, light levels"
+                    ).forEach { (source, desc) ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.Black.copy(alpha = 0.02f), RoundedCornerShape(8.dp))
+                                .padding(10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(source, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = Color(0xFF0F172A))
+                                Text(desc, style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp), color = Color.Black.copy(alpha = 0.45f))
+                            }
+                            Text("JUST NOW", style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp), color = Color(0xFF047857), fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+
+                if (lastSyncStatus != null) {
+                    Text(
+                        text = "Sync status: $lastSyncStatus",
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                        color = Primary
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                TextButton(onClick = onDismiss) {
+                    Text("CLOSE", color = Color.Black.copy(alpha = 0.5f))
+                }
+                Button(
+                    onClick = onSyncTrigger,
+                    colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !isSyncing
+                ) {
+                    Text(if (isSyncing) "SYNCING..." else "SYNC NOW", color = Color.White)
+                }
+            }
+        },
+        containerColor = Color.White,
+        shape = RoundedCornerShape(24.dp)
+    )
 }
 

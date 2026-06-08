@@ -157,4 +157,6 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
+    fun getRequestedPermissions() = healthConnectManager.permissions
 }

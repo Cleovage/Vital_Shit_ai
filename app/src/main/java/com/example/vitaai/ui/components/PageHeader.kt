@@ -33,7 +33,7 @@ fun PageHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
-        Column {
+        Column(modifier = Modifier.weight(1f, fill = false)) {
             Text(
                 text = kicker.uppercase(Locale.US),
                 style = MaterialTheme.typography.labelSmall.copy(

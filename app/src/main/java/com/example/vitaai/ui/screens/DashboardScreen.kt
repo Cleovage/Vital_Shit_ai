@@ -218,7 +218,8 @@ private fun DashboardContent(
                 ReadinessScoreCard(
                     score = if (readinessScore > 0) readinessScore else 86,
                     snapshot = snapshot,
-                    insight = insight
+                    insight = insight,
+                    onClick = { navController.navigate("circadian") }
                 )
             }
 
@@ -242,14 +243,16 @@ private fun DashboardContent(
                             label = "Active energy",
                             value = if (activeEnergyKcal > 0) "$activeEnergyKcal kcal" else "512 kcal",
                             tone = "amber",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("metric/active_calories") }
                         )
                         MetricCard(
                             icon = Icons.Default.FitnessCenter,
                             label = "Training",
                             value = if (trainingMin > 0) "$trainingMin min" else "12 min",
                             tone = "cyan",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("activity") }
                         )
                     }
                     Row(
@@ -261,14 +264,16 @@ private fun DashboardContent(
                             label = "Protein",
                             value = if (proteinGrams > 0) "${proteinGrams} g" else "74 g",
                             tone = "yellow",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("nutrition") }
                         )
                         MetricCard(
                             icon = Icons.Default.ModeNight,
                             label = "Sleep",
                             value = if (sleepHours > 0.0) String.format(Locale.US, "%.1f h", sleepHours) else "7.1 h",
                             tone = "blue",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("circadian") }
                         )
                     }
                 }
@@ -297,19 +302,22 @@ private fun DashboardContent(
                         icon = Icons.Default.Lightbulb,
                         title = "Recovery Prioritization",
                         description = "Your deep sleep was slightly lower last night. Consider winding down 30 mins earlier today and avoiding screens before bed.",
-                        tone = "rose"
+                        tone = "rose",
+                        onClick = { navController.navigate("circadian") }
                     )
                     TipCard(
                         icon = Icons.Default.Coffee,
                         title = "Afternoon Energy Dip",
                         description = "Based on your activity patterns, you might feel a dip around 3 PM. Try substituting coffee with a quick 10-min brisk walk or stretching session.",
-                        tone = "emerald"
+                        tone = "emerald",
+                        onClick = { navController.navigate("activity") }
                     )
                     TipCard(
                         icon = Icons.Default.WaterDrop,
                         title = "Hydration Check-in",
                         description = "You're currently 400ml behind your daily hydration pace. Grab a glass of water now to stay on track for your 2.4L goal.",
-                        tone = "blue"
+                        tone = "blue",
+                        onClick = { navController.navigate("nutrition") }
                     )
                 }
             }
@@ -393,7 +401,8 @@ private fun MetricCard(
     label: String,
     value: String,
     tone: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     val (iconBgColor, iconColor) = when (tone) {
         "amber" -> Color(0xFFFEF3C7) to Color(0xFFB45309)
@@ -404,14 +413,7 @@ private fun MetricCard(
     }
 
     GlassCard(
-        modifier = modifier
-            .shadow(
-                elevation = 4.dp,
-                shape = RoundedCornerShape(30.dp),
-                clip = false,
-                ambientColor = Color.Black.copy(alpha = 0.04f),
-                spotColor = Color.Black.copy(alpha = 0.04f)
-            )
+        modifier = modifier.clickable { onClick() }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -461,7 +463,8 @@ private fun TipCard(
     title: String,
     description: String,
     tone: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     val (iconBgColor, iconColor) = when (tone) {
         "rose" -> Color(0xFFFFE4E6) to Color(0xFFE11D48)
@@ -471,7 +474,7 @@ private fun TipCard(
     }
 
     GlassCard(
-        modifier = modifier
+        modifier = modifier.clickable { onClick() }
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -520,7 +523,8 @@ private fun ReadinessScoreCard(
     score: Int,
     snapshot: HealthSnapshot,
     insight: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     val badgeColor = Color(0xFF047857)
     val badgeBgColor = Color(0xFFECFDF5)
@@ -586,7 +590,7 @@ private fun ReadinessScoreCard(
         )
 
         GlassCardGlow(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().clickable { onClick() },
             glowColor = arcCyan
         ) {
             Row(

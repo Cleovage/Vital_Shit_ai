@@ -575,9 +575,6 @@ private fun RangeSelectorPill(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .clip(pillShape)
-                    .clickable { onSelect(key) }
-                    .background(bgColor)
                     .then(
                         if (isSelected) {
                             Modifier.shadow(
@@ -587,7 +584,10 @@ private fun RangeSelectorPill(
                                 spotColor = Color(0xFF0F172A).copy(alpha = 0.18f)
                             )
                         } else Modifier
-                    ),
+                    )
+                    .clip(pillShape)
+                    .clickable { onSelect(key) }
+                    .background(bgColor),
                 contentAlignment = Alignment.Center
             ) {
                 Text(

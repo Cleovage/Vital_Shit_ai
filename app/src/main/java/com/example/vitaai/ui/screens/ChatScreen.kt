@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -28,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -437,38 +439,37 @@ private fun ChatInput(
                 .padding(horizontal = 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextField(
+            BasicTextField(
                 value = text,
                 onValueChange = onTextChange,
-                modifier = Modifier.weight(1f),
-                placeholder = {
-                    Text(
-                        text = "Ask about workouts, meals, recovery...",
-                        color = Color.Black.copy(alpha = 0.4f),
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp)
-                    )
-                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(onSend = {
                     if (text.isNotBlank()) {
                         onSend()
                     }
                 }),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    cursorColor = Primary,
-                    focusedTextColor = Color(0xFF0F172A),
-                    unfocusedTextColor = Color(0xFF0F172A)
-                ),
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF0F172A)
                 ),
-                singleLine = true
+                singleLine = true,
+                cursorBrush = SolidColor(Primary),
+                decorationBox = { innerTextField ->
+                    Box(contentAlignment = Alignment.CenterStart) {
+                        if (text.isEmpty()) {
+                            Text(
+                                text = "Ask about workouts, meals, recovery...",
+                                color = Color.Black.copy(alpha = 0.4f),
+                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp)
+                            )
+                        }
+                        innerTextField()
+                    }
+                }
             )
             
             // Custom send button inside the input container row
