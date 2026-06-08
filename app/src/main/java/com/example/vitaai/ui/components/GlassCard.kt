@@ -95,7 +95,7 @@ fun GlassCardGlow(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(cornerRadius)
-    val shadowColor = glowColor.copy(alpha = 0.18f).toArgb()
+    val shadowColor = Color.Black.copy(alpha = 0.18f).toArgb()
     val elevPx = 14f
 
     Column(
@@ -124,8 +124,8 @@ fun GlassCardGlow(
             // Hardware-accelerated layer shadow with glow color
             .graphicsLayer {
                 shadowElevation = 14f
-                ambientShadowColor = glowColor.copy(alpha = 0.12f)
-                spotShadowColor = glowColor.copy(alpha = 0.18f)
+                ambientShadowColor = Color.Black.copy(alpha = 0.12f)
+                spotShadowColor = Color.Black.copy(alpha = 0.18f)
             }
             .clip(shape)
             .then(

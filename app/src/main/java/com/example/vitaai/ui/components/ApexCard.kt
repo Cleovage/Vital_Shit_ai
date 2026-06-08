@@ -83,11 +83,6 @@ fun ApexCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.Black.copy(alpha = 0.025f))
-                        .border(
-                            width = 1.dp,
-                            color = Color.Black.copy(alpha = 0.04f),
-                            shape = RectangleShape
-                        )
                         .padding(horizontal = 16.dp, vertical = 10.dp)
                 ) {
                     Text(
@@ -98,6 +93,10 @@ fun ApexCard(
                         fontWeight = FontWeight.Bold
                     )
                 }
+                androidx.compose.material3.HorizontalDivider(
+                    color = Color.Black.copy(alpha = 0.05f),
+                    thickness = 1.dp
+                )
             }
             Box(Modifier.fillMaxWidth()) {
                 content()

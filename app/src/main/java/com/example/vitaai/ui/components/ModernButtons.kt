@@ -67,7 +67,7 @@ fun GlowPrimaryButton(
         label = "glowAlpha"
     )
 
-    val glowColorArgb = glowColor.copy(alpha = glowAlpha).toArgb()
+    val glowColorArgb = Color.Black.copy(alpha = glowAlpha).toArgb()
 
     Button(
         onClick = onClick,
