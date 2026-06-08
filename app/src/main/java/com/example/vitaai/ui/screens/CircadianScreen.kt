@@ -17,8 +17,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -129,6 +134,41 @@ fun CircadianScreen(
                     )
                     
                     Spacer(modifier = Modifier.height(16.dp))
+
+                    // Sleep Tracking toggle row
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(vitaColors.glassFill.copy(alpha = 0.5f))
+                            .border(1.dp, vitaColors.glassBorderDark.copy(alpha = 0.08f), RoundedCornerShape(16.dp))
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(
+                                text = "Sleep Tracking",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = if (uiState.isTrackingSleep) "Active — tracking in progress" else "Tap to start tonight\'s session",
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            )
+                        }
+                        Switch(
+                            checked = uiState.isTrackingSleep,
+                            onCheckedChange = { viewModel.toggleSleepTracking(context) },
+                            colors = SwitchDefaults.colors(
+                                checkedTrackColor = Color(0xFF06B6D4),
+                                checkedThumbColor = Color.White
+                            )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     // Premium sleep tracking CTA
                     GlowPrimaryButton(
@@ -442,9 +482,14 @@ fun CircadianScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
+                        .graphicsLayer {
+                            shadowElevation = 10f
+                            ambientShadowColor = Color.Black.copy(alpha = 0.08f)
+                            spotShadowColor = Color.Black.copy(alpha = 0.10f)
+                        }
                         .clip(RoundedCornerShape(24.dp))
-                        .background(vitaColors.glassFill.copy(alpha = 0.02f))
-                        .border(1.dp, vitaColors.glassBorderDark.copy(alpha = 0.05f), RoundedCornerShape(24.dp))
+                        .background(vitaColors.glassFill.copy(alpha = 0.45f))
+                        .border(1.dp, vitaColors.glassBorderDark.copy(alpha = 0.08f), RoundedCornerShape(24.dp))
                         .padding(32.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -477,10 +522,39 @@ private fun BentoStatCard(
 ) {
     val vitaColors = LocalVitaColors.current
     val shape = RoundedCornerShape(24.dp)
+    val statShadowColor = Color.Black.copy(alpha = 0.10f).toArgb()
+    val elevPx = 10f
 
     Column(
         modifier = modifier
             .fillMaxWidth()
+            // Paint-based Gaussian shadow for real depth outside clip
+            .drawBehind {
+                val paint = Paint().apply {
+                    asFrameworkPaint().apply {
+                        isAntiAlias = true
+                        setColor(android.graphics.Color.TRANSPARENT)
+                        setShadowLayer(elevPx * 2.2f, 0f, elevPx * 0.8f, statShadowColor)
+                    }
+                }
+                drawIntoCanvas { canvas ->
+                    canvas.drawRoundRect(
+                        left = 0f,
+                        top = 0f,
+                        right = size.width,
+                        bottom = size.height,
+                        radiusX = 24.dp.toPx(),
+                        radiusY = 24.dp.toPx(),
+                        paint = paint
+                    )
+                }
+            }
+            // Hardware-accelerated shadow layer
+            .graphicsLayer {
+                shadowElevation = 10f
+                ambientShadowColor = Color.Black.copy(alpha = 0.08f)
+                spotShadowColor = Color.Black.copy(alpha = 0.10f)
+            }
             .clip(shape)
             .background(vitaColors.glassFill.copy(alpha = 0.72f))
             .border(
@@ -509,7 +583,7 @@ private fun BentoStatCard(
             Box(
                 modifier = Modifier
                     .size(32.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(12.dp))
                     .background(color.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {

@@ -8,8 +8,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -27,16 +31,38 @@ fun GlassCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(cornerRadius)
+    val shadowColor = Color.Black.copy(alpha = 0.12f).toArgb()
+    val elevPx = 12f
 
     Column(
         modifier = modifier
-            .shadow(
-                elevation = 4.dp,
-                shape = shape,
-                clip = false,
-                ambientColor = Color.Black.copy(alpha = 0.055f),
-                spotColor = Color.Black.copy(alpha = 0.055f)
-            )
+            // Paint-based Gaussian shadow — renders OUTSIDE the clip boundary for real depth
+            .drawBehind {
+                val paint = Paint().apply {
+                    asFrameworkPaint().apply {
+                        isAntiAlias = true
+                        color = android.graphics.Color.TRANSPARENT
+                        setShadowLayer(elevPx * 2.2f, 0f, elevPx * 0.8f, shadowColor)
+                    }
+                }
+                drawIntoCanvas { canvas ->
+                    canvas.drawRoundRect(
+                        left = 0f,
+                        top = 0f,
+                        right = size.width,
+                        bottom = size.height,
+                        radiusX = cornerRadius.toPx(),
+                        radiusY = cornerRadius.toPx(),
+                        paint = paint
+                    )
+                }
+            }
+            // Hardware-accelerated layer shadow for API 28+ devices
+            .graphicsLayer {
+                shadowElevation = 12f
+                ambientShadowColor = Color.Black.copy(alpha = 0.12f)
+                spotShadowColor = Color.Black.copy(alpha = 0.15f)
+            }
             .clip(shape)
             .then(
                 if (onClick != null) {
@@ -69,16 +95,38 @@ fun GlassCardGlow(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val shape = RoundedCornerShape(cornerRadius)
+    val shadowColor = glowColor.copy(alpha = 0.18f).toArgb()
+    val elevPx = 14f
 
     Column(
         modifier = modifier
-            .shadow(
-                elevation = 8.dp,
-                shape = shape,
-                clip = false,
-                ambientColor = glowColor.copy(alpha = 0.08f),
-                spotColor = glowColor.copy(alpha = 0.08f)
-            )
+            // Paint-based Gaussian shadow with glow tint — renders outside clip boundary
+            .drawBehind {
+                val paint = Paint().apply {
+                    asFrameworkPaint().apply {
+                        isAntiAlias = true
+                        color = android.graphics.Color.TRANSPARENT
+                        setShadowLayer(elevPx * 2.2f, 0f, elevPx * 0.8f, shadowColor)
+                    }
+                }
+                drawIntoCanvas { canvas ->
+                    canvas.drawRoundRect(
+                        left = 0f,
+                        top = 0f,
+                        right = size.width,
+                        bottom = size.height,
+                        radiusX = cornerRadius.toPx(),
+                        radiusY = cornerRadius.toPx(),
+                        paint = paint
+                    )
+                }
+            }
+            // Hardware-accelerated layer shadow with glow color
+            .graphicsLayer {
+                shadowElevation = 14f
+                ambientShadowColor = glowColor.copy(alpha = 0.12f)
+                spotShadowColor = glowColor.copy(alpha = 0.18f)
+            }
             .clip(shape)
             .then(
                 if (onClick != null) {

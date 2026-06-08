@@ -514,7 +514,9 @@ private fun HydrationCommand(
                     )
                     IconButton(
                         onClick = { editingWaterGoal = !editingWaterGoal },
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
+                            .size(24.dp)
+                            .graphicsLayer { shadowElevation = 6f }
                     ) {
                         Icon(
                             imageVector = if (editingWaterGoal) Icons.Default.CheckCircle else Icons.Default.Edit,
@@ -859,7 +861,7 @@ private fun QuickAddMacros(onQuickAdd: (Double, Double, Double, Double) -> Unit)
                     .fillMaxWidth()
                     .height(44.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0F172A), contentColor = Color.White),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(20.dp)
             ) {
                 Text("LOG PERFORMANCE DATA", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
             }
@@ -925,9 +927,16 @@ private fun LogHistory(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
+                        .graphicsLayer {
+                            shadowElevation = 8f
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+                            clip = true
+                            ambientShadowColor = Color.Black.copy(alpha = 0.08f)
+                            spotShadowColor = Color.Black.copy(alpha = 0.10f)
+                        }
+                        .clip(RoundedCornerShape(16.dp))
                         .background(Color.Black.copy(alpha = 0.03f))
-                        .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(12.dp))
+                        .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(16.dp))
                         .padding(horizontal = 14.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -983,9 +992,16 @@ private fun LogHistory(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
+                        .graphicsLayer {
+                            shadowElevation = 8f
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+                            clip = true
+                            ambientShadowColor = Color.Black.copy(alpha = 0.08f)
+                            spotShadowColor = Color.Black.copy(alpha = 0.10f)
+                        }
+                        .clip(RoundedCornerShape(16.dp))
                         .background(Color.Black.copy(alpha = 0.03f))
-                        .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(12.dp))
+                        .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(16.dp))
                         .padding(horizontal = 14.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically

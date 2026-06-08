@@ -10,7 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.*
@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,7 +53,7 @@ fun HistoryScreen(navController: NavController, viewModel: ActivityViewModel = h
                     },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.Default.ArrowBack, "Back")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -168,7 +169,7 @@ fun WorkoutHistoryCard(
             ) {
                 Column {
                     Spacer(Modifier.height(12.dp))
-                    HorizontalDivider(color = Color.Black.copy(alpha = 0.05f))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
                     Spacer(Modifier.height(8.dp))
                     
                     if (session.avgHeartRate > 0) {
@@ -219,14 +220,20 @@ fun StreakPipelineTimeline(
     activeStreakDays: List<Boolean>
 ) {
     val days = listOf("M", "T", "W", "T", "F", "S", "S")
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(20.dp)
+    val vitaColors = com.example.vitaai.ui.theme.LocalVitaColors.current
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .graphicsLayer {
+                shadowElevation = 8f
+                ambientShadowColor = Color.Black.copy(alpha = 0.08f)
+                spotShadowColor = Color.Black.copy(alpha = 0.10f)
+            }
             .clip(shape)
-            .background(Color.White.copy(alpha = 0.78f))
-            .border(1.dp, Color.Black.copy(alpha = 0.07f), shape)
+            .background(vitaColors.glassFill.copy(alpha = 0.72f))
+            .border(1.dp, vitaColors.glassBorderDark.copy(alpha = 0.09f), shape)
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -238,15 +245,15 @@ fun StreakPipelineTimeline(
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(if (completed) Color(0xFF0F172A) else Color.Black.copy(alpha = 0.04f))
-                    .border(1.dp, if (completed) Color(0xFF0F172A) else Color.Black.copy(alpha = 0.07f), CircleShape),
+                    .background(if (completed) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.04f))
+                    .border(1.dp, if (completed) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.07f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = days[i],
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (completed) Color.White else Color.Black.copy(alpha = 0.4f)
+                    color = if (completed) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                 )
             }
 
@@ -256,8 +263,8 @@ fun StreakPipelineTimeline(
                         .weight(1f)
                         .height(4.dp)
                         .background(
-                            if (completed && nextCompleted) Color(0xFF0F172A) 
-                            else Color.Black.copy(alpha = 0.05f)
+                            if (completed && nextCompleted) MaterialTheme.colorScheme.onSurface
+                            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
                         )
                 )
             }

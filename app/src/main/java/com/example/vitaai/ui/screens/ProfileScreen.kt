@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -456,6 +457,11 @@ fun AchievementsDialog(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .graphicsLayer {
+                                    shadowElevation = 6f
+                                    ambientShadowColor = Color.Black.copy(alpha = 0.06f)
+                                    spotShadowColor = Color.Black.copy(alpha = 0.08f)
+                                }
                                 .background(
                                     if (isEarned) color.copy(alpha = 0.05f) else Color.Black.copy(alpha = 0.02f),
                                     RoundedCornerShape(12.dp)

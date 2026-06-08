@@ -394,6 +394,7 @@ fun SessionScreen(
                 }
             },
             containerColor = Color.White,
+            shape = RoundedCornerShape(24.dp),
             titleContentColor = Color(0xFF0F172A),
             textContentColor = Color.Black.copy(alpha = 0.65f)
         )
@@ -416,7 +417,15 @@ private fun HUDStatTile(
     modifier: Modifier = Modifier,
     icon: ImageVector
 ) {
-    GlassCard(modifier = modifier, contentPadding = 12.dp) {
+    GlassCard(
+        modifier = modifier.graphicsLayer {
+            shadowElevation = 8f
+            ambientShadowColor = Color.Black.copy(alpha = 0.08f)
+            spotShadowColor = Color.Black.copy(alpha = 0.10f)
+        },
+        cornerRadius = 20.dp,
+        contentPadding = 12.dp
+    ) {
         Column {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(icon, contentDescription = null, tint = Primary.copy(alpha = 0.5f), modifier = Modifier.size(14.dp))

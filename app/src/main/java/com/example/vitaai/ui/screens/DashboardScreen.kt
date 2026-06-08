@@ -366,6 +366,11 @@ private fun DashboardHeader() {
         // AI Sync active ping badge
         Row(
             modifier = Modifier
+                .graphicsLayer {
+                    shadowElevation = 8f
+                    ambientShadowColor = Color.Black.copy(alpha = 0.08f)
+                    spotShadowColor = Color.Black.copy(alpha = 0.10f)
+                }
                 .clip(RoundedCornerShape(20.dp))
                 .border(
                     width = 1.dp,
@@ -811,6 +816,11 @@ private fun ReadinessScoreCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .graphicsLayer {
+                        shadowElevation = 8f
+                        ambientShadowColor = Color.Black.copy(alpha = 0.08f)
+                        spotShadowColor = Color.Black.copy(alpha = 0.10f)
+                    }
                     .clip(RoundedCornerShape(20.dp))
                     .background(Color.Black.copy(alpha = 0.03f))
                     .border(1.dp, Color.Black.copy(alpha = 0.05f), RoundedCornerShape(20.dp))

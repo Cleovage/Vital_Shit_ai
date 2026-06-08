@@ -622,6 +622,11 @@ private fun WorkoutHome(
 
                     Box(
                         modifier = Modifier
+                            .graphicsLayer {
+                                shadowElevation = 6f
+                                ambientShadowColor = Color.Black.copy(alpha = 0.06f)
+                                spotShadowColor = Color.Black.copy(alpha = 0.08f)
+                            }
                             .background(containerColor, RoundedCornerShape(12.dp))
                             .border(1.dp, borderColor, RoundedCornerShape(12.dp))
                             .clickable { selectedCategory = category }
@@ -1134,6 +1139,11 @@ fun CustomProtocolDialog(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .graphicsLayer {
+                                shadowElevation = 8f
+                                ambientShadowColor = Color.Black.copy(alpha = 0.08f)
+                                spotShadowColor = Color.Black.copy(alpha = 0.10f)
+                            }
                             .background(Color.White.copy(alpha = 0.78f), RoundedCornerShape(12.dp))
                             .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(12.dp))
                             .padding(horizontal = 14.dp, vertical = 10.dp),
