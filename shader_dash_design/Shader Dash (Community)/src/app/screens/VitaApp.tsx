@@ -3,8 +3,11 @@ import { AnimatePresence, motion } from "motion/react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Activity, Apple, Award, Battery, Bot, CalendarDays, ChevronLeft, ChevronRight, Coffee, Droplets, Dumbbell, Flame, HeartPulse, Lightbulb, Moon, Plus, Salad, Send, ShieldCheck, Sparkles, TrendingUp, User, Utensils, Zap } from "lucide-react";
+import { Activity, Apple, Award, Bot, CalendarDays, ChevronLeft, ChevronRight, Coffee, Droplets, Dumbbell, Edit3, Flame, HeartPulse, Lightbulb, LogOut, Moon, Plus, Salad, Send, Settings, ShieldCheck, Sparkles, TrendingUp, User, Utensils, Zap } from "lucide-react";
+import { ActionRow } from "../components/ActionRow";
 import { GlassCard } from "../components/GlassCard";
+import { PageHeader } from "../components/PageHeader";
+import { SectionHeader } from "../components/SectionHeader";
 
 const week = [
   { day: "5", kcal: 0, protein: 0, water: 0, min: 0, hr: 0, sleep: 0 },
@@ -81,24 +84,6 @@ const analyticsCatalog: AnalyticDefinition[] = [
 
 const rangeLabels: Record<AnalyticRange, string> = { day: "Day", week: "Week", month: "Month", year: "Year" };
 
-function Header({ title, kicker }: { title: string; kicker: string }) {
-  return (
-    <header className="mb-6 flex items-start justify-between pt-4">
-      <div>
-        <p className="text-[13px] font-semibold uppercase tracking-[0.34em] text-black/40">{kicker}</p>
-        <h1 className="mt-1.5 text-[40px] font-semibold leading-none tracking-[-0.05em] text-[#0f172a]">{title}</h1>
-      </div>
-      <div className="flex items-center gap-2 rounded-full border border-black/[0.08] bg-white/80 px-4 py-2.5 text-[13px] font-bold text-cyan-600 backdrop-blur-2xl shadow-[0_4px_16px_rgba(6,182,212,0.10)]">
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75"></span>
-          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-cyan-500"></span>
-        </span>
-        AI Sync
-      </div>
-    </header>
-  );
-}
-
 function Metric({ icon: Icon, label, value, tone }: { icon: any; label: string; value: string; tone: string }) {
   return (
     <GlassCard className="p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.07)] transition-shadow">
@@ -152,34 +137,10 @@ function ChartCard({ title, value, unit, color, dataKey, range = "week" }: { tit
   );
 }
 
-function ActionRow({ icon: Icon, title, subtitle, to, onClick }: { icon: any; title: string; subtitle: string; to?: string; onClick?: () => void }) {
-  const content = (
-    <GlassCard className="p-5 transition-all duration-300 hover:scale-[1.015] hover:shadow-[0_10px_28px_rgba(0,0,0,0.07)] active:scale-[0.98]">
-      <div className="flex items-center gap-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/[0.04] text-[#0f172a] shadow-sm backdrop-blur-sm">
-          <Icon className="h-6 w-6" />
-        </div>
-        <div className="flex-1">
-          <p className="text-[16px] font-semibold tracking-[-0.03em] text-[#0f172a]">{title}</p>
-          <p className="text-[14px] text-black/50 mt-0.5">{subtitle}</p>
-        </div>
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black/[0.04]">
-          <ChevronRight className="h-5 w-5 text-black/40" />
-        </div>
-      </div>
-    </GlassCard>
-  );
-
-  if (to) {
-    return <Link to={to} className="block">{content}</Link>;
-  }
-  return <button type="button" onClick={onClick} className="w-full text-left">{content}</button>;
-}
-
 export function Home() {
   return (
     <div className="flex flex-1 flex-col pb-6 w-full">
-      <Header title="VitaAI" kicker="Health companion" />
+      <PageHeader title="VitaAI" kicker="Health companion" />
 
       {/* Readiness card */}
       <GlassCard className="relative mb-6 overflow-hidden p-6 border border-black/[0.06] shadow-[0_8px_36px_rgba(6,182,212,0.08)] transition-all">
@@ -316,7 +277,7 @@ export function Home() {
 export function Health() {
   return (
     <div className="space-y-6 pb-6">
-      <Header title="Health" kicker="Movement & Fuel" />
+      <PageHeader title="Health" kicker="Movement & fuel" />
 
       <div className="grid grid-cols-2 gap-4">
         {/* Steps Animated Card */}
@@ -519,7 +480,7 @@ export function Analytics() {
 
   return (
     <div className="space-y-6 pb-6">
-      <Header title="Analytics" kicker="Vitals & recovery" />
+      <PageHeader title="Analytics" kicker="Vitals & recovery" />
       {selectedAnalytic ? (
         <AnalyticDetail analytic={selectedAnalytic} range={detailRange} onRangeChange={setDetailRange} onBack={() => setSelectedAnalytic(null)} />
       ) : (
@@ -574,7 +535,7 @@ export function VitaChat() {
 
   return (
     <div className="flex min-h-[calc(100vh-8rem)] flex-col pb-6">
-      <Header title="VitaAI" kicker="Coach chat" />
+      <PageHeader title="VitaAI" kicker="Coach chat" />
       <div className="flex-1 space-y-4">
         {messages.map(([who, text], i) => (
           <GlassCard
@@ -654,26 +615,78 @@ export function VitaChat() {
   );
 }
 
+function ProfileStatusChip({ label, active, tone }: { label: string; active: boolean; tone: "cyan" | "green" }) {
+  const activeStyles =
+    tone === "green"
+      ? "border-emerald-300/60 bg-emerald-50 text-emerald-700"
+      : "border-cyan-300/60 bg-cyan-50 text-cyan-700";
+  const inactiveStyles = "border-black/[0.08] bg-black/[0.03] text-black/45";
+
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-bold ${active ? activeStyles : inactiveStyles}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${active ? (tone === "green" ? "bg-emerald-500" : "bg-cyan-500") : "bg-black/20"}`} />
+      {label}
+    </span>
+  );
+}
+
+function ProfileStat({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="text-center">
+      <p className="text-[18px] font-bold tracking-[-0.03em] text-[#0f172a]">{value}</p>
+      <p className="mt-0.5 text-[11px] text-black/45">{label}</p>
+    </div>
+  );
+}
+
 export function Profile() {
   return (
-    <div className="space-y-6 pb-6">
-      <Header title="Profile" kicker="Personalization" />
-      <GlassCard className="p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+    <div className="space-y-5 pb-6">
+      <PageHeader title="Profile" kicker="Personalization" />
+
+      <GlassCard className="border-cyan-500/20 p-6 shadow-[0_8px_32px_rgba(6,182,212,0.08)]">
         <div className="flex items-center gap-5">
-          <div className="flex h-20 w-20 items-center justify-center rounded-[28px] bg-[#0f172a] text-white shadow-[0_8px_28px_rgba(15,23,42,0.18)]">
+          <div className="flex h-20 w-20 items-center justify-center rounded-[28px] bg-gradient-to-br from-[#1e293b] to-[#0f172a] text-white shadow-[0_8px_28px_rgba(15,23,42,0.18)]">
             <User className="h-10 w-10" />
           </div>
           <div>
-            <h2 className="text-[28px] font-semibold tracking-[-0.05em] text-[#0f172a]">Alex</h2>
-            <p className="text-[14px] text-black/50 mt-0.5">Health Connect synced • Premium trial</p>
+            <h2 className="text-[22px] font-semibold tracking-[-0.04em] text-[#0f172a]">Alex</h2>
+            <button type="button" className="mt-1 inline-flex items-center gap-1 text-[12px] font-medium text-cyan-600">
+              <Edit3 className="h-3.5 w-3.5" />
+              Tap to edit name
+            </button>
           </div>
         </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <ProfileStatusChip label="Health Connect" active tone="green" />
+          <ProfileStatusChip label="Premium trial" active tone="cyan" />
+        </div>
+
+        <div className="my-4 h-px bg-black/[0.06]" />
+
+        <div className="grid grid-cols-3 gap-3">
+          <ProfileStat value="Lv 10" label="Level" />
+          <ProfileStat value="24" label="Workouts" />
+          <ProfileStat value="2.4 L" label="Water goal" />
+        </div>
       </GlassCard>
-      <div className="space-y-4">
+
+      <SectionHeader title="Your progress" />
+      <div className="space-y-3">
         <ActionRow icon={Award} title="Achievements" subtitle="8 streaks, 3 nutrition badges" onClick={() => toast("You're in the top 5% of users this week!")} />
-        <ActionRow icon={ShieldCheck} title="Health Connect" subtitle="Vitals, workout, nutrition permissions" onClick={() => toast.success("Health Connect is fully synced.")} />
-        <ActionRow icon={Battery} title="Recovery settings" subtitle="Sleep goal, readiness, reminders" onClick={() => toast("Settings saved. You'll be reminded at 9:00 PM.")} />
-        <ActionRow icon={Droplets} title="Hydration goal" subtitle="2.4 L daily target" onClick={() => toast("Water logged! Goal updated.")} />
+      </div>
+
+      <SectionHeader title="Health & goals" subtitle="Calibrate biometrics and daily targets" />
+      <div className="space-y-3">
+        <ActionRow icon={ShieldCheck} title="Health Connect" subtitle="Vitals, workouts, and nutrition synced" onClick={() => toast.success("Health Connect is fully synced.")} />
+        <ActionRow icon={Settings} title="Biometric settings" subtitle="Weight, height, BMR, and activity targets" onClick={() => toast("Calibration saved.")} />
+        <ActionRow icon={Droplets} title="Hydration goal" subtitle="2.4 L daily target" onClick={() => toast("Water goal updated.")} />
+      </div>
+
+      <SectionHeader title="Account" />
+      <div className="space-y-3">
+        <ActionRow icon={LogOut} title="Sign out" subtitle="Sign out and clear local records" style="destructive" onClick={() => toast("Signed out.")} />
       </div>
     </div>
   );

@@ -3,27 +3,94 @@ package com.example.vitaai.ui.screens
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vitaai.data.CalorieCalculator
+import com.example.vitaai.data.HealthMetricType
+import com.example.vitaai.data.HealthSnapshot
+import com.example.vitaai.data.NutritionRepository
+import com.example.vitaai.data.NutritionSummary
+import com.example.vitaai.data.VitaRepository
+import com.example.vitaai.data.GoalsRepository
+import com.example.vitaai.data.HealthMetrics
 import com.example.vitaai.data.WorkoutRepository
-import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.data.local.WorkoutTemplateEntity
 import com.example.vitaai.data.local.WorkoutSessionWithSets
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.health.connect.client.records.ExerciseSessionRecord
 
+data class ActivityHealthData(
+    val snapshot: HealthSnapshot = HealthSnapshot(),
+    val nutrition: NutritionSummary = NutritionSummary(),
+    val stepGoal: Long = 10_000L,
+    val exerciseTrend: List<Float> = emptyList(),
+    val caloriesTrend: List<Float> = emptyList(),
+    val proteinTrend: List<Float> = emptyList()
+)
+
 @HiltViewModel
 class ActivityViewModel @Inject constructor(
-    private val workoutRepository: WorkoutRepository
+    private val workoutRepository: WorkoutRepository,
+    private val vitaRepository: VitaRepository,
+    private val nutritionRepository: NutritionRepository,
+    private val goalsRepository: GoalsRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<ActivityUiState>(ActivityUiState.Loading)
     val uiState: StateFlow<ActivityUiState> = _uiState
 
+    private data class TrendData(
+        val exercise: List<Float> = emptyList(),
+        val calories: List<Float> = emptyList(),
+        val protein: List<Float> = emptyList()
+    )
+
+    private val _trends = MutableStateFlow(TrendData())
+
+    val healthData: StateFlow<ActivityHealthData> = combine(
+        vitaRepository.healthSnapshotFlow,
+        nutritionRepository.observeTodaySummary(),
+        goalsRepository.goals,
+        _trends
+    ) { snapshot, nutrition, goals, trends ->
+        ActivityHealthData(
+            snapshot = snapshot,
+            nutrition = nutrition,
+            stepGoal = goals.stepGoal,
+            exerciseTrend = trends.exercise,
+            caloriesTrend = trends.calories,
+            proteinTrend = trends.protein
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = ActivityHealthData()
+    )
+
     init {
         loadWorkouts()
+        loadTrends()
+    }
+
+    private fun loadTrends() {
+        viewModelScope.launch {
+            runCatching {
+                _trends.value = TrendData(
+                    exercise = HealthMetrics.trendValues(
+                        vitaRepository.getMetricTrend(HealthMetricType.EXERCISE_MINUTES, days = 7)
+                    ),
+                    calories = HealthMetrics.trendValues(
+                        vitaRepository.getMetricTrend(HealthMetricType.CALORIES_INTAKE, days = 7)
+                    ),
+                    protein = HealthMetrics.trendValues(
+                        vitaRepository.getMetricTrend(HealthMetricType.PROTEIN, days = 7)
+                    )
+                )
+            }
+        }
     }
 
     fun loadWorkouts() {

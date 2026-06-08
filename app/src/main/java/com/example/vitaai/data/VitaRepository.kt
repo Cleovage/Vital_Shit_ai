@@ -18,6 +18,7 @@ import javax.inject.Singleton
 data class HealthSnapshot(
     val steps: Long = 0,
     val avgHeartRate: Double = 0.0,
+    val restingHeartRate: Double = 0.0,
     val sleepDurationHours: Double = 0.0,
     val calories: Double = 0.0,
     val basalCalories: Double = 0.0,
@@ -51,6 +52,7 @@ class VitaRepository @Inject constructor(
         
         val steps = healthConnectManager.readDailySteps(startOfDay, now)
         val avgHr = healthConnectManager.readAvgHeartRate(startOfDay, now)
+        val restingHr = healthConnectManager.readRestingHeartRate(startOfDay, now)
         val hourlyHeartRate = healthConnectManager.readHourlyHeartRate(startOfDay, now)
         val hcSleepDuration = healthConnectManager.readSleepDuration(
             now.minus(24, ChronoUnit.HOURS),
@@ -83,6 +85,7 @@ class VitaRepository @Inject constructor(
         return HealthSnapshot(
             steps = steps,
             avgHeartRate = avgHr,
+            restingHeartRate = restingHr,
             sleepDurationHours = sleepDuration,
             calories = calories,
             basalCalories = basalCalories,

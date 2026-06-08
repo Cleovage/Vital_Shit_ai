@@ -4,6 +4,8 @@
   --font-size: 14px;
   --background: #ffffff;
   --foreground: #0f172a;
+  --brand-primary: #06b6d4;
+  --brand-foreground: #0f172a;
   --card: rgba(255, 255, 255, 0.78);
   --card-foreground: #0f172a;
   --popover: rgba(255, 255, 255, 0.96);

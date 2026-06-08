@@ -9,8 +9,10 @@ import com.example.vitaai.data.HealthConnectManager
 import com.example.vitaai.data.GoalsRepository
 import com.example.vitaai.data.VitaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
@@ -56,6 +58,7 @@ class MetricDetailViewModel @Inject constructor(
     val uiState: StateFlow<MetricDetailUiState> = _uiState
 
     private var currentMetric: HealthMetricType? = null
+    private var snapshotJob: Job? = null
     private val systemZone = ZoneId.systemDefault()
 
     fun load(metricRoute: String?) {
@@ -65,11 +68,13 @@ class MetricDetailViewModel @Inject constructor(
                 return
             }
 
-        if (currentMetric == metric && _uiState.value is MetricDetailUiState.Success) {
+        if (currentMetric != metric) {
+            snapshotJob?.cancel()
+            currentMetric = metric
+        } else if (_uiState.value is MetricDetailUiState.Success) {
             return
         }
 
-        currentMetric = metric
         loadMetric(metric)
     }
 
@@ -84,22 +89,34 @@ class MetricDetailViewModel @Inject constructor(
     }
 
     private fun loadMetric(metric: HealthMetricType) {
+        snapshotJob?.cancel()
         viewModelScope.launch {
-            _uiState.value = MetricDetailUiState.Loading
-
             if (!healthConnectManager.hasAllPermissions()) {
                 _uiState.value = MetricDetailUiState.PermissionsRequired
                 return@launch
             }
 
-            try {
-                val snapshot = repository.getDailySnapshot()
-                val trend = repository.getMetricTrend(metric, days = 7)
-                _uiState.value = MetricDetailUiState.Success(
-                    buildDetail(metric = metric, snapshot = snapshot, trend = trend)
-                )
+            if (_uiState.value !is MetricDetailUiState.Success) {
+                _uiState.value = MetricDetailUiState.Loading
+            }
+
+            val trend = try {
+                repository.getMetricTrend(metric, days = 7)
             } catch (e: Exception) {
                 _uiState.value = MetricDetailUiState.Error(e.message ?: "Unable to load metric")
+                return@launch
+            }
+
+            snapshotJob = launch {
+                repository.healthSnapshotFlow
+                    .catch { e ->
+                        _uiState.value = MetricDetailUiState.Error(e.message ?: "Unable to load metric")
+                    }
+                    .collect { snapshot ->
+                        _uiState.value = MetricDetailUiState.Success(
+                            buildDetail(metric = metric, snapshot = snapshot, trend = trend)
+                        )
+                    }
             }
         }
     }
@@ -132,15 +149,22 @@ class MetricDetailViewModel @Inject constructor(
 
     private fun currentValue(metric: HealthMetricType, snapshot: HealthSnapshot): String {
         return when (metric) {
-            HealthMetricType.ACTIVE_CALORIES -> snapshot.calories.roundToInt().toString()
+            HealthMetricType.ACTIVE_CALORIES -> formatOrDash(snapshot.calories)
             HealthMetricType.STEPS -> snapshot.steps.toString()
-            HealthMetricType.HEART_RATE -> if (snapshot.avgHeartRate > 0) snapshot.avgHeartRate.roundToInt().toString() else "0"
+            HealthMetricType.HEART_RATE -> {
+                val rate = when {
+                    snapshot.restingHeartRate > 0 -> snapshot.restingHeartRate
+                    snapshot.avgHeartRate > 0 -> snapshot.avgHeartRate
+                    else -> 0.0
+                }
+                if (rate > 0) rate.roundToInt().toString() else "--"
+            }
             HealthMetricType.SLEEP -> String.format(Locale.US, "%.1f", snapshot.sleepDurationHours)
             HealthMetricType.DISTANCE -> String.format(Locale.US, "%.2f", snapshot.distanceMeters / 1000.0)
             HealthMetricType.HYDRATION -> String.format(Locale.US, "%.2f", snapshot.hydrationLiters)
-            HealthMetricType.EXERCISE_MINUTES -> snapshot.exerciseMinutes.roundToInt().toString()
-            HealthMetricType.CALORIES_INTAKE -> snapshot.caloriesIntake.roundToInt().toString()
-            HealthMetricType.PROTEIN -> snapshot.proteinGrams.roundToInt().toString()
+            HealthMetricType.EXERCISE_MINUTES -> formatOrDash(snapshot.exerciseMinutes)
+            HealthMetricType.CALORIES_INTAKE -> formatOrDash(snapshot.caloriesIntake)
+            HealthMetricType.PROTEIN -> formatOrDash(snapshot.proteinGrams)
             HealthMetricType.CARBOHYDRATE -> snapshot.carbsGrams.roundToInt().toString()
             HealthMetricType.FAT -> snapshot.fatGrams.roundToInt().toString()
             else -> "0"
@@ -211,6 +235,9 @@ class MetricDetailViewModel @Inject constructor(
 
         return base
     }
+
+    private fun formatOrDash(value: Double): String =
+        if (value > 0.0) value.roundToInt().toString() else "--"
 
     private fun toSourceLabel(source: HealthDataSource): String {
         return when (source) {

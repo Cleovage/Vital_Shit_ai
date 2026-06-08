@@ -47,6 +47,7 @@ class HealthConnectManager @Inject constructor(
     )
 
     val permissions = requiredPermissions + setOf(
+        HealthPermission.getReadPermission(RestingHeartRateRecord::class),
         HealthPermission.getWritePermission(StepsRecord::class),
         HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
         HealthPermission.getWritePermission(ActiveCaloriesBurnedRecord::class),
@@ -129,6 +130,34 @@ class HealthConnectManager @Inject constructor(
         } catch (e: Exception) {
             0.0
         }
+    }
+
+    suspend fun readRestingHeartRate(startTime: Instant, endTime: Instant): Double {
+        val client = healthConnectClient ?: return 0.0
+        return try {
+            val response = client.readRecords(
+                ReadRecordsRequest(
+                    RestingHeartRateRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            val samples = response.records.map { it.beatsPerMinute.toDouble() }
+            if (samples.isNotEmpty()) {
+                samples.average()
+            } else {
+                estimateRestingHeartRate(startTime, endTime)
+            }
+        } catch (e: Exception) {
+            estimateRestingHeartRate(startTime, endTime)
+        }
+    }
+
+    private suspend fun estimateRestingHeartRate(startTime: Instant, endTime: Instant): Double {
+        val samples = readHeartRate(startTime, endTime)
+        if (samples.isEmpty()) return 0.0
+        val sorted = samples.sorted()
+        val bottomCount = maxOf(1, sorted.size / 4)
+        return sorted.take(bottomCount).average()
     }
 
     suspend fun readSleepDuration(startTime: Instant, endTime: Instant): Double {

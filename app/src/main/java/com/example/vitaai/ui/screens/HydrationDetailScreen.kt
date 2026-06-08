@@ -45,6 +45,7 @@ import androidx.navigation.NavController
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.components.GlassCard
 import com.example.vitaai.ui.components.PageHeader
+import com.example.vitaai.ui.theme.VitaTextStyles
 
 @Composable
 fun HydrationDetailScreen(
@@ -110,17 +111,16 @@ fun HydrationDetailScreen(
                         ) {
                             Text(
                                 text = "${state.todayMl} / ${state.goalMl} ml",
-                                color = Color(0xFF0F172A),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 28.sp
+                                style = VitaTextStyles.metricProminent,
+                                color = Color(0xFF0F172A)
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             HydrationProgressRing(progress = progress, todayMl = state.todayMl, color = cyan, dim = cyanDim)
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "${(progress * 100).toInt()}% of daily goal",
-                                color = Color(0xFF475569),
-                                fontSize = 13.sp
+                                style = VitaTextStyles.sectionSubtitle,
+                                color = Color(0xFF475569)
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Row(

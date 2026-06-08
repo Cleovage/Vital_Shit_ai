@@ -86,13 +86,15 @@ import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.HealthConnectClient
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.vitaai.data.HealthMetricType
+import com.example.vitaai.data.DailyGoals
+import com.example.vitaai.data.HealthMetrics
 import com.example.vitaai.data.HealthSnapshot
 import com.example.vitaai.data.NutritionSummary
 import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.components.GlassCard
 import com.example.vitaai.ui.components.GlassCardGlow
+import com.example.vitaai.ui.components.PageHeader
 import com.example.vitaai.data.GoalProgress
 import com.example.vitaai.ui.theme.*
 import java.util.Locale
@@ -115,6 +117,7 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
                 recentWorkouts = state.recentWorkouts,
                 goalProgress = state.goalProgress,
                 streakDays = state.streakDays,
+                goals = state.goals,
                 viewModel = viewModel,
                 navController = navController
             )
@@ -175,6 +178,7 @@ private fun DashboardContent(
     recentWorkouts: List<WorkoutSessionEntity>,
     goalProgress: GoalProgress,
     streakDays: Int,
+    goals: DailyGoals,
     viewModel: DashboardViewModel,
     navController: NavController
 ) {
@@ -209,14 +213,14 @@ private fun DashboardContent(
         ) {
             // --- 1. HEADER ---
             item {
-                DashboardHeader()
+                PageHeader(title = "VitaAI", kicker = "Health companion")
             }
 
             // --- 2. READINESS SCORE CARD ---
             item {
-                val readinessScore = ((snapshot.sleepDurationHours / 8.0 * 0.5) + (snapshot.avgHeartRate / 80.0 * 0.5)).coerceIn(0.0, 1.0).times(100).toInt()
+                val readinessScore = HealthMetrics.computeReadinessScore(snapshot)
                 ReadinessScoreCard(
-                    score = if (readinessScore > 0) readinessScore else 86,
+                    score = readinessScore,
                     snapshot = snapshot,
                     insight = insight,
                     onClick = { navController.navigate("circadian") }
@@ -225,11 +229,6 @@ private fun DashboardContent(
 
             // --- 3. METRICS GRID (2x2 Bento) ---
             item {
-                val activeEnergyKcal = snapshot.calories.roundToInt()
-                val trainingMin = snapshot.exerciseMinutes.roundToInt()
-                val proteinGrams = nutrition.proteinGrams.roundToInt()
-                val sleepHours = snapshot.sleepDurationHours
-
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -241,7 +240,7 @@ private fun DashboardContent(
                         MetricCard(
                             icon = Icons.Default.Whatshot,
                             label = "Active energy",
-                            value = if (activeEnergyKcal > 0) "$activeEnergyKcal kcal" else "512 kcal",
+                            value = HealthMetrics.formatActiveEnergyKcal(snapshot.calories),
                             tone = "amber",
                             modifier = Modifier.weight(1f),
                             onClick = { navController.navigate("metric/active_calories") }
@@ -249,7 +248,7 @@ private fun DashboardContent(
                         MetricCard(
                             icon = Icons.Default.FitnessCenter,
                             label = "Training",
-                            value = if (trainingMin > 0) "$trainingMin min" else "12 min",
+                            value = HealthMetrics.formatTrainingMinutes(snapshot.exerciseMinutes),
                             tone = "cyan",
                             modifier = Modifier.weight(1f),
                             onClick = { navController.navigate("activity") }
@@ -262,7 +261,7 @@ private fun DashboardContent(
                         MetricCard(
                             icon = Icons.Default.Restaurant,
                             label = "Protein",
-                            value = if (proteinGrams > 0) "${proteinGrams} g" else "74 g",
+                            value = HealthMetrics.formatProteinGrams(nutrition.proteinGrams),
                             tone = "yellow",
                             modifier = Modifier.weight(1f),
                             onClick = { navController.navigate("nutrition") }
@@ -270,7 +269,7 @@ private fun DashboardContent(
                         MetricCard(
                             icon = Icons.Default.ModeNight,
                             label = "Sleep",
-                            value = if (sleepHours > 0.0) String.format(Locale.US, "%.1f h", sleepHours) else "7.1 h",
+                            value = HealthMetrics.formatSleepHours(snapshot.sleepDurationHours),
                             tone = "blue",
                             modifier = Modifier.weight(1f),
                             onClick = { navController.navigate("circadian") }
@@ -284,11 +283,7 @@ private fun DashboardContent(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Today's Insights & Tips",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = (-0.03).sp
-                    ),
+                    style = VitaTextStyles.cardSectionTitle,
                     color = Color(0xFF0F172A)
                 )
             }
@@ -301,21 +296,26 @@ private fun DashboardContent(
                     TipCard(
                         icon = Icons.Default.Lightbulb,
                         title = "Recovery Prioritization",
-                        description = "Your deep sleep was slightly lower last night. Consider winding down 30 mins earlier today and avoiding screens before bed.",
+                        description = HealthMetrics.recoveryTip(snapshot.sleepDurationHours),
                         tone = "rose",
                         onClick = { navController.navigate("circadian") }
                     )
                     TipCard(
                         icon = Icons.Default.Coffee,
                         title = "Afternoon Energy Dip",
-                        description = "Based on your activity patterns, you might feel a dip around 3 PM. Try substituting coffee with a quick 10-min brisk walk or stretching session.",
+                        description = insight.ifBlank {
+                            "Based on your synced activity, a short walk or mobility break can help sustain afternoon energy."
+                        },
                         tone = "emerald",
                         onClick = { navController.navigate("activity") }
                     )
                     TipCard(
                         icon = Icons.Default.WaterDrop,
                         title = "Hydration Check-in",
-                        description = "You're currently 400ml behind your daily hydration pace. Grab a glass of water now to stay on track for your 2.4L goal.",
+                        description = HealthMetrics.hydrationPaceMessage(
+                            hydrationLiters = maxOf(snapshot.hydrationLiters, nutrition.hydrationMl / 1000.0),
+                            goalLiters = goals.hydrationGoalLiters
+                        ),
                         tone = "blue",
                         onClick = { navController.navigate("nutrition") }
                     )
@@ -329,75 +329,6 @@ private fun DashboardContent(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = Primary
         )
-    }
-}
-
-@Composable
-private fun DashboardHeader() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "HEALTH COMPANION",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 4.4.sp // 0.34em
-                ),
-                color = Color.Black.copy(alpha = 0.40f)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "VitaAI",
-                style = MaterialTheme.typography.displayMedium.copy(
-                    fontSize = 40.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = (-2).sp // -0.05em
-                ),
-                color = Color(0xFF0F172A)
-            )
-        }
-
-        // AI Sync active ping badge
-        Row(
-            modifier = Modifier
-                .graphicsLayer {
-                    shadowElevation = 8f
-                    shape = RoundedCornerShape(20.dp)
-                    ambientShadowColor = Color.Black.copy(alpha = 0.08f)
-                    spotShadowColor = Color.Black.copy(alpha = 0.10f)
-                }
-                .clip(RoundedCornerShape(20.dp))
-                .border(
-                    width = 1.dp,
-                    color = Color.Black.copy(alpha = 0.08f),
-                    shape = RoundedCornerShape(20.dp)
-                )
-                .background(Color.White.copy(alpha = 0.8f))
-                .padding(horizontal = 14.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF06B6D4))
-            )
-            Text(
-                text = "AI Sync",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                color = Color(0xFF0891B2)
-            )
-        }
     }
 }
 
@@ -443,20 +374,13 @@ private fun MetricCard(
             Column {
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
+                    style = VitaTextStyles.metricLabel,
                     color = Color.Black.copy(alpha = 0.50f)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = value,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = (-0.96).sp
-                    ),
+                    style = VitaTextStyles.metricCompact,
                     color = Color(0xFF0F172A)
                 )
             }
@@ -506,19 +430,13 @@ private fun TipCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
+                    style = VitaTextStyles.cardTitle,
                     color = Color(0xFF0F172A)
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = description,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontSize = 14.sp,
-                        lineHeight = 22.sp
-                    ),
+                    style = VitaTextStyles.bodyPrimary,
                     color = Color.Black.copy(alpha = 0.55f)
                 )
             }
@@ -558,10 +476,9 @@ private fun ReadinessScoreCard(
     val arcCyan = Color(0xFF06B6D4)
     val arcBlue = Color(0xFF3B82F6)
 
-    val sleepPct = ((snapshot.sleepDurationHours / 8.0) * 100).toInt().coerceIn(0, 100)
-    val hrvPct = if (snapshot.avgHeartRate > 0)
-        ((snapshot.avgHeartRate / 80.0) * 100).toInt().coerceIn(0, 100)
-    else 81
+    val sleepPct = HealthMetrics.sleepProgressPercent(snapshot.sleepDurationHours)
+    val heartPct = HealthMetrics.heartRecoveryPercent(snapshot)
+    val readinessBadge = HealthMetrics.readinessLabel(score)
 
     Box(modifier = modifier.fillMaxWidth()) {
         Box(
@@ -613,11 +530,7 @@ private fun ReadinessScoreCard(
                     ) {
                         Text(
                             text = "Readiness",
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.95.sp
-                            ),
+                            style = VitaTextStyles.cardOverline,
                             color = Color.Black.copy(alpha = 0.45f)
                         )
                         Box(
@@ -628,12 +541,8 @@ private fun ReadinessScoreCard(
                                 .padding(horizontal = 10.dp, vertical = 4.dp)
                         ) {
                             Text(
-                                text = "OPTIMAL",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = 0.5.sp
-                                ),
+                                text = readinessBadge,
+                                style = VitaTextStyles.badge,
                                 color = badgeColor
                             )
                         }
@@ -644,16 +553,12 @@ private fun ReadinessScoreCard(
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text(
                             text = score.toString(),
-                            style = MaterialTheme.typography.displayLarge.copy(
-                                fontSize = 64.sp,
-                                letterSpacing = (-3.84).sp
-                            ),
-                            color = Color(0xFF0F172A),
-                            fontWeight = FontWeight.SemiBold
+                            style = VitaTextStyles.metricHero,
+                            color = Color(0xFF0F172A)
                         )
                         Text(
                             text = "%",
-                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
+                            style = VitaTextStyles.metricUnit,
                             color = Color.Black.copy(alpha = 0.3f),
                             modifier = Modifier.padding(bottom = 8.dp, start = 2.dp)
                         )
@@ -677,18 +582,12 @@ private fun ReadinessScoreCard(
                             )
                             Text(
                                 text = "Sleep",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                ),
+                                style = VitaTextStyles.metricRowLabel,
                                 color = Color.Black.copy(alpha = 0.40f)
                             )
                             Text(
                                 text = "$sleepPct%",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold
-                                ),
+                                style = VitaTextStyles.metricRowValue,
                                 color = Color(0xFF0F172A)
                             )
                         }
@@ -703,19 +602,13 @@ private fun ReadinessScoreCard(
                                 modifier = Modifier.size(16.dp)
                             )
                             Text(
-                                text = "HRV",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                ),
+                                text = "Heart",
+                                style = VitaTextStyles.metricRowLabel,
                                 color = Color.Black.copy(alpha = 0.40f)
                             )
                             Text(
-                                text = "$hrvPct%",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold
-                                ),
+                                text = "$heartPct%",
+                                style = VitaTextStyles.metricRowValue,
                                 color = Color(0xFF0F172A)
                             )
                         }
@@ -842,10 +735,7 @@ private fun ReadinessScoreCard(
                             )
                             append(insight.ifEmpty { "Workout load is balanced. Add a protein-rich meal and 900 ml water to close your Vita ring." })
                         },
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontSize = 14.sp,
-                            lineHeight = 22.sp
-                        ),
+                        style = VitaTextStyles.bodyPrimary,
                         color = Color(0xFF0F172A).copy(alpha = 0.8f)
                     )
                 }

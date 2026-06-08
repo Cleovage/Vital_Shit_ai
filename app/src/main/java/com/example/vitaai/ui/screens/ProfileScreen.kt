@@ -1,7 +1,5 @@
 package com.example.vitaai.ui.screens
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,10 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vitaai.ui.components.ActionRow
+import com.example.vitaai.ui.components.ActionRowStyle
 import com.example.vitaai.ui.components.AuraBackground
-import com.example.vitaai.ui.components.GlassCard
-import com.example.vitaai.ui.components.GlowButton
+import com.example.vitaai.ui.components.GlassCardGlow
 import com.example.vitaai.ui.components.PageHeader
+import com.example.vitaai.ui.components.SectionHeader
 import com.example.vitaai.ui.theme.*
 import java.util.Locale
 import android.widget.Toast
@@ -83,20 +82,26 @@ fun ProfileScreen(navController: androidx.navigation.NavController, viewModel: P
                 PageHeader(title = "Profile", kicker = "Personalization")
             }
 
-            // --- 2. PROFILE HERO CARD (1:1 copy of Web UI) ---
+            // --- 2. PROFILE HERO ---
             item {
-                GlassCard(modifier = Modifier.fillMaxWidth()) {
+                GlassCardGlow(
+                    modifier = Modifier.fillMaxWidth(),
+                    glowColor = Primary
+                ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
-                        // Left side: Dark slate-900 circle with User icon
                         Box(
                             modifier = Modifier
                                 .size(80.dp)
                                 .clip(RoundedCornerShape(28.dp))
-                                .background(Color(0xFF0F172A)),
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(OnBackground, OnBackground.copy(alpha = 0.85f))
+                                    )
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -106,8 +111,7 @@ fun ProfileScreen(navController: androidx.navigation.NavController, viewModel: P
                                 modifier = Modifier.size(40.dp)
                             )
                         }
-                        
-                        // Right side: Name and Sync info (tappable to rename)
+
                         Column(
                             modifier = Modifier
                                 .weight(1f)
@@ -115,56 +119,103 @@ fun ProfileScreen(navController: androidx.navigation.NavController, viewModel: P
                         ) {
                             Text(
                                 text = userDisplayName,
-                                style = MaterialTheme.typography.displaySmall.copy(
-                                    fontSize = 20.sp, // Reduced font size to accommodate email addresses nicely
-                                    fontWeight = FontWeight.SemiBold,
-                                    letterSpacing = (-0.8).sp
-                                ),
-                                color = Color(0xFF0F172A)
+                                style = VitaTextStyles.profileName,
+                                color = OnBackground
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Tap to edit name",
-                                color = Color(0xFF06B6D4),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = if (state.permissionsGranted)
-                                    "Health Connect synced • Premium trial"
-                                else
-                                    "Health Connect pending • Premium trial",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color.Black.copy(alpha = 0.5f)
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = null,
+                                    tint = Primary,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Text(
+                                    text = "Tap to edit name",
+                                    style = VitaTextStyles.editHint,
+                                    color = Primary
+                                )
+                            }
                         }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ProfileStatusChip(
+                            label = if (state.permissionsGranted) "Health Connect" else "Connect pending",
+                            isActive = state.permissionsGranted,
+                            activeColor = AccentGreen
+                        )
+                        ProfileStatusChip(
+                            label = "Premium trial",
+                            isActive = true,
+                            activeColor = Primary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HorizontalDivider(color = Color.Black.copy(alpha = 0.06f))
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        ProfileStat(
+                            value = "Lv ${state.level}",
+                            label = "Level"
+                        )
+                        ProfileStat(
+                            value = state.completedWorkoutsCount.toString(),
+                            label = "Workouts"
+                        )
+                        val hydrationGoal = if (state.hydrationGoalLiters > 0.0) state.hydrationGoalLiters else 2.4
+                        ProfileStat(
+                            value = String.format(Locale.US, "%.1f L", hydrationGoal),
+                            label = "Water goal"
+                        )
                     }
                 }
             }
 
-            // --- 3. ACTION ROWS (1:1 copy of Web UI) ---
+            // --- 3. PROGRESS ---
+            item {
+                SectionHeader(title = "Your progress")
+            }
+            item {
+                ActionRow(
+                    icon = Icons.Default.Star,
+                    title = "Achievements",
+                    subtitle = "8 streaks, 3 nutrition badges",
+                    onClick = { showAchievementsDialog = true }
+                )
+            }
+
+            // --- 4. HEALTH & GOALS ---
+            item {
+                SectionHeader(
+                    title = "Health & goals",
+                    subtitle = "Calibrate biometrics and daily targets"
+                )
+            }
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    ActionRow(
-                        icon = Icons.Default.Star,
-                        title = "Achievements",
-                        subtitle = "8 streaks, 3 nutrition badges",
-                        onClick = { 
-                            showAchievementsDialog = true
-                        }
-                    )
-                    
                     ActionRow(
                         icon = Icons.Default.VerifiedUser,
                         title = "Health Connect",
-                        subtitle = if (state.permissionsGranted) 
-                            "Vitals, workouts, nutrition permissions synced" 
-                        else 
-                            "Permissions pending setup",
+                        subtitle = if (state.permissionsGranted)
+                            "Vitals, workouts, and nutrition synced"
+                        else
+                            "Tap to grant permissions",
                         onClick = {
                             if (!state.permissionsGranted) {
                                 healthConnectLauncher.launch(viewModel.getRequestedPermissions())
@@ -173,41 +224,47 @@ fun ProfileScreen(navController: androidx.navigation.NavController, viewModel: P
                             }
                         }
                     )
-                    
+
                     ActionRow(
                         icon = Icons.Default.Settings,
-                        title = "Biometric Settings",
-                        subtitle = "Calibrate weight, height, BMR, and targets",
-                        onClick = { 
-                            showEditDialog = true 
-                        }
+                        title = "Biometric settings",
+                        subtitle = "Weight, height, BMR, and activity targets",
+                        onClick = { showEditDialog = true }
                     )
-                    
+
                     val hydrationGoal = if (state.hydrationGoalLiters > 0.0) state.hydrationGoalLiters else 2.4
                     ActionRow(
                         icon = Icons.Default.LocalDrink,
                         title = "Hydration goal",
                         subtitle = String.format(Locale.US, "%.1f L daily target", hydrationGoal),
-                        onClick = {
-                            showEditDialog = true
-                        }
+                        onClick = { showEditDialog = true }
                     )
+                }
+            }
 
+            // --- 5. ACCOUNT ---
+            item {
+                SectionHeader(title = "Account")
+            }
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     if (isAnonymous) {
                         ActionRow(
                             icon = Icons.Default.Link,
-                            title = "Link Email Account",
-                            subtitle = "Link email & password to save progress",
-                            onClick = {
-                                showLinkDialog = true
-                            }
+                            title = "Link email account",
+                            subtitle = "Save progress across devices",
+                            onClick = { showLinkDialog = true }
                         )
                     }
 
                     ActionRow(
                         icon = Icons.Default.ExitToApp,
-                        title = "LOG OUT",
-                        subtitle = "Sign out and wipe all local records",
+                        title = "Sign out",
+                        subtitle = "Sign out and clear local records",
+                        style = ActionRowStyle.Destructive,
                         onClick = {
                             viewModel.logout {
                                 navController.navigate("auth") {
@@ -480,6 +537,59 @@ fun ProfileScreen(navController: androidx.navigation.NavController, viewModel: P
 }
 
 @Composable
+private fun ProfileStatusChip(
+    label: String,
+    isActive: Boolean,
+    activeColor: Color
+) {
+    val backgroundColor = if (isActive) activeColor.copy(alpha = 0.1f) else Color.Black.copy(alpha = 0.04f)
+    val borderColor = if (isActive) activeColor.copy(alpha = 0.25f) else Color.Black.copy(alpha = 0.08f)
+    val textColor = if (isActive) activeColor else Color.Black.copy(alpha = 0.45f)
+
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(backgroundColor)
+            .border(1.dp, borderColor, RoundedCornerShape(20.dp))
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(6.dp)
+                .clip(CircleShape)
+                .background(if (isActive) activeColor else Color.Black.copy(alpha = 0.2f))
+        )
+        Text(
+            text = label,
+            style = VitaTextStyles.chip,
+            color = textColor
+        )
+    }
+}
+
+@Composable
+private fun ProfileStat(
+    value: String,
+    label: String
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = value,
+            style = VitaTextStyles.statValue,
+            color = OnBackground
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = label,
+            style = VitaTextStyles.statLabel,
+            color = Color.Black.copy(alpha = 0.45f)
+        )
+    }
+}
+
+@Composable
 fun AchievementsDialog(
     onDismiss: () -> Unit
 ) {
@@ -495,9 +605,8 @@ fun AchievementsDialog(
         title = {
             Text(
                 "Earned Achievements",
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF0F172A),
-                style = MaterialTheme.typography.titleLarge
+                style = VitaTextStyles.dialogTitle,
+                color = Color(0xFF0F172A)
             )
         },
         text = {

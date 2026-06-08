@@ -54,6 +54,7 @@ import com.example.vitaai.ui.theme.OnSurfaceVariant
 import com.example.vitaai.ui.theme.OutlineVariant
 import com.example.vitaai.ui.theme.Primary
 import com.example.vitaai.ui.theme.SurfaceContainerHigh
+import com.example.vitaai.ui.theme.VitaTextStyles
 import java.util.Locale
 import kotlin.math.abs
 
@@ -188,19 +189,12 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
                 Column {
                     Text(
                         text = detail.metric.title.uppercase(Locale.US),
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            letterSpacing = 2.sp
-                        ),
+                        style = VitaTextStyles.detailKicker,
                         color = Color.Black.copy(alpha = 0.40f)
                     )
                     Text(
                         text = "Metric Details",
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
+                        style = VitaTextStyles.screenSubtitle,
                         color = Color(0xFF0F172A)
                     )
                 }
@@ -212,31 +206,27 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
             GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
                 Text(
                     text = "TODAY",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Black.copy(alpha = 0.45f),
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.8.sp
+                    style = VitaTextStyles.cardOverline,
+                    color = Color.Black.copy(alpha = 0.45f)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
                         text = detail.currentValue,
-                        style = MaterialTheme.typography.displayMedium.copy(fontSize = 44.sp),
-                        color = metricColor,
-                        fontWeight = FontWeight.Black
+                        style = VitaTextStyles.metricLarge,
+                        color = metricColor
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = detail.unitLabel.uppercase(Locale.US),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.Black.copy(alpha = 0.4f),
-                        fontWeight = FontWeight.Bold
+                        style = VitaTextStyles.metricUnitLabel,
+                        color = Color.Black.copy(alpha = 0.4f)
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = detail.description,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = VitaTextStyles.bodySecondary,
                     color = Color.Black.copy(alpha = 0.6f)
                 )
             }
@@ -246,10 +236,8 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
             GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
                 Text(
                     text = "SYNCED SOURCES",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Black.copy(alpha = 0.45f),
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.8.sp
+                    style = VitaTextStyles.cardOverline,
+                    color = Color.Black.copy(alpha = 0.45f)
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 detail.sourceLabels.forEach { source ->
@@ -263,9 +251,8 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
                     ) {
                         Text(
                             text = source.uppercase(Locale.US),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF0F172A),
-                            fontWeight = FontWeight.Bold
+                            style = VitaTextStyles.caption.copy(fontWeight = FontWeight.Bold),
+                            color = Color(0xFF0F172A)
                         )
                     }
                 }
@@ -276,10 +263,8 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
             GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
                 Text(
                     text = "TODAY'S TREND",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Black.copy(alpha = 0.45f),
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.8.sp
+                    style = VitaTextStyles.cardOverline,
+                    color = Color.Black.copy(alpha = 0.45f)
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 LuminousLineChart(
@@ -298,10 +283,8 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
             GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
                 Text(
                     text = "7-DAY TREND",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Black.copy(alpha = 0.45f),
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.8.sp
+                    style = VitaTextStyles.cardOverline,
+                    color = Color.Black.copy(alpha = 0.45f)
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 LuminousBarChart(
@@ -320,10 +303,8 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
             GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
                 Text(
                     text = "RELATED STATS",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Black.copy(alpha = 0.45f),
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.8.sp
+                    style = VitaTextStyles.cardOverline,
+                    color = Color.Black.copy(alpha = 0.45f)
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -331,14 +312,13 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(
                                 text = stat.first,
-                                style = MaterialTheme.typography.bodySmall,
+                                style = VitaTextStyles.bodySecondary,
                                 color = Color.Black.copy(alpha = 0.55f)
                             )
                             Text(
                                 text = stat.second,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color(0xFF0F172A),
-                                fontWeight = FontWeight.Bold
+                                style = VitaTextStyles.metricRowValue,
+                                color = Color(0xFF0F172A)
                             )
                         }
                     }

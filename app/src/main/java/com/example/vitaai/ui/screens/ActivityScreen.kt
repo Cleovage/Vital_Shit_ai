@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.vitaai.data.HealthMetrics
 import com.example.vitaai.data.*
 import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.data.local.WorkoutSessionWithSets
@@ -44,6 +45,7 @@ import com.example.vitaai.ui.components.ActionRow
 import com.example.vitaai.ui.components.GlassCard
 import com.example.vitaai.ui.components.GlassCardGlow
 import com.example.vitaai.ui.components.AuraBackground
+import com.example.vitaai.ui.components.PageHeader
 import com.example.vitaai.ui.components.ProgressRing
 import com.example.vitaai.ui.components.LuminousLineChart
 import com.example.vitaai.ui.theme.*
@@ -56,28 +58,11 @@ import kotlin.math.roundToInt
 @Composable
 fun ActivityScreen(
     navController: NavController,
-    viewModel: ActivityViewModel = hiltViewModel(),
-    dashboardViewModel: DashboardViewModel = hiltViewModel()
+    viewModel: ActivityViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val dashboardUiState by dashboardViewModel.uiState.collectAsState()
+    val healthData by viewModel.healthData.collectAsState()
     var query by remember { mutableStateOf("") }
-
-    // Resolve snapshot & nutrition from dashboard view model if success, fallback to nominal mocks
-    val (snapshot, nutrition) = when (val dashState = dashboardUiState) {
-        is DashboardUiState.Success -> dashState.snapshot to dashState.nutrition
-        else -> HealthSnapshot(
-            steps = 4820,
-            calories = 512.0,
-            exerciseMinutes = 12.0,
-            sleepDurationHours = 7.1,
-            avgHeartRate = 74.0
-        ) to NutritionSummary(
-            calories = 512.0,
-            proteinGrams = 74.0,
-            hydrationMl = 1100.0
-        )
-    }
 
     AuraBackground {
         when (val state = uiState) {
@@ -93,8 +78,7 @@ fun ActivityScreen(
                 sessions = state.sessions,
                 query = query,
                 onQueryChange = { query = it },
-                snapshot = snapshot,
-                nutrition = nutrition,
+                healthData = healthData,
                 onCreateTemplate = { name, desc, mode, rest, gps ->
                     viewModel.createTemplate(name, desc, mode, rest, gps)
                 }
@@ -110,10 +94,12 @@ private fun WorkoutHome(
     sessions: List<WorkoutSessionWithSets>,
     query: String,
     onQueryChange: (String) -> Unit,
-    snapshot: HealthSnapshot,
-    nutrition: NutritionSummary,
+    healthData: ActivityHealthData,
     onCreateTemplate: (String, String, String, Int, Boolean) -> Unit
 ) {
+    val snapshot = healthData.snapshot
+    val nutrition = healthData.nutrition
+    val stepGoal = healthData.stepGoal.coerceAtLeast(1L)
     var selectedCategory by remember { mutableStateOf("ALL") }
     var showCreateDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -147,29 +133,8 @@ private fun WorkoutHome(
         contentPadding = PaddingValues(start = 20.dp, top = 24.dp, end = 20.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // --- 1. WEB UI: HEADER ---
         item {
-            Column {
-                Text(
-                    text = "MOVEMENT & FUEL",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = 4.4.sp // 0.34em
-                    ),
-                    color = Color.Black.copy(alpha = 0.40f)
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Health",
-                    style = MaterialTheme.typography.displayMedium.copy(
-                        fontSize = 40.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = (-2).sp
-                    ),
-                    color = Color(0xFF0F172A)
-                )
-            }
+            PageHeader(title = "Health", kicker = "Movement & fuel")
         }
 
         // --- 2. WEB UI: STEPS & HEART RATE SIDE-BY-SIDE CARD ROWS ---
@@ -210,7 +175,7 @@ private fun WorkoutHome(
                             .fillMaxWidth()
                             .fillMaxHeight()
                     ) {
-                        val stepsPercent = (snapshot.steps.toFloat() / 10000f).coerceIn(0f, 1f)
+                        val stepsPercent = (snapshot.steps.toFloat() / stepGoal.toFloat()).coerceIn(0f, 1f)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -229,31 +194,20 @@ private fun WorkoutHome(
                                     )
                                     Text(
                                         text = "Steps",
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.Medium
-                                        ),
+                                        style = VitaTextStyles.metricLabel,
                                         color = Color.Black.copy(alpha = 0.5f)
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
                                     text = String.format(Locale.US, "%,d", snapshot.steps),
-                                    style = MaterialTheme.typography.titleLarge.copy(
-                                        fontSize = 32.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        letterSpacing = (-1.28).sp
-                                    ),
+                                    style = VitaTextStyles.metricMedium,
                                     color = Color(0xFF0F172A)
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = "GOAL: 10,000",
-                                    style = MaterialTheme.typography.labelSmall.copy(
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        letterSpacing = 0.5.sp
-                                    ),
+                                    text = "GOAL: ${String.format(Locale.US, "%,d", stepGoal)}",
+                                    style = VitaTextStyles.caption,
                                     color = Color.Black.copy(alpha = 0.4f)
                                 )
                             }
@@ -370,39 +324,31 @@ private fun WorkoutHome(
                                     )
                                     Text(
                                         text = "Avg heart",
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.Medium
-                                        ),
+                                        style = VitaTextStyles.metricLabel,
                                         color = Color.Black.copy(alpha = 0.5f)
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Row(verticalAlignment = Alignment.Bottom) {
                                     Text(
-                                        text = if (snapshot.avgHeartRate > 0.0) snapshot.avgHeartRate.roundToInt().toString() else "74",
-                                        style = MaterialTheme.typography.titleLarge.copy(
-                                            fontSize = 32.sp,
-                                            fontWeight = FontWeight.SemiBold,
-                                            letterSpacing = (-1.28).sp
-                                        ),
+                                        text = HealthMetrics.formatHeartRateBpm(snapshot.avgHeartRate),
+                                        style = VitaTextStyles.metricMedium,
                                         color = Color(0xFF0F172A)
                                     )
                                     Text(
                                         text = " bpm",
-                                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp),
+                                        style = VitaTextStyles.metricUnitLabel.copy(fontWeight = FontWeight.Medium),
                                         color = Color.Black.copy(alpha = 0.4f),
                                         modifier = Modifier.padding(bottom = 4.dp, start = 2.dp)
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = "RESTING: 58 BPM",
-                                    style = MaterialTheme.typography.labelSmall.copy(
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        letterSpacing = 0.5.sp
+                                    text = HealthMetrics.formatRestingHeartRate(
+                                        resting = snapshot.restingHeartRate,
+                                        avg = snapshot.avgHeartRate
                                     ),
+                                    style = VitaTextStyles.caption,
                                     color = hrGlow.copy(alpha = 0.8f)
                                 )
                             }
@@ -496,28 +442,32 @@ private fun WorkoutHome(
                 // Recorded Training Time Chart Card
                 ChartCard(
                     title = "Recorded training time",
-                    value = if (snapshot.exerciseMinutes > 0.0) "${snapshot.exerciseMinutes.roundToInt()}.0" else "12.0",
+                    value = if (snapshot.exerciseMinutes > 0.0) {
+                        String.format(Locale.US, "%.1f", snapshot.exerciseMinutes)
+                    } else {
+                        "--"
+                    },
                     unit = "MIN",
                     color = Color(0xFF06B6D4),
-                    dataPoints = listOf(0f, 0f, 0f, 0f, 24f, 12f, 19f)
+                    dataPoints = healthData.exerciseTrend.ifEmpty { listOf(0f, snapshot.exerciseMinutes.toFloat()) }
                 )
 
                 // Food Logged Chart Card
                 ChartCard(
                     title = "Food logged in VitaAI",
-                    value = if (nutrition.calories > 0f) nutrition.calories.roundToInt().toString() else "512",
+                    value = if (nutrition.calories > 0.0) nutrition.calories.roundToInt().toString() else "--",
                     unit = "KCAL",
                     color = Color(0xFFEAB308),
-                    dataPoints = listOf(0f, 0f, 0f, 0f, 586f, 210f, 512f)
+                    dataPoints = healthData.caloriesTrend.ifEmpty { listOf(0f, nutrition.calories.toFloat()) }
                 )
 
                 // Protein intake Chart Card
                 ChartCard(
                     title = "Protein intake distribution",
-                    value = if (nutrition.proteinGrams > 0f) nutrition.proteinGrams.roundToInt().toString() else "74",
+                    value = if (nutrition.proteinGrams > 0.0) nutrition.proteinGrams.roundToInt().toString() else "--",
                     unit = "G",
                     color = Color(0xFFF59E0B),
-                    dataPoints = listOf(0f, 0f, 0f, 0f, 61f, 27f, 74f)
+                    dataPoints = healthData.proteinTrend.ifEmpty { listOf(0f, nutrition.proteinGrams.toFloat()) }
                 )
             }
         }
@@ -569,11 +519,7 @@ private fun WorkoutHome(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 "CUSTOM PROTOCOLS & HISTORY",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.5.sp
-                ),
+                style = VitaTextStyles.cardOverline,
                 color = Color.Black.copy(alpha = 0.45f)
             )
         }
@@ -778,30 +724,20 @@ private fun ChartCard(
                 ) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold
-                        ),
+                        style = VitaTextStyles.cardTitle.copy(fontWeight = FontWeight.SemiBold),
                         color = Color.Black.copy(alpha = 0.6f),
                         modifier = Modifier.widthIn(max = 240.dp)
                     )
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = value,
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                letterSpacing = (-1.12).sp
-                            ),
+                            style = VitaTextStyles.metricProminent,
                             color = color
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = unit,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold
-                            ),
+                            style = VitaTextStyles.statLabel.copy(fontWeight = FontWeight.Bold),
                             color = Color.Black.copy(alpha = 0.4f)
                         )
                     }

@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import com.example.vitaai.ui.theme.VitaTextStyles
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,10 +21,8 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 /**
  * Premium card for VitaAI — Shader Dash light-cream aesthetic.
@@ -93,10 +91,8 @@ fun ApexCard(
                 ) {
                     Text(
                         text = title.uppercase(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF0F172A).copy(alpha = 0.7f),
-                        letterSpacing = 1.2.sp,
-                        fontWeight = FontWeight.Bold
+                        style = VitaTextStyles.cardHeaderBar,
+                        color = Color(0xFF0F172A).copy(alpha = 0.7f)
                     )
                 }
                 androidx.compose.material3.HorizontalDivider(
