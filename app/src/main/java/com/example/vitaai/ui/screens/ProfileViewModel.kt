@@ -253,4 +253,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun getRequestedPermissions() = healthConnectManager.permissions
+
+    val currentUser: com.google.firebase.auth.FirebaseUser?
+        get() = auth?.currentUser
 }

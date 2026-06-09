@@ -449,7 +449,7 @@ private fun AnalyticDetailView(
                                     dataPoints = card.stackedValues,
                                     xAxisLabels = axisLabels,
                                     yAxisLabelFormatter = { value -> formatAxisValue(value, card.unit) },
-                                    showGrid = false,
+                                    showGrid = true,
                                     modifier = Modifier.fillMaxWidth().height(240.dp)
                                 )
                             }
@@ -460,7 +460,7 @@ private fun AnalyticDetailView(
                                     glowColor = metricColor.copy(alpha = 0.35f),
                                     xAxisLabels = axisLabels,
                                     yAxisLabelFormatter = { value -> formatAxisValue(value, card.unit) },
-                                    showGrid = false,
+                                    showGrid = true,
                                     modifier = Modifier.fillMaxWidth().height(240.dp)
                                 )
                             }
@@ -471,7 +471,7 @@ private fun AnalyticDetailView(
                                     glowColor = metricColor.copy(alpha = 0.3f),
                                     xAxisLabels = axisLabels,
                                     yAxisLabelFormatter = { value -> formatAxisValue(value, card.unit) },
-                                    showGrid = false,
+                                    showGrid = true,
                                     modifier = Modifier.fillMaxWidth().height(240.dp)
                                 )
                             }
@@ -730,8 +730,8 @@ private fun AnalyticsCard(
                             dataPoints = card.stackedValues,
                             xAxisLabels = axisLabels,
                             yAxisLabelFormatter = { value -> formatAxisValue(value, card.unit) },
-                            showGrid = false,
-                            modifier = Modifier.fillMaxWidth().height(140.dp)
+                            showGrid = true,
+                            modifier = Modifier.fillMaxWidth().height(220.dp)
                         )
                     }
                     card.title in listOf("Heart Rate", "Distance") || card.values.size > 8 -> {
@@ -741,8 +741,8 @@ private fun AnalyticsCard(
                             glowColor = metricColor.copy(alpha = 0.35f),
                             xAxisLabels = axisLabels,
                             yAxisLabelFormatter = { value -> formatAxisValue(value, card.unit) },
-                            showGrid = false,
-                            modifier = Modifier.fillMaxWidth().height(130.dp)
+                            showGrid = true,
+                            modifier = Modifier.fillMaxWidth().height(220.dp)
                         )
                     }
                     else -> {
@@ -752,8 +752,8 @@ private fun AnalyticsCard(
                             glowColor = metricColor.copy(alpha = 0.3f),
                             xAxisLabels = axisLabels,
                             yAxisLabelFormatter = { value -> formatAxisValue(value, card.unit) },
-                            showGrid = false,
-                            modifier = Modifier.fillMaxWidth().height(120.dp)
+                            showGrid = true,
+                            modifier = Modifier.fillMaxWidth().height(220.dp)
                         )
                     }
                 }

@@ -1,5 +1,6 @@
 package com.example.vitaai.ui.screens
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
@@ -9,56 +10,61 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.vitaai.ui.components.AuraBackground
-import com.example.vitaai.ui.components.PageHeader
 import com.example.vitaai.ui.theme.*
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.launch
 
-// ─── Blob colours ──────────────────────────────────────────────────────────────
-private val BlobCyan    = Color(0xFF06B6D4)
-private val BlobBlue    = Color(0xFF3B82F6)
-private val BlobEmerald = Color(0xFF10B981)
-
 @Composable
-fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
-    val messages    by viewModel.messages.collectAsState()
-    val isThinking  by viewModel.isThinking.collectAsState()
-    var inputText   by remember { mutableStateOf("") }
-    val listState   = rememberLazyListState()
-    val scope       = rememberCoroutineScope()
+fun ChatScreen(
+    onOpenHistory: () -> Unit = {},
+    viewModel: ChatViewModel = hiltViewModel()
+) {
+    val messages by viewModel.messages.collectAsState()
+    val isThinking by viewModel.isThinking.collectAsState()
+    val activeChatId by viewModel.activeChatId.collectAsState()
+    var inputText by remember { mutableStateOf("") }
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
-    // Derive scroll-to-bottom FAB visibility
+    // Show scroll-to-bottom FAB when scrolled up
     val showScrollFab by remember {
         derivedStateOf {
             val lastVisibleIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
@@ -67,22 +73,14 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
         }
     }
 
-    val quickSuggestions = remember {
-        listOf(
-            "How am I doing today? 💪",
-            "Suggest a workout 🏋️",
-            "What should I eat? 🥗",
-            "Sleep tips for tonight 🌙"
-        )
-    }
-    // Show suggestions only when conversation is new or after the last AI message
-    val showSuggestions by remember {
+    // Welcome state: show suggestion cards if history is empty or only has the welcome prompt
+    val showWelcome by remember {
         derivedStateOf {
-            messages.isEmpty() || (!messages.last().isUser && !isThinking)
+            messages.size <= 1
         }
     }
 
-    // Auto-scroll to latest message (or thinking indicator)
+    // Auto-scroll to latest message
     val itemCount = messages.size + if (isThinking) 1 else 0
     LaunchedEffect(itemCount) {
         if (itemCount > 0) {
@@ -91,373 +89,339 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     }
 
     AuraBackground {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
+        CompositionLocalProvider(LocalActiveChatId provides activeChatId) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .imePadding()
             ) {
-                // ─── Header ────────────────────────────────────────────────
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 8.dp)
+                Column(
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    PageHeader(title = "VitaAI", kicker = "Coach chat")
-                }
-
-                HorizontalDivider(
-                    color = Color.Black.copy(alpha = 0.06f),
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 4.dp)
-                )
-
-                // ─── Messages ──────────────────────────────────────────────
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 20.dp),
-                    state = listState,
-                    verticalArrangement = Arrangement.spacedBy(14.dp),
-                    contentPadding = PaddingValues(vertical = 16.dp)
-                ) {
-                    items(messages) { message ->
-                        AnimatedVisibility(
-                            visible = true,
-                            enter = fadeIn(tween(300)) + slideInVertically(
-                                animationSpec = tween(300),
-                                initialOffsetY = { it / 3 }
-                            )
-                        ) {
-                            Column {
-                                // Sender label above each bubble
-                                Text(
-                                    text = if (message.isUser) "YOU" else "VITAAI",
-                                    style = MaterialTheme.typography.labelSmall.copy(
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        letterSpacing = 1.5.sp
-                                    ),
-                                    color = Color.Black.copy(alpha = 0.45f),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(
-                                            start = if (message.isUser) 0.dp else 4.dp,
-                                            end = if (message.isUser) 4.dp else 0.dp,
-                                            bottom = 6.dp
-                                        )
-                                        .wrapContentWidth(
-                                            if (message.isUser) Alignment.End else Alignment.Start
-                                        )
-                                )
-                                ChatBubble(message)
-                            }
-                        }
-                    }
-
-                    // Thinking indicator as a special last item
-                    item {
-                        AnimatedVisibility(
-                            visible = isThinking,
-                            enter = fadeIn(tween(300)) + slideInVertically(
-                                animationSpec = tween(300),
-                                initialOffsetY = { it / 3 }
-                            ),
-                            exit = fadeOut(tween(200)) + slideOutVertically(
-                                animationSpec = tween(200),
-                                targetOffsetY = { it / 3 }
-                            )
-                        ) {
-                            AnimatedBlobThinkingIndicator()
-                        }
-                    }
-                }
-
-                // ─── Quick Suggestions ──────────────────────────────────
-                AnimatedVisibility(
-                    visible = showSuggestions,
-                    enter = fadeIn(tween(250)),
-                    exit = fadeOut(tween(200))
-                ) {
+                    // ─── ChatGPT-Style Minimalist Top Header ───
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState())
-                            .padding(horizontal = 16.dp, vertical = 6.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        quickSuggestions.forEach { chip ->
+                        // Left side brand switcher look
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { viewModel.startNewConversation() }
+                                .padding(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .background(Color.White.copy(alpha = 0.75f))
-                                    .border(1.dp, Color.Black.copy(alpha = 0.08f), RoundedCornerShape(20.dp))
-                                    .clickable {
-                                        viewModel.sendMessage(chip)
-                                    }
-                                    .padding(horizontal = 14.dp, vertical = 8.dp)
-                            ) {
-                                Text(
-                                    text = chip,
-                                    style = MaterialTheme.typography.labelMedium.copy(
-                                        fontWeight = FontWeight.Medium,
-                                        fontSize = 13.sp
+                                    .size(24.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        brush = Brush.linearGradient(
+                                            colors = listOf(Color(0xFF06B6D4), Color(0xFF3B82F6))
+                                        )
                                     ),
-                                    color = Color.Black.copy(alpha = 0.65f)
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AutoAwesome,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(12.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "VitaAI Coach",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 17.sp
+                                ),
+                                color = Color(0xFF0F172A)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowDown,
+                                contentDescription = null,
+                                tint = Color.Black.copy(alpha = 0.4f),
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+
+                        // Right side action buttons
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(onClick = { viewModel.startNewConversation() }) {
+                                Icon(
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = "New conversation",
+                                    tint = Color(0xFF0F172A)
+                                )
+                            }
+                            IconButton(onClick = onOpenHistory) {
+                                Icon(
+                                    imageVector = Icons.Default.History,
+                                    contentDescription = "Chat history",
+                                    tint = Color(0xFF0F172A)
                                 )
                             }
                         }
                     }
-                }
 
-                // ─── Input Area ────────────────────────────────────────────
-                ChatInput(
-                    text = inputText,
-                    onTextChange = { inputText = it },
-                    onSend = {
-                        if (inputText.isNotBlank()) {
-                            viewModel.sendMessage(inputText)
-                            inputText = ""
-                        }
-                    }
-                )
-            }
-
-            // ─── Scroll to Bottom FAB ───────────────────────────────────
-            AnimatedVisibility(
-                visible = showScrollFab,
-                enter = fadeIn(tween(200)),
-                exit = fadeOut(tween(200)),
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 100.dp)
-            ) {
-                SmallFloatingActionButton(
-                    onClick = {
-                        scope.launch {
-                            val total = listState.layoutInfo.totalItemsCount
-                            if (total > 0) listState.animateScrollToItem(total - 1)
-                        }
-                    },
-                    containerColor = Color(0xFF0F172A).copy(alpha = 0.85f),
-                    contentColor = Color.White,
-                    shape = CircleShape
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowDown,
-                        contentDescription = "Scroll to bottom",
-                        modifier = Modifier.size(22.dp)
+                    HorizontalDivider(
+                        color = Color.Black.copy(alpha = 0.06f),
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
                     )
+
+                    // ─── Main Chat Content ───
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    ) {
+                        if (showWelcome) {
+                            // Centered welcome layout + 2x2 Suggestion Cards
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 20.dp),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(68.dp)
+                                        .shadow(8.dp, CircleShape)
+                                        .clip(CircleShape)
+                                        .background(
+                                            brush = Brush.linearGradient(
+                                                colors = listOf(Color(0xFF06B6D4), Color(0xFF3B82F6))
+                                            )
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.AutoAwesome,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(20.dp))
+
+                                Text(
+                                    text = "What can I help with?",
+                                    style = MaterialTheme.typography.headlineMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 24.sp
+                                    ),
+                                    color = Color(0xFF0F172A)
+                                )
+
+                                Spacer(modifier = Modifier.height(28.dp))
+
+                                // Suggestion Cards Grid (2x2 Column containing 2 Rows)
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        SuggestionCard(
+                                            title = "How am I doing today?",
+                                            subtitle = "Get a summary of steps & active metrics",
+                                            icon = "💪",
+                                            modifier = Modifier.weight(1f),
+                                            onClick = { viewModel.sendMessage("How am I doing today? 💪") }
+                                        )
+                                        SuggestionCard(
+                                            title = "Suggest a workout",
+                                            subtitle = "Tailor a routine for your goals",
+                                            icon = "🏋️",
+                                            modifier = Modifier.weight(1f),
+                                            onClick = { viewModel.sendMessage("Suggest a workout 🏋️") }
+                                        )
+                                    }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        SuggestionCard(
+                                            title = "What should I eat?",
+                                            subtitle = "Get smart meal or nutrition ideas",
+                                            icon = "🥗",
+                                            modifier = Modifier.weight(1f),
+                                            onClick = { viewModel.sendMessage("What should I eat? 🥗") }
+                                        )
+                                        SuggestionCard(
+                                            title = "Sleep tips for tonight",
+                                            subtitle = "Improve recovery based on trends",
+                                            icon = "🌙",
+                                            modifier = Modifier.weight(1f),
+                                            onClick = { viewModel.sendMessage("Sleep tips for tonight 🌙") }
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            // Scrollable list of conversation messages
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 20.dp),
+                                state = listState,
+                                verticalArrangement = Arrangement.spacedBy(20.dp),
+                                contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp)
+                            ) {
+                                items(messages) { message ->
+                                    ChatBubbleItem(message = message, viewModel = viewModel)
+                                }
+
+                                // Subtle staggered typing dots
+                                if (isThinking) {
+                                    item {
+                                        ThinkingIndicatorItem()
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // ─── Centered Input pill area ───
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        ChatInputBar(
+                            text = inputText,
+                            onTextChange = { inputText = it },
+                            onSend = {
+                                if (inputText.isNotBlank()) {
+                                    viewModel.sendMessage(inputText)
+                                    inputText = ""
+                                }
+                            }
+                        )
+
+                        Text(
+                            text = "VitaAI Coach can make mistakes. Verify important health stats.",
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            color = Color.Black.copy(alpha = 0.35f),
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
+                }
+
+                // ─── Scroll-to-Bottom Floating Action Button ───
+                AnimatedVisibility(
+                    visible = showScrollFab,
+                    enter = fadeIn(tween(200)),
+                    exit = fadeOut(tween(200)),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 100.dp)
+                ) {
+                    SmallFloatingActionButton(
+                        onClick = {
+                            scope.launch {
+                                val total = listState.layoutInfo.totalItemsCount
+                                if (total > 0) listState.animateScrollToItem(total - 1)
+                            }
+                        },
+                        containerColor = Color(0xFF0F172A).copy(alpha = 0.85f),
+                        contentColor = Color.White,
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Scroll to bottom",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-
-// ─── Animated Blob Thinking Indicator ─────────────────────────────────────────
-
+// ─── Suggestion Card Composable ───
 @Composable
-fun AnimatedBlobThinkingIndicator() {
-    val infiniteTransition = rememberInfiniteTransition(label = "blobThink")
-
-    // ── Blob 1: Cyan ──
-    val blob1Scale by infiniteTransition.animateFloat(
-        initialValue = 1.0f, targetValue = 1.8f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(3500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ), label = "b1s"
-    )
-    val blob1Alpha by infiniteTransition.animateFloat(
-        initialValue = 0.15f, targetValue = 0.45f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(3500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ), label = "b1a"
-    )
-
-    // ── Blob 2: Blue ──
-    val blob2Scale by infiniteTransition.animateFloat(
-        initialValue = 1.0f, targetValue = 1.6f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(4000, easing = FastOutSlowInEasing, delayMillis = 500),
-            repeatMode = RepeatMode.Reverse
-        ), label = "b2s"
-    )
-    val blob2Alpha by infiniteTransition.animateFloat(
-        initialValue = 0.15f, targetValue = 0.40f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(4000, easing = FastOutSlowInEasing, delayMillis = 500),
-            repeatMode = RepeatMode.Reverse
-        ), label = "b2a"
-    )
-    val blob2OffsetX by infiniteTransition.animateFloat(
-        initialValue = -8f, targetValue = 8f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(4000, easing = FastOutSlowInEasing, delayMillis = 500),
-            repeatMode = RepeatMode.Reverse
-        ), label = "b2x"
-    )
-
-    // ── Blob 3: Emerald ──
-    val blob3Scale by infiniteTransition.animateFloat(
-        initialValue = 1.0f, targetValue = 1.9f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(4500, easing = FastOutSlowInEasing, delayMillis = 1000),
-            repeatMode = RepeatMode.Reverse
-        ), label = "b3s"
-    )
-    val blob3Alpha by infiniteTransition.animateFloat(
-        initialValue = 0.10f, targetValue = 0.35f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(4500, easing = FastOutSlowInEasing, delayMillis = 1000),
-            repeatMode = RepeatMode.Reverse
-        ), label = "b3a"
-    )
-    val blob3OffsetX by infiniteTransition.animateFloat(
-        initialValue = 8f, targetValue = -8f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(4500, easing = FastOutSlowInEasing, delayMillis = 1000),
-            repeatMode = RepeatMode.Reverse
-        ), label = "b3x"
-    )
-
-    // ── Center dot ──
-    val dotAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.4f, targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(3500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ), label = "dot"
-    )
-
-    // ── Text alpha ──
-    val textAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.4f, targetValue = 0.9f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(3500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ), label = "txt"
-    )
-
-    val shape = RoundedCornerShape(24.dp)
-
-    Row(
-        modifier = Modifier
-            .clip(shape)
-            .background(Color.White.copy(alpha = 0.78f))
-            .border(
-                width = 1.dp,
-                color = Color.Black.copy(alpha = 0.07f),
-                shape = shape
+private fun SuggestionCard(
+    title: String,
+    subtitle: String,
+    icon: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .shadow(
+                elevation = 3.dp,
+                shape = RoundedCornerShape(16.dp),
+                ambientColor = Color.Black.copy(alpha = 0.04f),
+                spotColor = Color.Black.copy(alpha = 0.04f)
             )
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White.copy(alpha = 0.8f))
+            .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick)
+            .padding(14.dp)
     ) {
-        // ── Blob container ──
-        Box(
-            modifier = Modifier.size(width = 56.dp, height = 40.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            // Blob 3 – Emerald (back)
-            Box(
-                modifier = Modifier
-                    .size(22.dp)
-                    .offset(x = blob3OffsetX.dp, y = 4.dp)
-                    .graphicsLayer {
-                        scaleX = blob3Scale
-                        scaleY = blob3Scale
-                    }
-                    .blur(6.dp)
-                    .clip(CircleShape)
-                    .background(BlobEmerald.copy(alpha = blob3Alpha))
+        Column {
+            Text(
+                text = icon,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(bottom = 6.dp)
             )
-            // Blob 2 – Blue (mid)
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .offset(x = blob2OffsetX.dp, y = (-3).dp)
-                    .graphicsLayer {
-                        scaleX = blob2Scale
-                        scaleY = blob2Scale
-                    }
-                    .blur(4.dp)
-                    .clip(CircleShape)
-                    .background(BlobBlue.copy(alpha = blob2Alpha))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp
+                ),
+                color = Color(0xFF0F172A)
             )
-            // Blob 1 – Cyan (front)
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .graphicsLayer {
-                        scaleX = blob1Scale
-                        scaleY = blob1Scale
-                    }
-                    .blur(6.dp)
-                    .clip(CircleShape)
-                    .background(BlobCyan.copy(alpha = blob1Alpha))
-            )
-            // Center bright dot
-            Box(
-                modifier = Modifier
-                    .size(6.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF0F172A).copy(alpha = dotAlpha))
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontSize = 11.sp,
+                    lineHeight = 14.sp
+                ),
+                color = Color.Black.copy(alpha = 0.45f)
             )
         }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Text(
-            text = "Tuning in...",
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            color = Color(0xFF0F172A).copy(alpha = textAlpha)
-        )
     }
 }
 
-// ─── Chat Bubble ───────────────────────────────────────────────────────────────
-
-private fun formatMessageTime(timestamp: Long): String {
-    val sdf = java.text.SimpleDateFormat("h:mm a", java.util.Locale.getDefault())
-    return sdf.format(java.util.Date(timestamp))
-}
-
+// ─── Chat Bubble Item Selector ───
 @Composable
-private fun ChatBubble(message: Message) {
-    val isUser    = message.isUser
-    val alignment = if (isUser) Alignment.CenterEnd else Alignment.CenterStart
-
-    val shape = if (isUser) {
-        RoundedCornerShape(20.dp, 20.dp, 4.dp, 20.dp)
-    } else {
-        RoundedCornerShape(20.dp, 20.dp, 20.dp, 4.dp)
-    }
-
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = alignment
-    ) {
-        if (isUser) {
-            // User bubble: Solid slate-900 with white text, shadow
+private fun ChatBubbleItem(message: Message, viewModel: ChatViewModel) {
+    if (message.isUser) {
+        // User message: Sleek right-aligned bubble
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            val shape = RoundedCornerShape(18.dp, 18.dp, 4.dp, 18.dp)
             Column(
                 modifier = Modifier
-                    .widthIn(max = 290.dp)
+                    .widthIn(max = 300.dp)
                     .shadow(
-                        elevation = 6.dp,
+                        elevation = 4.dp,
                         shape = shape,
-                        ambientColor = Color.Black.copy(alpha = 0.18f),
-                        spotColor = Color.Black.copy(alpha = 0.18f)
+                        ambientColor = Color.Black.copy(alpha = 0.08f),
+                        spotColor = Color.Black.copy(alpha = 0.08f)
                     )
                     .clip(shape)
                     .background(Color(0xFF0F172A))
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
             ) {
                 Text(
                     text = message.text,
@@ -476,11 +440,8 @@ private fun ChatBubble(message: Message) {
                 ) {
                     Text(
                         text = formatMessageTime(message.timestamp),
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Normal
-                        ),
-                        color = Color.White.copy(alpha = 0.6f)
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        color = Color.White.copy(alpha = 0.55f)
                     )
                     Text(
                         text = "✓✓",
@@ -488,58 +449,210 @@ private fun ChatBubble(message: Message) {
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
                         ),
-                        color = Color(0xFF34D399)
+                        color = Color(0xFF34D399) // Emerald-400
                     )
                 }
             }
-        } else {
-            // AI bubble: Translucent Glass Card
-            Column(
+        }
+    } else {
+        // Assistant message: Clean, bubble-free document style with avatar on left
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.Top
+        ) {
+            // Glowing AI Avatar
+            Box(
                 modifier = Modifier
-                    .widthIn(max = 290.dp)
-                    .shadow(
-                        elevation = 4.dp,
-                        shape = shape,
-                        ambientColor = Color.Black.copy(alpha = 0.04f),
-                        spotColor = Color.Black.copy(alpha = 0.04f)
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(
+                        brush = Brush.sweepGradient(
+                            colors = listOf(Color(0xFF06B6D4), Color(0xFF3B82F6), Color(0xFF06B6D4))
+                        )
                     )
-                    .clip(shape)
-                    .background(Color.White.copy(alpha = 0.78f))
-                    .border(
-                        width = 1.dp,
-                        color = Color.Black.copy(alpha = 0.07f),
-                        shape = shape
-                    )
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .border(1.dp, Color.White.copy(alpha = 0.2f), CircleShape),
+                contentAlignment = Alignment.Center
             ) {
+                Icon(
+                    imageVector = Icons.Default.AutoAwesome,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Body text column
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "VitaAI Coach",
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp
+                        ),
+                        color = Color(0xFF0F172A)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF10B981))
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
                 Text(
                     text = message.text,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium,
                         lineHeight = 22.sp
                     ),
                     color = Color(0xFF0F172A)
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = formatMessageTime(message.timestamp),
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Normal
-                    ),
-                    color = Color.Black.copy(alpha = 0.4f),
-                    modifier = Modifier.align(Alignment.End)
-                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Copy to Clipboard and Regenerate actions row
+                val clipboardManager = LocalClipboardManager.current
+                val context = LocalContext.current
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = {
+                            clipboardManager.setText(AnnotatedString(message.text))
+                            Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+                        },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ContentCopy,
+                            contentDescription = "Copy message",
+                            tint = Color.Black.copy(alpha = 0.35f),
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            viewModel.sendMessage("Regenerate response for last query")
+                        },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Regenerate",
+                            tint = Color.Black.copy(alpha = 0.35f),
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+
+                    Text(
+                        text = formatMessageTime(message.timestamp),
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        color = Color.Black.copy(alpha = 0.3f)
+                    )
+                }
             }
         }
     }
 }
 
-// ─── Chat Input ────────────────────────────────────────────────────────────────
-
+// ─── Thinking Indicator Item (Staggered Dots) ───
 @Composable
-private fun ChatInput(
+private fun ThinkingIndicatorItem() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.Top
+    ) {
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .clip(CircleShape)
+                .background(
+                    brush = Brush.sweepGradient(
+                        colors = listOf(Color(0xFF06B6D4), Color(0xFF3B82F6), Color(0xFF06B6D4))
+                    )
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.AutoAwesome,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = "VitaAI Coach",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp
+                ),
+                color = Color(0xFF0F172A)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
+                val transition = rememberInfiniteTransition(label = "thinkingDots")
+                val dot1Alpha by transition.animateFloat(
+                    initialValue = 0.2f, targetValue = 1.0f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(600, easing = LinearEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ), label = "tDot1"
+                )
+                val dot2Alpha by transition.animateFloat(
+                    initialValue = 0.2f, targetValue = 1.0f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(600, easing = LinearEasing, delayMillis = 200),
+                        repeatMode = RepeatMode.Reverse
+                    ), label = "tDot2"
+                )
+                val dot3Alpha by transition.animateFloat(
+                    initialValue = 0.2f, targetValue = 1.0f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(600, easing = LinearEasing, delayMillis = 400),
+                        repeatMode = RepeatMode.Reverse
+                    ), label = "tDot3"
+                )
+
+                Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(Color(0xFF0F172A).copy(alpha = dot1Alpha)))
+                Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(Color(0xFF0F172A).copy(alpha = dot2Alpha)))
+                Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(Color(0xFF0F172A).copy(alpha = dot3Alpha)))
+            }
+        }
+    }
+}
+
+// ─── Pill-shaped Input Bar Composable ───
+@Composable
+private fun ChatInputBar(
     text: String,
     onTextChange: (String) -> Unit,
     onSend: () -> Unit
@@ -550,10 +663,9 @@ private fun ChatInput(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .windowInsetsPadding(WindowInsets.ime.union(WindowInsets.navigationBars)),
+            .navigationBarsPadding(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Standard Web-like input container (light white bg, black border, shadow)
         Row(
             modifier = Modifier
                 .weight(1f)
@@ -565,7 +677,7 @@ private fun ChatInput(
                     spotColor = Color.Black.copy(alpha = 0.05f)
                 )
                 .clip(containerShape)
-                .background(Color.White.copy(alpha = 0.85f))
+                .background(Color.White.copy(alpha = 0.9f))
                 .border(
                     width = 1.dp,
                     color = Color.Black.copy(alpha = 0.08f),
@@ -574,12 +686,27 @@ private fun ChatInput(
                 .padding(horizontal = 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Visual Clip Attachment button
+            IconButton(
+                onClick = {},
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AttachFile,
+                    contentDescription = "Attach file",
+                    tint = Color.Black.copy(alpha = 0.4f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(4.dp))
+
             BasicTextField(
                 value = text,
                 onValueChange = onTextChange,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 12.dp, vertical = 12.dp),
+                    .padding(horizontal = 4.dp, vertical = 12.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(onSend = {
                     if (text.isNotBlank()) {
@@ -588,18 +715,17 @@ private fun ChatInput(
                 }),
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium,
                     color = Color(0xFF0F172A)
                 ),
                 singleLine = false,
-                maxLines = 4,
+                maxLines = 5,
                 cursorBrush = SolidColor(Primary),
                 decorationBox = { innerTextField ->
                     Box(contentAlignment = Alignment.CenterStart) {
                         if (text.isEmpty()) {
                             Text(
-                                text = "Ask about workouts, meals, recovery...",
-                                color = Color.Black.copy(alpha = 0.4f),
+                                text = "Message VitaAI...",
+                                color = Color.Black.copy(alpha = 0.38f),
                                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp)
                             )
                         }
@@ -607,34 +733,38 @@ private fun ChatInput(
                     }
                 }
             )
-            
-            // Custom send button inside the input container row
+
+            Spacer(modifier = Modifier.width(6.dp))
+
+            // Round up-arrow Send Button
+            val hasText = text.isNotBlank()
             Box(
                 modifier = Modifier
                     .padding(end = 4.dp)
-                    .size(40.dp)
+                    .size(36.dp)
                     .clip(CircleShape)
                     .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(Color(0xFF1E293B), Color(0xFF0F172A))
-                        )
+                        if (hasText) Color(0xFF0F172A) else Color.Black.copy(alpha = 0.06f)
                     )
                     .clickable(
-                        enabled = text.isNotBlank(),
+                        enabled = hasText,
                         onClick = onSend
-                    )
-                    .graphicsLayer {
-                        alpha = if (text.isNotBlank()) 1f else 0.4f
-                    },
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.Send,
+                    imageVector = Icons.Default.ArrowUpward,
                     contentDescription = "Send",
-                    tint = Color.White,
+                    tint = if (hasText) Color.White else Color.Black.copy(alpha = 0.3f),
                     modifier = Modifier.size(18.dp)
                 )
             }
         }
     }
+}
+
+// ─── Format Time Helper ───
+private fun formatMessageTime(timestamp: Long): String {
+    val sdf = SimpleDateFormat("h:mm a", Locale.getDefault())
+    return sdf.format(Date(timestamp))
 }

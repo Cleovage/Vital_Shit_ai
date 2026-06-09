@@ -36,15 +36,27 @@ class DashboardViewModel @Inject constructor(
     }
 
     init {
-        viewModelScope.launch { workoutRepository.seedDefaultTemplatesIfNeeded() }
+        viewModelScope.launch {
+            try {
+                workoutRepository.seedDefaultTemplatesIfNeeded()
+            } catch (t: Throwable) {
+                android.util.Log.e("DashboardViewModel", "Failed to seed default templates", t)
+            }
+        }
         loadData()
     }
 
     fun loadData() {
         snapshotJob?.cancel()
         viewModelScope.launch {
-            if (!healthConnectManager.hasAllPermissions()) {
-                _uiState.value = DashboardUiState.PermissionsRequired
+            try {
+                if (!healthConnectManager.hasAllPermissions()) {
+                    _uiState.value = DashboardUiState.PermissionsRequired
+                    return@launch
+                }
+            } catch (t: Throwable) {
+                android.util.Log.e("DashboardViewModel", "Failed to check Health Connect permissions", t)
+                _uiState.value = DashboardUiState.Error(t.localizedMessage ?: "Health Connect is unavailable")
                 return@launch
             }
 

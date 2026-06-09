@@ -273,8 +273,8 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
                     glowColor = metricColor.copy(alpha = 0.35f),
                     xAxisLabels = detail.todayLabels,
                     yAxisLabelFormatter = { value -> formatAxisValue(value, detail.unitLabel) },
-                    showGrid = false,
-                    modifier = Modifier.fillMaxWidth().height(160.dp)
+                    showGrid = true,
+                    modifier = Modifier.fillMaxWidth().height(220.dp)
                 )
             }
         }
@@ -293,8 +293,8 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
                     glowColor = metricColor.copy(alpha = 0.3f),
                     xAxisLabels = detail.weekLabels,
                     yAxisLabelFormatter = { value -> formatAxisValue(value, detail.unitLabel) },
-                    showGrid = false,
-                    modifier = Modifier.fillMaxWidth().height(150.dp)
+                    showGrid = true,
+                    modifier = Modifier.fillMaxWidth().height(220.dp)
                 )
             }
         }

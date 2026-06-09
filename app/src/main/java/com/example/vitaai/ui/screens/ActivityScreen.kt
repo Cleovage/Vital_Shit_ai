@@ -48,9 +48,11 @@ import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.components.PageHeader
 import com.example.vitaai.ui.components.ProgressRing
 import com.example.vitaai.ui.components.LuminousLineChart
+import com.example.vitaai.ui.components.LuminousBarChart
 import com.example.vitaai.ui.theme.*
 import java.time.Instant
 import java.time.ZoneId
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -100,6 +102,16 @@ private fun WorkoutHome(
     val snapshot = healthData.snapshot
     val nutrition = healthData.nutrition
     val stepGoal = healthData.stepGoal.coerceAtLeast(1L)
+
+    val zoneId = remember { ZoneId.systemDefault() }
+    val today = remember { LocalDate.now(zoneId) }
+    val weekLabels = remember(today) {
+        val formatter = DateTimeFormatter.ofPattern("EEE", Locale.US)
+        (6 downTo 0).map { offset ->
+            today.minusDays(offset.toLong()).format(formatter)
+        }
+    }
+
     var selectedCategory by remember { mutableStateOf("ALL") }
     var showCreateDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -173,15 +185,16 @@ private fun WorkoutHome(
                     GlassCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight()
+                            .fillMaxHeight(),
+                        onClick = { navController.navigate("metric/steps") }
                     ) {
                         val stepsPercent = (snapshot.steps.toFloat() / stepGoal.toFloat()).coerceIn(0f, 1f)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.Top
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -225,7 +238,7 @@ private fun WorkoutHome(
                             )
 
                             Box(
-                                modifier = Modifier.size(52.dp),
+                                modifier = Modifier.requiredSize(52.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 ProgressRing(
@@ -304,14 +317,15 @@ private fun WorkoutHome(
                     GlassCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight()
+                            .fillMaxHeight(),
+                        onClick = { navController.navigate("metric/heart_rate") }
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.Top
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -375,10 +389,10 @@ private fun WorkoutHome(
 
                             Box(
                                 modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(RoundedCornerShape(18.dp))
+                                    .requiredSize(48.dp)
+                                    .clip(CircleShape)
                                     .background(Color(0xFFFFE4E6))
-                                    .border(1.dp, Color(0xFFFECDD3), RoundedCornerShape(18.dp)),
+                                    .border(1.dp, Color(0xFFFECDD3), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
@@ -449,7 +463,9 @@ private fun WorkoutHome(
                     },
                     unit = "MIN",
                     color = Color(0xFF06B6D4),
-                    dataPoints = healthData.exerciseTrend.ifEmpty { listOf(0f, snapshot.exerciseMinutes.toFloat()) }
+                    dataPoints = healthData.exerciseTrend.ifEmpty { listOf(0f, snapshot.exerciseMinutes.toFloat()) },
+                    xAxisLabels = weekLabels,
+                    chartType = "bar"
                 )
 
                 // Food Logged Chart Card
@@ -458,7 +474,9 @@ private fun WorkoutHome(
                     value = if (nutrition.calories > 0.0) nutrition.calories.roundToInt().toString() else "--",
                     unit = "KCAL",
                     color = Color(0xFFEAB308),
-                    dataPoints = healthData.caloriesTrend.ifEmpty { listOf(0f, nutrition.calories.toFloat()) }
+                    dataPoints = healthData.caloriesTrend.ifEmpty { listOf(0f, nutrition.calories.toFloat()) },
+                    xAxisLabels = weekLabels,
+                    chartType = "bar"
                 )
 
                 // Protein intake Chart Card
@@ -467,7 +485,9 @@ private fun WorkoutHome(
                     value = if (nutrition.proteinGrams > 0.0) nutrition.proteinGrams.roundToInt().toString() else "--",
                     unit = "G",
                     color = Color(0xFFF59E0B),
-                    dataPoints = healthData.proteinTrend.ifEmpty { listOf(0f, nutrition.proteinGrams.toFloat()) }
+                    dataPoints = healthData.proteinTrend.ifEmpty { listOf(0f, nutrition.proteinGrams.toFloat()) },
+                    xAxisLabels = weekLabels,
+                    chartType = "line"
                 )
             }
         }
@@ -685,12 +705,14 @@ private fun ChartCard(
     unit: String,
     color: Color,
     dataPoints: List<Float>,
-    modifier: Modifier = Modifier
+    xAxisLabels: List<String>,
+    modifier: Modifier = Modifier,
+    chartType: String = "line"
 ) {
     GlassCard(
         modifier = modifier
             .fillMaxWidth()
-            .height(240.dp)
+            .height(300.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             // Background blur orbs
@@ -746,16 +768,27 @@ private fun ChartCard(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(130.dp)
+                        .height(195.dp)
                 ) {
-                    LuminousLineChart(
-                        dataPoints = dataPoints,
-                        lineColor = color,
-                        glowColor = color.copy(alpha = 0.12f),
-                        xAxisLabels = listOf("5", "11", "17", "23", "29", "1", "3"),
-                        height = 130.dp,
-                        showGrid = false
-                    )
+                    if (chartType == "bar") {
+                        LuminousBarChart(
+                            dataPoints = dataPoints,
+                            barColor = color,
+                            glowColor = color,
+                            xAxisLabels = xAxisLabels,
+                            height = 195.dp,
+                            showGrid = true
+                        )
+                    } else {
+                        LuminousLineChart(
+                            dataPoints = dataPoints,
+                            lineColor = color,
+                            glowColor = color.copy(alpha = 0.12f),
+                            xAxisLabels = xAxisLabels,
+                            height = 195.dp,
+                            showGrid = true
+                        )
+                    }
                 }
             }
         }

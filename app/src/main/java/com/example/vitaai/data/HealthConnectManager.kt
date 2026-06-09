@@ -34,8 +34,14 @@ class HealthConnectManager @Inject constructor(
 ) {
     private val healthConnectClient: HealthConnectClient? by lazy {
         try {
-            HealthConnectClient.getOrCreate(context)
-        } catch (e: Exception) {
+            val status = HealthConnectClient.getSdkStatus(context)
+            if (status == HealthConnectClient.SDK_AVAILABLE) {
+                HealthConnectClient.getOrCreate(context)
+            } else {
+                null
+            }
+        } catch (t: Throwable) {
+            android.util.Log.e("HealthConnectManager", "Failed to initialize HealthConnectClient", t)
             null
         }
     }

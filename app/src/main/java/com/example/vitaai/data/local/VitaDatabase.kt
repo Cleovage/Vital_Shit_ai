@@ -18,14 +18,17 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         AmbientLightLogEntity::class,
         ScreenStateEventEntity::class,
         MeditationLogEntity::class,
-        HydrationLogEntity::class
+        HydrationLogEntity::class,
+        ChatConversationEntity::class,
+        ChatMessageEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class VitaDatabase : RoomDatabase() {
     abstract fun vitaDao(): VitaDao
     abstract fun logDao(): LogDao
+    abstract fun chatDao(): ChatDao
 
     companion object {
         /**
@@ -58,6 +61,40 @@ abstract class VitaDatabase : RoomDatabase() {
                         "`deleted` INTEGER NOT NULL, " +
                         "`syncedToCloud` INTEGER NOT NULL, " +
                         "PRIMARY KEY(`id`))"
+                )
+            }
+        }
+
+        /**
+         * v3 → v4: add the chats and chat_messages tables so the coach
+         * chat can persist a history of past conversations and mirror
+         * them to Firestore (`users/{uid}/chats/{chatId}/messages`).
+         */
+        val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `chats` (" +
+                        "`id` TEXT NOT NULL, " +
+                        "`title` TEXT NOT NULL, " +
+                        "`createdAt` INTEGER NOT NULL, " +
+                        "`updatedAt` INTEGER NOT NULL, " +
+                        "`messageCount` INTEGER NOT NULL, " +
+                        "`syncedToCloud` INTEGER NOT NULL, " +
+                        "PRIMARY KEY(`id`))"
+                )
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `chat_messages` (" +
+                        "`id` TEXT NOT NULL, " +
+                        "`chatId` TEXT NOT NULL, " +
+                        "`text` TEXT NOT NULL, " +
+                        "`isUser` INTEGER NOT NULL, " +
+                        "`timestampMillis` INTEGER NOT NULL, " +
+                        "`syncedToCloud` INTEGER NOT NULL, " +
+                        "PRIMARY KEY(`id`))"
+                )
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_chat_messages_chatId` " +
+                        "ON `chat_messages`(`chatId`)"
                 )
             }
         }

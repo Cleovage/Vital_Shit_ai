@@ -52,36 +52,41 @@ class WorkoutRepository @Inject constructor(
     fun observeRecentSessionsWithSets(limit: Int = 8): Flow<List<WorkoutSessionWithSets>> {
         return dao.observeRecentWorkoutSessionsWithSets(limit).combine(flow {
             while (true) {
-                if (healthConnectManager.hasAllPermissions()) {
-                    val now = Instant.now()
-                    val thirtyDaysAgo = now.minus(java.time.Duration.ofDays(30))
-                    
-                    val sessions = healthConnectManager.readExerciseSessions(thirtyDaysAgo, now)
-                        .sortedByDescending { it.startTime }
-                        .take(limit)
-                        .map { record ->
-                            WorkoutSessionWithSets(
-                                session = WorkoutSessionEntity(
-                                    id = 0L, 
-                                    templateId = "",
-                                    title = record.title ?: "Workout",
-                                    category = "HC",
-                                    startTimeMillis = record.startTime.toEpochMilli(),
-                                    endTimeMillis = record.endTime.toEpochMilli(),
-                                    durationSeconds = java.time.Duration.between(record.startTime, record.endTime).seconds,
-                                    totalSets = 0,
-                                    totalReps = 0,
-                                    calories = 0.0,
-                                    avgHeartRate = 0.0,
-                                    distanceMeters = 0.0,
-                                    notes = record.notes ?: "",
-                                    completed = true
-                                ),
-                                sets = emptyList()
-                            )
-                        }
-                    emit(sessions)
-                } else {
+                try {
+                    if (healthConnectManager.hasAllPermissions()) {
+                        val now = Instant.now()
+                        val thirtyDaysAgo = now.minus(java.time.Duration.ofDays(30))
+                        
+                        val sessions = healthConnectManager.readExerciseSessions(thirtyDaysAgo, now)
+                            .sortedByDescending { it.startTime }
+                            .take(limit)
+                            .map { record ->
+                                WorkoutSessionWithSets(
+                                    session = WorkoutSessionEntity(
+                                        id = 0L, 
+                                        templateId = "",
+                                        title = record.title ?: "Workout",
+                                        category = "HC",
+                                        startTimeMillis = record.startTime.toEpochMilli(),
+                                        endTimeMillis = record.endTime.toEpochMilli(),
+                                        durationSeconds = java.time.Duration.between(record.startTime, record.endTime).seconds,
+                                        totalSets = 0,
+                                        totalReps = 0,
+                                        calories = 0.0,
+                                        avgHeartRate = 0.0,
+                                        distanceMeters = 0.0,
+                                        notes = record.notes ?: "",
+                                        completed = true
+                                    ),
+                                    sets = emptyList()
+                                )
+                            }
+                        emit(sessions)
+                    } else {
+                        emit(emptyList<WorkoutSessionWithSets>())
+                    }
+                } catch (t: Throwable) {
+                    android.util.Log.e("WorkoutRepository", "Failed to query HC sessions", t)
                     emit(emptyList<WorkoutSessionWithSets>())
                 }
                 delay(20000)
@@ -103,33 +108,38 @@ class WorkoutRepository @Inject constructor(
     fun observeRecentSessions(limit: Int = 8): Flow<List<WorkoutSessionEntity>> {
         return dao.observeRecentWorkoutSessions(limit).combine(flow {
             while (true) {
-                if (healthConnectManager.hasAllPermissions()) {
-                    val now = Instant.now()
-                    val thirtyDaysAgo = now.minus(java.time.Duration.ofDays(30))
-                    
-                    val sessions = healthConnectManager.readExerciseSessions(thirtyDaysAgo, now)
-                        .sortedByDescending { it.startTime }
-                        .take(limit)
-                        .map { record ->
-                            WorkoutSessionEntity(
-                                id = 0L, 
-                                templateId = "",
-                                title = record.title ?: "Workout",
-                                category = "HC",
-                                startTimeMillis = record.startTime.toEpochMilli(),
-                                endTimeMillis = record.endTime.toEpochMilli(),
-                                durationSeconds = java.time.Duration.between(record.startTime, record.endTime).seconds,
-                                totalSets = 0,
-                                totalReps = 0,
-                                calories = 0.0,
-                                avgHeartRate = 0.0,
-                                distanceMeters = 0.0,
-                                notes = record.notes ?: "",
-                                completed = true
-                            )
-                        }
-                    emit(sessions)
-                } else {
+                try {
+                    if (healthConnectManager.hasAllPermissions()) {
+                        val now = Instant.now()
+                        val thirtyDaysAgo = now.minus(java.time.Duration.ofDays(30))
+                        
+                        val sessions = healthConnectManager.readExerciseSessions(thirtyDaysAgo, now)
+                            .sortedByDescending { it.startTime }
+                            .take(limit)
+                            .map { record ->
+                                WorkoutSessionEntity(
+                                    id = 0L, 
+                                    templateId = "",
+                                    title = record.title ?: "Workout",
+                                    category = "HC",
+                                    startTimeMillis = record.startTime.toEpochMilli(),
+                                    endTimeMillis = record.endTime.toEpochMilli(),
+                                    durationSeconds = java.time.Duration.between(record.startTime, record.endTime).seconds,
+                                    totalSets = 0,
+                                    totalReps = 0,
+                                    calories = 0.0,
+                                    avgHeartRate = 0.0,
+                                    distanceMeters = 0.0,
+                                    notes = record.notes ?: "",
+                                    completed = true
+                                )
+                            }
+                        emit(sessions)
+                    } else {
+                        emit(emptyList<WorkoutSessionEntity>())
+                    }
+                } catch (t: Throwable) {
+                    android.util.Log.e("WorkoutRepository", "Failed to query HC sessions", t)
                     emit(emptyList<WorkoutSessionEntity>())
                 }
                 delay(20000)

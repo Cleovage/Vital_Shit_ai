@@ -50,7 +50,7 @@ fun ProfileScreen(navController: androidx.navigation.NavController, viewModel: P
     var showNameDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    val firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+    val firebaseUser = viewModel.currentUser
     val isAnonymous = firebaseUser?.isAnonymous == true
     // Prefer the resolved displayName from the ViewModel (Firestore + Auth),
     // then fall back to the legacy email/guest placeholder.

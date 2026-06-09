@@ -4,6 +4,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -68,14 +69,18 @@ fun ProgressRing(
         Brush.sweepGradient(colors)
     }
 
-    Box(contentAlignment = Alignment.Center, modifier = modifier.size(size)) {
-        Canvas(modifier = Modifier.size(size)) {
-            val canvasSize = this.size
+    Box(contentAlignment = Alignment.Center, modifier = modifier.requiredSize(size)) {
+        Canvas(modifier = Modifier.requiredSize(size)) {
             val stroke = strokeWidth.toPx()
             val glow = glowWidth.toPx()
-            val padding = glow / 2
-            val arcSize = Size(canvasSize.width - glow, canvasSize.height - glow)
-            val arcOffset = Offset(padding, padding)
+            // Always use min dimension so the arc is a perfect circle even in non-square layouts
+            val minDim = minOf(this.size.width, this.size.height)
+            val arcDim = (minDim - glow).coerceAtLeast(1f)
+            val arcSize = Size(arcDim, arcDim)
+            val arcOffset = Offset(
+                (this.size.width - arcDim) / 2f,
+                (this.size.height - arcDim) / 2f
+            )
 
             // Background track
             drawArc(

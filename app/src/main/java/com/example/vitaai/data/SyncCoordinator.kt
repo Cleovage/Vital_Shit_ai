@@ -37,6 +37,7 @@ sealed class SyncState {
 @Singleton
 class SyncCoordinator @Inject constructor(
     private val logDao: LogDao,
+    private val chatRepository: ChatRepository,
     private val auth: FirebaseAuth?,
     private val firestore: FirebaseFirestore?
 ) {
@@ -175,8 +176,8 @@ class SyncCoordinator @Inject constructor(
      */
     suspend fun fullSync(): Int {
         return try {
-            val pushed = pushPendingLogs()
-            val pulled = pullCloudLogs()
+            val pushed = pushPendingLogs() + chatRepository.pushPending(uid)
+            val pulled = pullCloudLogs() + chatRepository.pullCloud(uid)
             _state.value = SyncState.Success(pushed = pushed, pulled = pulled)
             pushed + pulled
         } catch (t: Throwable) {

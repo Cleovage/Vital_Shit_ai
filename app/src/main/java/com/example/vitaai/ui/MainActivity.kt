@@ -27,6 +27,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -246,7 +247,26 @@ fun VitaApp(auth: FirebaseAuth?) {
                 composable("dashboard") { DashboardScreen(navController = navController) }
                 composable("activity") { ActivityScreen(navController = navController) }
                 composable("nutrition") { NutritionScreen() }
-                composable("chat") { ChatScreen() }
+                composable("chat") {
+                    ChatScreen(
+                        onOpenHistory = { navController.navigate("chat/history") }
+                    )
+                }
+                composable("chat/history") {
+                    val parentEntry = remember(it) { navController.getBackStackEntry("chat") }
+                    val chatVm: com.example.vitaai.ui.screens.ChatViewModel = hiltViewModel(parentEntry)
+                    ChatHistoryScreen(
+                        onBack = { navController.popBackStack() },
+                        onOpenConversation = { id ->
+                            chatVm.openConversation(id)
+                            navController.popBackStack()
+                        },
+                        onNewConversation = {
+                            chatVm.startNewConversation()
+                            navController.popBackStack()
+                        }
+                    )
+                }
                 composable("analytics") { AnalyticsScreen(navController = navController) }
                 composable("profile") { ProfileScreen(navController = navController) }
                 composable("circadian") { CircadianScreen(navController = navController) }
