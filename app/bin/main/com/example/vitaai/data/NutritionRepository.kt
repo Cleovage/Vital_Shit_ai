@@ -7,6 +7,9 @@ import com.example.vitaai.data.local.VitaDao
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.time.Instant
 import java.time.ZoneId
 import javax.inject.Inject
@@ -80,42 +83,67 @@ class NutritionRepository @Inject constructor(
         DrinkCatalogItem("Energy Drink", "Energy", 250.0, 0.65, 32.0, 27.0, 120.0, "Caffeine boost with sugar and sodium tracked.")
     )
 
-    fun observeTodaySummary(): Flow<NutritionSummary> = flow {
+    private fun tickerFlow(periodMillis: Long): Flow<Long> = flow {
         while (true) {
+            emit(System.currentTimeMillis())
+            delay(periodMillis)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun observeTodaySummary(): Flow<NutritionSummary> {
+        return tickerFlow(10000).flatMapLatest {
             val bounds = todayBounds()
             val start = Instant.ofEpochMilli(bounds.first)
             val end = Instant.ofEpochMilli(bounds.second)
             
-            val hcTotals = healthConnectManager.readDailyNutrition(start, end)
-            val hcHydration = healthConnectManager.readDailyHydration(start, end)
-            
-            // Still get local entries for detailed list
-            val foods = dao.getFoodEntries(bounds.first, bounds.second)
-            val drinks = dao.getDrinkEntries(bounds.first, bounds.second)
-            
-            emit(NutritionSummary(
-                foods = foods,
-                drinks = drinks,
-                calories = hcTotals.calories,
-                proteinGrams = hcTotals.proteinGrams,
-                carbsGrams = hcTotals.carbsGrams,
-                fatGrams = hcTotals.fatGrams,
-                fiberGrams = foods.sumOf { it.fiberGrams }, // Fiber not usually aggregated well in simple HC API without specific metrics
-                sugarGrams = foods.sumOf { it.sugarGrams } + drinks.sumOf { it.sugarGrams },
-                sodiumMg = foods.sumOf { it.sodiumMg } + drinks.sumOf { it.sodiumMg },
-                caffeineMg = foods.sumOf { it.caffeineMg } + drinks.sumOf { it.caffeineMg },
-                fluidMl = drinks.sumOf { it.volumeMl },
-                hydrationMl = hcHydration * 1000.0 // Convert Liters to ML
-            ))
-            
-            delay(10000) // Refresh every 10 seconds
+            combine(
+                dao.observeFoodEntries(bounds.first, bounds.second),
+                dao.observeDrinkEntries(bounds.first, bounds.second)
+            ) { foods, drinks ->
+                val hcTotals = runCatching { healthConnectManager.readDailyNutrition(start, end) }.getOrDefault(NutritionTotals())
+                val hcHydration = runCatching { healthConnectManager.readDailyHydration(start, end) }.getOrDefault(0.0)
+                
+                NutritionSummary(
+                    foods = foods,
+                    drinks = drinks,
+                    calories = maxOf(hcTotals.calories, foods.sumOf { it.calories }),
+                    proteinGrams = maxOf(hcTotals.proteinGrams, foods.sumOf { it.proteinGrams }),
+                    carbsGrams = maxOf(hcTotals.carbsGrams, foods.sumOf { it.carbsGrams }),
+                    fatGrams = maxOf(hcTotals.fatGrams, foods.sumOf { it.fatGrams }),
+                    fiberGrams = foods.sumOf { it.fiberGrams },
+                    sugarGrams = foods.sumOf { it.sugarGrams } + drinks.sumOf { it.sugarGrams },
+                    sodiumMg = foods.sumOf { it.sodiumMg } + drinks.sumOf { it.sodiumMg },
+                    caffeineMg = foods.sumOf { it.caffeineMg } + drinks.sumOf { it.caffeineMg },
+                    fluidMl = drinks.sumOf { it.volumeMl },
+                    hydrationMl = maxOf(hcHydration * 1000.0, drinks.sumOf { it.hydrationMl })
+                )
+            }
         }
     }
 
     suspend fun getSummaryForRange(startMillis: Long, endMillis: Long): NutritionSummary {
-        return buildSummary(
-            foods = dao.getFoodEntries(startMillis, endMillis),
-            drinks = dao.getDrinkEntries(startMillis, endMillis)
+        val start = Instant.ofEpochMilli(startMillis)
+        val end = Instant.ofEpochMilli(endMillis)
+        val hcTotals = healthConnectManager.readDailyNutrition(start, end)
+        val hcHydration = healthConnectManager.readDailyHydration(start, end)
+        
+        val foods = dao.getFoodEntries(startMillis, endMillis)
+        val drinks = dao.getDrinkEntries(startMillis, endMillis)
+        
+        return NutritionSummary(
+            foods = foods,
+            drinks = drinks,
+            calories = maxOf(hcTotals.calories, foods.sumOf { it.calories }),
+            proteinGrams = maxOf(hcTotals.proteinGrams, foods.sumOf { it.proteinGrams }),
+            carbsGrams = maxOf(hcTotals.carbsGrams, foods.sumOf { it.carbsGrams }),
+            fatGrams = maxOf(hcTotals.fatGrams, foods.sumOf { it.fatGrams }),
+            fiberGrams = foods.sumOf { it.fiberGrams },
+            sugarGrams = foods.sumOf { it.sugarGrams } + drinks.sumOf { it.sugarGrams },
+            sodiumMg = foods.sumOf { it.sodiumMg } + drinks.sumOf { it.sodiumMg },
+            caffeineMg = foods.sumOf { it.caffeineMg } + drinks.sumOf { it.caffeineMg },
+            fluidMl = drinks.sumOf { it.volumeMl },
+            hydrationMl = maxOf(hcHydration * 1000.0, drinks.sumOf { it.hydrationMl })
         )
     }
 
@@ -177,6 +205,14 @@ class NutritionRepository @Inject constructor(
         )
         dao.insertDrinkEntry(entry)
         runCatching { healthConnectManager.writeHydration(entry.hydrationMl / 1000.0) }
+    }
+
+    suspend fun deleteFood(id: Long) {
+        dao.deleteFoodEntry(id)
+    }
+
+    suspend fun deleteDrink(id: Long) {
+        dao.deleteDrinkEntry(id)
     }
 
     private fun buildSummary(foods: List<FoodEntryEntity>, drinks: List<DrinkEntryEntity>): NutritionSummary {

@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.health.connect.client.PermissionController
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.vitaai.ui.components.ApexCard
+import com.example.vitaai.ui.components.GlassCard
 import com.example.vitaai.ui.components.AuraBackground
 import com.example.vitaai.ui.components.LuminousBarChart
 import com.example.vitaai.ui.components.LuminousLineChart
@@ -52,6 +54,7 @@ import com.example.vitaai.ui.theme.OnSurfaceVariant
 import com.example.vitaai.ui.theme.OutlineVariant
 import com.example.vitaai.ui.theme.Primary
 import com.example.vitaai.ui.theme.SurfaceContainerHigh
+import com.example.vitaai.ui.theme.VitaTextStyles
 import java.util.Locale
 import kotlin.math.abs
 
@@ -106,6 +109,7 @@ private fun formatAxisValue(value: Float, unit: String): String {
 
 @Composable
 private fun MetricPermissionScreen(viewModel: MetricDetailViewModel) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val healthConnectLauncher = rememberLauncherForActivityResult(
         contract = PermissionController.createRequestPermissionResultContract()
     ) { grantedPermissions ->
@@ -115,7 +119,15 @@ private fun MetricPermissionScreen(viewModel: MetricDetailViewModel) {
     val activityRecognitionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) {
-        healthConnectLauncher.launch(viewModel.getRequestedPermissions())
+        val sdkStatus = androidx.health.connect.client.HealthConnectClient.getSdkStatus(context)
+        if (sdkStatus == androidx.health.connect.client.HealthConnectClient.SDK_AVAILABLE) {
+            healthConnectLauncher.launch(viewModel.getRequestedPermissions())
+        } else {
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                data = android.net.Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata")
+            }
+            context.startActivity(intent)
+        }
     }
 
     Column(
@@ -135,7 +147,17 @@ private fun MetricPermissionScreen(viewModel: MetricDetailViewModel) {
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = { activityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION) },
+            onClick = {
+                val sdkStatus = androidx.health.connect.client.HealthConnectClient.getSdkStatus(context)
+                if (sdkStatus == androidx.health.connect.client.HealthConnectClient.SDK_AVAILABLE) {
+                    activityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                } else {
+                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                        data = android.net.Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata")
+                    }
+                    context.startActivity(intent)
+                }
+            },
             colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = OnPrimary)
         ) {
             Text("GRANT ACCESS")
@@ -145,6 +167,8 @@ private fun MetricPermissionScreen(viewModel: MetricDetailViewModel) {
 
 @Composable
 private fun MetricDetailContent(navController: NavController, detail: MetricDetailData) {
+    val metricColor = getMetricColor(detail.metric.title)
+    
     LazyColumn(
         modifier = Modifier.fillMaxSize().statusBarsPadding(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -155,104 +179,147 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Primary)
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.Black.copy(alpha = 0.4f)
+                    )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
                         text = detail.metric.title.uppercase(Locale.US),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Primary,
-                        fontWeight = FontWeight.Bold
+                        style = VitaTextStyles.detailKicker,
+                        color = Color.Black.copy(alpha = 0.40f)
                     )
-                    Text("Metric Details", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
+                    Text(
+                        text = "Metric Details",
+                        style = VitaTextStyles.screenSubtitle,
+                        color = Color(0xFF0F172A)
+                    )
                 }
             }
-            HorizontalDivider(color = OutlineVariant.copy(alpha = 0.5f))
+            HorizontalDivider(color = Color.Black.copy(alpha = 0.06f))
         }
 
         item {
-            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("TODAY", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.Bottom) {
+            GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Text(
+                    text = "TODAY",
+                    style = VitaTextStyles.cardOverline,
+                    color = Color.Black.copy(alpha = 0.45f)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        text = detail.currentValue,
+                        style = VitaTextStyles.metricLarge,
+                        color = metricColor
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = detail.unitLabel.uppercase(Locale.US),
+                        style = VitaTextStyles.metricUnitLabel,
+                        color = Color.Black.copy(alpha = 0.4f)
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = detail.description,
+                    style = VitaTextStyles.bodySecondary,
+                    color = Color.Black.copy(alpha = 0.6f)
+                )
+            }
+        }
+
+        item {
+            GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Text(
+                    text = "SYNCED SOURCES",
+                    style = VitaTextStyles.cardOverline,
+                    color = Color.Black.copy(alpha = 0.45f)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                detail.sourceLabels.forEach { source ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .background(Color.Black.copy(alpha = 0.03f), shape = RoundedCornerShape(12.dp))
+                            .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(12.dp))
+                            .padding(horizontal = 12.dp, vertical = 10.dp)
+                    ) {
                         Text(
-                            text = detail.currentValue,
-                            style = MaterialTheme.typography.displayMedium.copy(fontSize = 44.sp),
-                            color = Primary,
-                            fontWeight = FontWeight.Bold
+                            text = source.uppercase(Locale.US),
+                            style = VitaTextStyles.caption.copy(fontWeight = FontWeight.Bold),
+                            color = Color(0xFF0F172A)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = detail.unitLabel, style = MaterialTheme.typography.titleMedium, color = OnSurfaceVariant)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(detail.description, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
-                }
-            }
-        }
-
-        item {
-            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("SYNCED SOURCES", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                    detail.sourceLabels.forEach { source ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(SurfaceContainerHigh, shape = MaterialTheme.shapes.small)
-                                .border(1.dp, OutlineVariant, MaterialTheme.shapes.small)
-                                .padding(horizontal = 10.dp, vertical = 8.dp)
-                        ) {
-                            Text(text = source, style = MaterialTheme.typography.bodySmall, color = Primary)
-                        }
                     }
                 }
             }
         }
 
         item {
-            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("TODAY'S TREND", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                    Spacer(modifier = Modifier.height(10.dp))
-                    LuminousLineChart(
-                        dataPoints = detail.todayChartValues.ifEmpty { listOf(0f, 0f) },
-                        lineColor = Primary,
-                        glowColor = Primary.copy(alpha = 0.35f),
-                        xAxisLabels = detail.todayLabels,
-                        yAxisLabelFormatter = { value -> formatAxisValue(value, detail.unitLabel) },
-                        modifier = Modifier.fillMaxWidth().height(160.dp)
-                    )
-                }
+            GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Text(
+                    text = "TODAY'S TREND",
+                    style = VitaTextStyles.cardOverline,
+                    color = Color.Black.copy(alpha = 0.45f)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                LuminousLineChart(
+                    dataPoints = detail.todayChartValues.ifEmpty { listOf(0f, 0f) },
+                    lineColor = metricColor,
+                    glowColor = metricColor.copy(alpha = 0.35f),
+                    xAxisLabels = detail.todayLabels,
+                    yAxisLabelFormatter = { value -> formatAxisValue(value, detail.unitLabel) },
+                    showGrid = true,
+                    modifier = Modifier.fillMaxWidth().height(220.dp)
+                )
             }
         }
 
         item {
-            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("7-DAY TREND", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                    Spacer(modifier = Modifier.height(10.dp))
-                    LuminousBarChart(
-                        dataPoints = detail.weekChartValues.ifEmpty { listOf(0f, 0f) },
-                        barColor = Primary,
-                        glowColor = Primary.copy(alpha = 0.3f),
-                        xAxisLabels = detail.weekLabels,
-                        yAxisLabelFormatter = { value -> formatAxisValue(value, detail.unitLabel) },
-                        modifier = Modifier.fillMaxWidth().height(150.dp)
-                    )
-                }
+            GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Text(
+                    text = "7-DAY TREND",
+                    style = VitaTextStyles.cardOverline,
+                    color = Color.Black.copy(alpha = 0.45f)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                LuminousBarChart(
+                    dataPoints = detail.weekChartValues.ifEmpty { listOf(0f, 0f) },
+                    barColor = metricColor,
+                    glowColor = metricColor.copy(alpha = 0.3f),
+                    xAxisLabels = detail.weekLabels,
+                    yAxisLabelFormatter = { value -> formatAxisValue(value, detail.unitLabel) },
+                    showGrid = true,
+                    modifier = Modifier.fillMaxWidth().height(220.dp)
+                )
             }
         }
 
         item {
-            ApexCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("RELATED STATS", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+            GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Text(
+                    text = "RELATED STATS",
+                    style = VitaTextStyles.cardOverline,
+                    color = Color.Black.copy(alpha = 0.45f)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     detail.relatedStats.forEach { stat ->
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(stat.first, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
-                            Text(stat.second, style = MaterialTheme.typography.bodySmall, color = Primary, fontWeight = FontWeight.SemiBold)
+                            Text(
+                                text = stat.first,
+                                style = VitaTextStyles.bodySecondary,
+                                color = Color.Black.copy(alpha = 0.55f)
+                            )
+                            Text(
+                                text = stat.second,
+                                style = VitaTextStyles.metricRowValue,
+                                color = Color(0xFF0F172A)
+                            )
                         }
                     }
                 }
@@ -262,5 +329,19 @@ private fun MetricDetailContent(navController: NavController, detail: MetricDeta
         item {
             Spacer(modifier = Modifier.height(24.dp))
         }
+    }
+}
+
+private fun getMetricColor(title: String): Color {
+    return when (title) {
+        "Heart Rate" -> Color(0xFFF43F5E) // Rose-500
+        "Sleep" -> Color(0xFF3B82F6) // Blue-500
+        "Steps", "Distance", "Workouts", "Exercise Minutes" -> Color(0xFF06B6D4) // Cyan-500
+        "Calories Burned" -> Color(0xFFF59E0B) // Amber-500
+        "Calories In" -> Color(0xFFEAB308) // Yellow-500
+        "Hydration" -> Color(0xFF06B6D4) // Cyan-500
+        "Protein" -> Color(0xFFEAB308) // Yellow-500
+        "Macro Balance" -> Color(0xFF3B82F6) // Blue-500
+        else -> Primary // Fallback to app's primary color
     }
 }

@@ -1,0 +1,18 @@
+06-09 14:40:52.218  1830  3124 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai.ui.MainActivity pid=16153 activityId:140337619 state:1
+06-09 14:40:52.218  1169  1173 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid=16153, activityId=140337619, uid=10458, state:RESUMED, fps:-1, win:0
+06-09 14:40:52.218  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid:16153, activityId:140337619, fps:-1, isMultiWindow:0
+06-09 14:40:52.218  1169  1173 I MTK_APPList: [notifyAPPstate] foreground:com.example.vitaai, pid:16153, activityId:140337619, uid:10458
+06-09 14:40:52.221  1169  1173 I MTK_APPList: [notifyAPPstate] pc:1, com.mi.android.globallauncher => com.example.vitaai
+06-09 14:40:52.610  1169  4695 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid:16153, activityId:140337619, fps:-1, isMultiWindow:0
+06-09 14:40:53.407  1830  2216 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai pid=16153 activityId:16153 state:3
+06-09 14:40:53.408  1169  4695 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai, pid=16153, activityId=16153, uid=10458, state:DEAD, fps:-1, win:0
+06-09 14:40:53.408  1169  4695 I MTK_APPList: [notifyAPPstate] pack:com.example.vitaai, pid:16153, STATE_DEAD
+06-09 14:40:53.410  1830  2216 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai.ui.MainActivity pid=16153 activityId:140337619 state:0
+06-09 14:40:53.410  1169  1173 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid=16153, activityId=140337619, uid=10458, state:PAUSED, fps:-1, win:0
+06-09 14:40:53.923  1169  4695 I MTK_APPList: [notifyAPPstate] pc:1, com.example.vitaai => com.mi.android.globallauncher
+06-09 14:40:54.496  1264  1264 I BufferQueueProducer: [Application Error: com.example.vitaai#158008](this:0xb400007053338f00,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=62.51 dur=1007.76 max=358.41 min=5.54
+06-09 14:40:54.609  1830  1964 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai.ui.MainActivity pid=16153 activityId:140337619 state:0
+06-09 14:40:54.611  1169  1172 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid=16153, activityId=140337619, uid=10458, state:PAUSED, fps:-1, win:0
+06-09 14:40:55.642  1830  3124 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai pid=16153 activityId:16153 state:3
+06-09 14:40:55.642  1169  1173 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai, pid=16153, activityId=16153, uid=10458, state:DEAD, fps:-1, win:0
+06-09 14:40:55.643  1169  1173 I MTK_APPList: [notifyAPPstate] pack:com.example.vitaai, pid:16153, STATE_DEAD

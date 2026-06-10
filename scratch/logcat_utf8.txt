@@ -1,0 +1,578 @@
+﻿--------- beginning of main
+06-09 14:48:03.278  1188  4593 I mtkpower@impl: [setMode] type:5, enabled:1
+06-09 14:48:03.293  1830  3190 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.mi.android.globallauncher/com.miui.home.launcher.Launcher pid=24536 activityId:266253374 state:0
+06-09 14:48:03.293  1169  1173 I MTK_APPList: [notifyAPPstate] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid=24536, activityId=266253374, uid=10158, state:PAUSED, fps:-1, win:0
+06-09 14:48:03.293  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 0
+06-09 14:48:03.293  1169  1173 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:03.293  1169  1173 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:48:03.294  1169  1173 I MTK_APPList: [notifyPID] 24536
+06-09 14:48:03.295  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:48:03.308  1830  3117 I mtkpower_client: perf_lock_acq, hdl:0, dur:400, num:10, pid:1830, tid:3117
+06-09 14:48:03.309  1830  3117 I mtkpower_client: ret_hdl:431042
+06-09 14:48:03.312  1188  1240 I libPowerHal: [perfLockAcq] idx:0 hdl:431042 hint:-1 pid:1830 tid:3117 duration:400 lock_user:system_server => ret_hdl:431042
+06-09 14:48:03.312  1188  1240 I libPowerHal: [setGPUFreq] system_server user set gpu freq min:0, max:-1
+06-09 14:48:03.312  1188  1240 I libPowerHal: system_server: set gpu opp level: 0
+06-09 14:48:03.312  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:03.313  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (0, 0); Hard min/max = (40, 0)
+06-09 14:48:03.313  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (0, 0)
+06-09 14:48:03.313  1188  1240 I libPowerHal: system_server: set gpu opp level: 0
+06-09 14:48:03.313  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:03.313  1188  1240 I libPowerHal: [PE] system_server update cmd:400000 param:3000000 pr:3
+06-09 14:48:03.314  1188  1240 I libPowerHal: [PE] system_server update cmd:400100 param:3000000 pr:3
+06-09 14:48:03.314  1188  1240 I libPowerHal: [PE] system_server update cmd:400200 param:3000000 pr:3
+06-09 14:48:03.315  1188  1240 I libPowerHal: [setDvfsrcDevFreqOpp] opp:0, freq:8533000000
+06-09 14:48:03.315  1188  1240 I libPowerHal: [PE] system_server update cmd:1000000 param:0 pr:3
+06-09 14:48:03.315  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(-1): -1 cluster[2] min(system_server): 3000000 max(-1): -1
+06-09 14:48:03.315  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431042
+06-09 14:48:03.330  1264  1264 I BufferQueueProducer: [com.mi.android.globallauncher/com.miui.home.launcher.Launcher#158170](this:0xb40000705335df50,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.30 dur=3301.81 max=3301.81 min=3301.81
+06-09 14:48:03.332  1830  2520 I mtkpower_client: perf_lock_acq, hdl:431026, dur:1000, num:6, pid:1830, tid:2520
+06-09 14:48:03.333  1830  2520 I mtkpower_client: ret_hdl:431043
+06-09 14:48:03.335  1188  1240 I libPowerHal: [perfLockAcq] idx:1 hdl:431043 hint:-1 pid:1830 tid:2520 duration:1000 lock_user:system_server => ret_hdl:431043
+06-09 14:48:03.335  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431043
+06-09 14:48:03.337  1188  1240 I libPowerHal: [perfLockAcq] idx:2 hdl:431044 hint:21 pid:1188 tid:1188 duration:10000 lock_user:vendor.mediatek => ret_hdl:431044
+06-09 14:48:03.339  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PROCESS_CREATE update cmd:1408300, param:100, pr:3
+06-09 14:48:03.339  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PROCESS_CREATE update cmd:300c000, param:15, pr:3
+06-09 14:48:03.339  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PROCESS_CREATE update cmd:808000 param:1 pr:3
+06-09 14:48:03.339  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PROCESS_CREATE update cmd:1468000 param:0 pr:3
+06-09 14:48:03.339  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431044
+06-09 14:48:03.341  1188  1240 I libPowerHal: [perfLockRel] hdl:431014, idx:-1
+06-09 14:48:03.346  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.45 dur=1374.99 max=1356.13 min=18.86
+06-09 14:48:03.357  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=1.57 dur=1272.57 max=739.30 min=533.27
+06-09 14:48:03.715  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431042
+06-09 14:48:03.715  1188  1240 I libPowerHal: [perfLockRel] hdl:431042, idx:0
+06-09 14:48:03.715  1188  1240 I libPowerHal: [unsetGPUFreq] current min:0, max:0; scn_gpu_min:0, scn_gpu_max:-1; scn_gpu_min(HL):-1, scn_gpu_max(HL):-1
+06-09 14:48:03.715  1188  1240 I libPowerHal: system_server: set gpu opp level: 40
+06-09 14:48:03.715  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:03.715  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (40, 0); Hard min/max = (40, 0)
+06-09 14:48:03.715  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (40, 0)
+06-09 14:48:03.715  1188  1240 I libPowerHal: system_server: set gpu opp level: 40
+06-09 14:48:03.715  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:03.716  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:1000000 pr:3
+06-09 14:48:03.716  1188  1240 I libPowerHal: [PD] system_server update cmd:400100 param:1000000 pr:3
+06-09 14:48:03.716  1188  1240 I libPowerHal: [PD] system_server update cmd:400200 param:1000000 pr:3
+06-09 14:48:03.716  1188  1240 I libPowerHal: [PD] system_server update cmd:1000000 param:-1 pr:6
+06-09 14:48:03.717  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 1000000 max(-1): -1 cluster[1] min(system_server): 1000000 max(-1): -1 cluster[2] min(system_server): -1 max(-1): -1
+06-09 14:48:03.717  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431042
+06-09 14:48:04.031  1830  3029 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai.ui.MainActivity pid=18175 activityId:94496862 state:1
+06-09 14:48:04.032  1169  4695 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid=18175, activityId=94496862, uid=10458, state:RESUMED, fps:-1, win:0
+06-09 14:48:04.032  1169  4695 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:48:04.032  1169  4695 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid:18175, activityId:94496862, fps:-1, isMultiWindow:0
+06-09 14:48:04.032  1830  3029 E mtkpower_client: addForegroundAPP: Add FG app failed!!!
+06-09 14:48:04.032  1169  4695 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:04.032  1169  4695 I MTK_APPList: [notifyAPPstate] foreground:com.example.vitaai, pid:18175, activityId:94496862, uid:10458
+06-09 14:48:04.032  1169  4695 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:48:04.032  1169  4695 I MTK_APPList: [notifyPID] 18175
+06-09 14:48:04.033  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18175
+06-09 14:48:04.033  1169  4695 I MTK_APPList: [notifyAPPstate] pc:1, com.mi.android.globallauncher => com.example.vitaai
+06-09 14:48:04.036  1830  2402 D AudioSystem: +setParameters(): foregroundUid=10458;bluetoothlowlatencystatus=false 
+06-09 14:48:04.037  1251  2406 D AudioFlingerImpl: setGameParameters keyvalue: bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:04.037  1251  2406 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:04.038  1118 14787 D AudioALSAHardware: +setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:04.038  1118 14787 D AudioALSAHardware: -setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:04.038  1251  2406 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:04.038  1251  2406 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:04.038  1251  2406 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:04.038  1251  2406 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:04.039  1251  2406 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:04.139  1830  1886 D AudioSystem: +setParameters(): gamebooster=false 
+06-09 14:48:04.140  1251  2406 D AudioFlingerImpl: setGameParameters keyvalue: gamebooster=false
+06-09 14:48:04.140  1251  2406 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): gamebooster=false
+06-09 14:48:04.141  1118 14787 D AudioALSAHardware: +setParameters(): gamebooster=false
+06-09 14:48:04.141  1118 14787 D AudioALSAHardware: -setParameters(): gamebooster=false
+06-09 14:48:04.141  1251  2406 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): gamebooster=false
+06-09 14:48:04.141  1251  2406 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): gamebooster=false
+06-09 14:48:04.142  1251  2406 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): gamebooster=false
+06-09 14:48:04.142  1251  2406 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): gamebooster=false
+06-09 14:48:04.142  1251  2406 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): gamebooster=false
+06-09 14:48:04.335  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431043
+06-09 14:48:04.335  1188  1240 I libPowerHal: [perfLockRel] hdl:431043, idx:1
+06-09 14:48:04.335  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:-1 pr:6
+06-09 14:48:04.335  1188  1240 I libPowerHal: [PD] system_server update cmd:400100 param:-1 pr:6
+06-09 14:48:04.335  1188  1240 I libPowerHal: [PD] system_server update cmd:400200 param:-1 pr:6
+06-09 14:48:04.335  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(-1): -1 max(-1): -1 cluster[1] min(-1): -1 max(-1): -1 cluster[2] min(-1): -1 max(-1): -1
+06-09 14:48:04.335  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431043
+06-09 14:48:04.348  1830  2520 I mtkpower_client: perf_lock_rel, hdl:431043, pid: 1830, tid:2520
+06-09 14:48:04.350  1188  1240 I libPowerHal: [perfLockRel] hdl:431043, idx:-1
+06-09 14:48:04.408  1830  1964 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.mi.android.globallauncher/com.miui.home.launcher.Launcher pid=24536 activityId:266253374 state:0
+06-09 14:48:04.408  1169  1173 I MTK_APPList: [notifyAPPstate] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid=24536, activityId=266253374, uid=10158, state:PAUSED, fps:-1, win:0
+06-09 14:48:04.408  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:48:04.408  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid:18175, activityId:94496862, fps:-1, isMultiWindow:0
+06-09 14:48:04.408  1169  1173 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:04.408  1169  1173 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:48:04.409  1169  1173 I MTK_APPList: [notifyPID] 18175
+06-09 14:48:04.409  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18175
+06-09 14:48:04.445  1188  4593 I libPowerHal: [mtkPowerHint] hint:21, hold:6000, ext:0, ext_hold:0
+06-09 14:48:04.446  1188  1240 I libPowerHal: [perfLockAcq] idx:0 hdl:431045 hint:21 pid:1188 tid:1188 duration:6000 lock_user:vendor.mediatek => ret_hdl:431045
+06-09 14:48:04.446  1188  4593 I mtkpower@impl: [setMode] type:5, enabled:0
+06-09 14:48:04.446  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431045
+06-09 14:48:04.447  1188  1240 I libPowerHal: [perfLockRel] hdl:431044, idx:2
+06-09 14:48:04.447  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431044
+06-09 14:48:04.551  1264  1264 I BufferQueueProducer: [com.miui.securitycenter/.FloatingWindow#157904](this:0xb400007053093320,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=2.38 dur=31932.78 max=31305.49 min=7.82
+06-09 14:48:04.568  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.82 dur=1221.66 max=1221.66 min=1221.66
+06-09 14:48:04.901  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.68 dur=2930.27 max=2910.71 min=19.56
+06-09 14:48:05.212  1830  3190 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai pid=18175 activityId:18175 state:3
+06-09 14:48:05.213  1169  4695 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai, pid=18175, activityId=18175, uid=10458, state:DEAD, fps:-1, win:0
+06-09 14:48:05.213  1169  4695 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 0
+06-09 14:48:05.213  1169  4695 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:05.213  1169  4695 I MTK_APPList: [notifyAPPstate] pack:com.example.vitaai, pid:18175, STATE_DEAD
+06-09 14:48:05.213  1169  4695 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:48:05.216  1830  3190 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai.ui.MainActivity pid=18175 activityId:94496862 state:0
+06-09 14:48:05.216  1169  4695 I MTK_APPList: [notifyPID] 18175
+06-09 14:48:05.217  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18175
+06-09 14:48:05.218  1169  4695 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid=18175, activityId=94496862, uid=10458, state:PAUSED, fps:-1, win:0
+06-09 14:48:05.218  1169  4695 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 0
+06-09 14:48:05.218  1169  4695 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:05.218  1169  4695 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:48:05.219  1169  4695 I MTK_APPList: [notifyPID] 18175
+06-09 14:48:05.220  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18175
+06-09 14:48:05.446  1830  2631 I mtkpower_client: perf_lock_acq, hdl:431018, dur:3000, num:6, pid:1830, tid:2631
+06-09 14:48:05.451  1830  2631 I mtkpower_client: ret_hdl:431046
+06-09 14:48:05.451  1830  2631 I mtkpower_client: perf_lock_rel, hdl:431046, pid: 1830, tid:2631
+06-09 14:48:05.452  1188  1240 I libPowerHal: cmdSetting - unknown cmd:340c300, scmd:(null) ,param_1:1
+06-09 14:48:05.453  1188  1240 I libPowerHal: [perfLockAcq] idx:1 hdl:431046 hint:-1 pid:1830 tid:2631 duration:3000 lock_user:system_server => ret_hdl:431046
+06-09 14:48:05.453  1188  1240 I libPowerHal: end_default_hold_time HindID : 57
+06-09 14:48:05.453  1188  1240 I libPowerHal: [disableScenarioByHintId] Disable HindID : 21
+06-09 14:48:05.453  1188  1240 I libPowerHal: [disableScenarioByHintId] disableScenarioByHintId: HindID : 21
+06-09 14:48:05.453  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PROCESS_CREATE update cmd:1408300 param:0, pr:6
+06-09 14:48:05.456  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PROCESS_CREATE update cmd:300c000 param:0, pr:6
+06-09 14:48:05.457  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PROCESS_CREATE update cmd:808000 param:0 pr:6
+06-09 14:48:05.458  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PROCESS_CREATE update cmd:1468000 param:1 pr:6
+06-09 14:48:05.458  1188  1240 I libPowerHal: [disableScenarioByHintId] Disable HindID : 57
+06-09 14:48:05.458  1188  1240 I libPowerHal: [PE] system_server update ONESHOT(set) cmd:3410300 param:57 pr:3
+06-09 14:48:05.458  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431046
+06-09 14:48:05.459  1188  1240 I libPowerHal: [perfLockRel] hdl:431046, idx:1
+06-09 14:48:05.459  1188  1240 I libPowerHal: end_default_hold_time HindID : 57
+06-09 14:48:05.459  1188  1240 I libPowerHal: [disableScenarioByHintId] Disable HindID : 21
+06-09 14:48:05.459  1188  1240 I libPowerHal: [disableScenarioByHintId] Disable HindID : 57
+06-09 14:48:05.460  1188  1240 I libPowerHal: [PD] system_server update ONESHOT(unset) cmd:3410300 param:57 pr:3
+06-09 14:48:05.460  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431046
+06-09 14:48:05.592  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=17.58 dur=1024.08 max=682.61 min=7.29
+06-09 14:48:05.592  1264  1264 I BufferQueueProducer: [com.miui.securitycenter/.FloatingWindow#157904](this:0xb400007053093320,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=49.00 dur=1040.86 max=625.05 min=6.92
+06-09 14:48:05.719  1830  1964 I mtkpower_client: perf_lock_acq, hdl:431042, dur:400, num:10, pid:1830, tid:1964
+06-09 14:48:05.721  1830  1964 I mtkpower_client: ret_hdl:431047
+06-09 14:48:05.721  1188  1240 I libPowerHal: [perfLockAcq] idx:0 hdl:431047 hint:-1 pid:1830 tid:1964 duration:400 lock_user:system_server => ret_hdl:431047
+06-09 14:48:05.721  1188  1240 I libPowerHal: [setGPUFreq] system_server user set gpu freq min:0, max:-1
+06-09 14:48:05.721  1188  1240 I libPowerHal: system_server: set gpu opp level: 0
+06-09 14:48:05.721  1830  1964 I mtkpower_client: perf_lock_acq, hdl:431047, dur:400, num:10, pid:1830, tid:1964
+06-09 14:48:05.721  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:05.721  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (0, 0); Hard min/max = (40, 0)
+06-09 14:48:05.722  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (0, 0)
+06-09 14:48:05.722  1188  1240 I libPowerHal: system_server: set gpu opp level: 0
+06-09 14:48:05.722  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:05.722  1188  1240 I libPowerHal: [PE] system_server update cmd:400000 param:3000000 pr:3
+06-09 14:48:05.722  1188  1240 I libPowerHal: [PE] system_server update cmd:400100 param:3000000 pr:3
+06-09 14:48:05.722  1188  1240 I libPowerHal: [PE] system_server update cmd:400200 param:3000000 pr:3
+06-09 14:48:05.723  1188  1240 I libPowerHal: [setDvfsrcDevFreqOpp] opp:0, freq:8533000000
+06-09 14:48:05.723  1188  1240 I libPowerHal: [PE] system_server update cmd:1000000 param:0 pr:3
+06-09 14:48:05.723  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(-1): -1 cluster[2] min(system_server): 3000000 max(-1): -1
+06-09 14:48:05.723  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431047
+06-09 14:48:05.723  1830  1964 I mtkpower_client: ret_hdl:431047
+06-09 14:48:05.724  1188  1240 I libPowerHal: [perfLockAcq] idx:0 hdl:431047 hint:-1 pid:1830 tid:1964 duration:400 lock_user:system_server => ret_hdl:431047
+06-09 14:48:05.724  1188  1240 I libPowerHal: [unsetGPUFreq] current min:0, max:0; scn_gpu_min:0, scn_gpu_max:-1; scn_gpu_min(HL):-1, scn_gpu_max(HL):-1
+06-09 14:48:05.724  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (0, 0); Hard min/max = (40, 0)
+06-09 14:48:05.724  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (0, 0)
+06-09 14:48:05.724  1188  1240 I libPowerHal: system_server: set gpu opp level: 0
+06-09 14:48:05.724  1830  1964 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.mi.android.globallauncher/com.miui.home.launcher.Launcher pid=24536 activityId:266253374 state:1
+06-09 14:48:05.725  1830  1964 E mtkpower_client: addForegroundAPP: Add FG app failed!!!
+06-09 14:48:05.725  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:05.725  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431047
+06-09 14:48:05.726  1169  1172 I MTK_APPList: [notifyAPPstate] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid=24536, activityId=266253374, uid=10158, state:RESUMED, fps:-1, win:0
+06-09 14:48:05.726  1169  1172 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:48:05.726  1169  1172 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid:24536, activityId:266253374, fps:-1, isMultiWindow:0
+06-09 14:48:05.726  1169  1172 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:05.726  1169  1172 I MTK_APPList: [notifyAPPstate] foreground:com.mi.android.globallauncher, pid:24536, activityId:266253374, uid:10158
+06-09 14:48:05.726  1169  1172 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:48:05.726  1188  1240 I libPowerHal: [perfLockAcq] idx:1 hdl:431048 hint:64 pid:1188 tid:1188 duration:10000 lock_user:vendor.mediatek => ret_hdl:431048
+06-09 14:48:05.726  1830  1964 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.mi.android.globallauncher/com.miui.home.launcher.Launcher pid=24536 activityId:266253374 state:1
+06-09 14:48:05.726  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_HOT_LAUNCH update cmd:404200 param:3350000 pr:3
+06-09 14:48:05.726  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(-1): -1 cluster[2] min(system_server): 3000000 max(MTKPOWER_HINT_HOT_LAUNCH): -1
+06-09 14:48:05.726  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431048
+06-09 14:48:05.726  1830  1964 E mtkpower_client: addForegroundAPP: Add FG app failed!!!
+06-09 14:48:05.727  1169  1172 I MTK_APPList: [notifyPID] 24536
+06-09 14:48:05.728  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:48:05.728  1169  1172 I MTK_APPList: [notifyAPPstate] pc:1, com.example.vitaai => com.mi.android.globallauncher
+06-09 14:48:05.728  1169  4695 I MTK_APPList: [notifyAPPstate] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid=24536, activityId=266253374, uid=10158, state:RESUMED, fps:-1, win:0
+06-09 14:48:05.728  1169  4695 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:48:05.728  1169  4695 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid:24536, activityId:266253374, fps:-1, isMultiWindow:0
+06-09 14:48:05.728  1169  4695 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:05.728  1169  4695 I MTK_APPList: [notifyAPPstate] foreground:com.mi.android.globallauncher, pid:24536, activityId:266253374, uid:10158
+06-09 14:48:05.728  1169  4695 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:48:05.729  1169  4695 I MTK_APPList: [notifyPID] 24536
+06-09 14:48:05.729  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:48:05.743  1830  2402 D AudioSystem: +setParameters(): foregroundUid=10158;bluetoothlowlatencystatus=false 
+06-09 14:48:05.743  1251  2406 D AudioFlingerImpl: setGameParameters keyvalue: bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:05.743  1251  2406 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:05.744  1118 14787 D AudioALSAHardware: +setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:05.744  1118 14787 D AudioALSAHardware: -setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:05.744  1251  2406 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:05.744  1251  2406 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:05.745  1251  2406 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:05.745  1251  2406 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:05.745  1251  2406 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:05.790  1830  2520 I mtkpower_client: perf_lock_acq, hdl:431043, dur:1000, num:6, pid:1830, tid:2520
+06-09 14:48:05.792  1830  2520 I mtkpower_client: ret_hdl:431049
+06-09 14:48:05.793  1188  1240 I libPowerHal: [perfLockAcq] idx:2 hdl:431049 hint:-1 pid:1830 tid:2520 duration:1000 lock_user:system_server => ret_hdl:431049
+06-09 14:48:05.793  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431049
+06-09 14:48:05.799  1188  1240 I libPowerHal: [perfLockRel] hdl:431048, idx:1
+06-09 14:48:05.799  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_HOT_LAUNCH update cmd:404200 param:-1 pr:6
+06-09 14:48:05.799  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(-1): -1 cluster[2] min(system_server): 3000000 max(-1): -1
+06-09 14:48:05.799  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431048
+06-09 14:48:05.812  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=30.55 dur=2455.02 max=1557.31 min=7.32
+06-09 14:48:05.847  1830  1886 D AudioSystem: +setParameters(): gamebooster=false 
+06-09 14:48:05.849  1251  2404 D AudioFlingerImpl: setGameParameters keyvalue: gamebooster=false
+06-09 14:48:05.849  1251  2404 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): gamebooster=false
+06-09 14:48:05.850  1118 14787 D AudioALSAHardware: +setParameters(): gamebooster=false
+06-09 14:48:05.850  1118 14787 D AudioALSAHardware: -setParameters(): gamebooster=false
+06-09 14:48:05.850  1251  2404 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): gamebooster=false
+06-09 14:48:05.850  1251  2404 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): gamebooster=false
+06-09 14:48:05.851  1251  2404 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): gamebooster=false
+06-09 14:48:05.851  1251  2404 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): gamebooster=false
+06-09 14:48:05.851  1251  2404 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): gamebooster=false
+06-09 14:48:05.958  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=2.84 dur=1057.54 max=990.55 min=8.74
+06-09 14:48:06.126  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431047
+06-09 14:48:06.126  1188  1240 I libPowerHal: [perfLockRel] hdl:431047, idx:0
+06-09 14:48:06.126  1188  1240 I libPowerHal: [unsetGPUFreq] current min:0, max:0; scn_gpu_min:0, scn_gpu_max:-1; scn_gpu_min(HL):-1, scn_gpu_max(HL):-1
+06-09 14:48:06.126  1188  1240 I libPowerHal: system_server: set gpu opp level: 40
+06-09 14:48:06.126  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:06.126  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (40, 0); Hard min/max = (40, 0)
+06-09 14:48:06.126  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (40, 0)
+06-09 14:48:06.126  1188  1240 I libPowerHal: system_server: set gpu opp level: 40
+06-09 14:48:06.126  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:06.127  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:1000000 pr:3
+06-09 14:48:06.127  1188  1240 I libPowerHal: [PD] system_server update cmd:400100 param:1000000 pr:3
+06-09 14:48:06.127  1188  1240 I libPowerHal: [PD] system_server update cmd:400200 param:1000000 pr:3
+06-09 14:48:06.127  1188  1240 I libPowerHal: [PD] system_server update cmd:1000000 param:-1 pr:6
+06-09 14:48:06.127  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 1000000 max(-1): -1 cluster[1] min(system_server): 1000000 max(-1): -1 cluster[2] min(system_server): -1 max(-1): -1
+06-09 14:48:06.127  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431047
+06-09 14:48:06.300  1264  1264 I BufferQueueProducer: [Application Error: com.example.vitaai#158210](this:0xb4000070533a7ff0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=62.49 dur=1008.12 max=483.16 min=7.83
+06-09 14:48:06.416  1830  1964 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai.ui.MainActivity pid=18175 activityId:94496862 state:0
+06-09 14:48:06.416  1169  1173 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid=18175, activityId=94496862, uid=10458, state:PAUSED, fps:-1, win:0
+06-09 14:48:06.416  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:48:06.416  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid:24536, activityId:266253374, fps:-1, isMultiWindow:0
+06-09 14:48:06.416  1169  1173 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:06.416  1169  1173 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:48:06.418  1169  1173 I MTK_APPList: [notifyPID] 24536
+06-09 14:48:06.419  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:48:06.777  1264  1264 I BufferQueueProducer: [com.mi.android.globallauncher/com.miui.home.launcher.Launcher#158212](this:0xb4000070532e0a90,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=116.75 dur=1002.16 max=16.73 min=5.18
+06-09 14:48:06.794  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431049
+06-09 14:48:06.794  1188  1240 I libPowerHal: [perfLockRel] hdl:431049, idx:2
+06-09 14:48:06.795  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:-1 pr:6
+06-09 14:48:06.795  1188  1240 I libPowerHal: [PD] system_server update cmd:400100 param:-1 pr:6
+06-09 14:48:06.795  1188  1240 I libPowerHal: [PD] system_server update cmd:400200 param:-1 pr:6
+06-09 14:48:06.795  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(-1): -1 max(-1): -1 cluster[1] min(-1): -1 max(-1): -1 cluster[2] min(-1): -1 max(-1): -1
+06-09 14:48:06.795  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431049
+06-09 14:48:06.801  1830  2520 I mtkpower_client: perf_lock_rel, hdl:431049, pid: 1830, tid:2520
+06-09 14:48:06.802  1188  1240 I libPowerHal: [perfLockRel] hdl:431049, idx:-1
+06-09 14:48:06.894  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=88.67 dur=1082.65 max=291.17 min=6.55
+06-09 14:48:06.934  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=14.90 dur=1342.04 max=967.25 min=8.22
+06-09 14:48:07.050  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:48:07.058  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:48:07.372  1407  1407 I mtkpower_client: perf_lock_acq, hdl:0, dur:50, num:2, pid:1407, tid:1407
+06-09 14:48:07.373  1407  1407 I mtkpower_client: ret_hdl:431050
+06-09 14:48:07.374  1188  1240 I libPowerHal: [perfLockAcq] idx:0 hdl:431050 hint:-1 pid:1407 tid:1407 duration:50 lock_user:touch_boost => ret_hdl:431050
+06-09 14:48:07.374  1188  1240 I libPowerHal: [PE] touch_boost update cmd:400000 param:1000000 pr:3
+06-09 14:48:07.374  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(touch_boost): 1000000 max(-1): -1 cluster[1] min(-1): -1 max(-1): -1 cluster[2] min(-1): -1 max(-1): -1
+06-09 14:48:07.375  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431050
+06-09 14:48:07.422  1407  1407 I mtkpower_client: perf_lock_rel, hdl:431050, tid:1407
+06-09 14:48:07.423  1188  1240 I libPowerHal: [perfLockRel] hdl:431050, idx:0
+06-09 14:48:07.423  1188  1240 I libPowerHal: [PD] touch_boost update cmd:400000 param:-1 pr:6
+06-09 14:48:07.423  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(-1): -1 max(-1): -1 cluster[1] min(-1): -1 max(-1): -1 cluster[2] min(-1): -1 max(-1): -1
+06-09 14:48:07.424  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431050
+06-09 14:48:07.441  1264  1264 I BufferQueueProducer: [Application Error: com.example.vitaai#158210](this:0xb4000070533a7ff0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=63.98 dur=1141.01 max=296.91 min=2.84
+06-09 14:48:07.444  1830  3117 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai pid=18175 activityId:18175 state:3
+06-09 14:48:07.445  1169  4695 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai, pid=18175, activityId=18175, uid=10458, state:DEAD, fps:-1, win:0
+06-09 14:48:07.445  1169  4695 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:48:07.445  1169  4695 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid:24536, activityId:266253374, fps:-1, isMultiWindow:0
+06-09 14:48:07.445  1169  4695 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:07.445  1169  4695 I MTK_APPList: [notifyAPPstate] pack:com.example.vitaai, pid:18175, STATE_DEAD
+06-09 14:48:07.445  1169  4695 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:48:07.448  1169  4695 I MTK_APPList: [notifyPID] 24536
+06-09 14:48:07.449  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:48:07.689  1264  1264 I BufferQueueProducer: [LauncherOverlayWindow:com.mi.appfinder#158205](this:0xb4000070530a9fa0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.41 dur=2447.39 max=2447.39 min=2447.39
+06-09 14:48:07.785  1264  1264 I BufferQueueProducer: [com.mi.android.globallauncher/com.miui.home.launcher.Launcher#158212](this:0xb4000070532e0a90,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=9.92 dur=1008.01 max=935.62 min=6.07
+06-09 14:48:07.941  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=1.91 dur=1047.07 max=607.45 min=439.62
+--------- beginning of system
+06-09 14:48:08.280  1830  2314 W NetworkPolicy: shared quota unsupported; generating rule for each iface
+06-09 14:48:08.755  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:48:08.766  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:48:09.982  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.75 dur=4024.03 max=3048.47 min=8.42
+06-09 14:48:09.982  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.33 dur=3048.62 max=3048.62 min=3048.62
+06-09 14:48:10.103  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=1.39 dur=2161.26 max=1721.05 min=137.24
+06-09 14:48:10.449  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431045
+06-09 14:48:10.450  1188  1240 I libPowerHal: [perfLockRel] hdl:431045, idx:-1
+06-09 14:48:12.972  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.67 dur=2990.08 max=2974.59 min=15.49
+06-09 14:48:12.973  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.67 dur=2990.19 max=2974.90 min=15.29
+06-09 14:48:13.120  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.33 dur=3017.48 max=3017.48 min=3017.48
+06-09 14:48:13.281  1188  1201 I mtkpower@impl: [setMode] type:5, enabled:1
+06-09 14:48:13.293  1830  3002 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.mi.android.globallauncher/com.miui.home.launcher.Launcher pid=24536 activityId:266253374 state:0
+06-09 14:48:13.294  1169  1173 I MTK_APPList: [notifyAPPstate] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid=24536, activityId=266253374, uid=10158, state:PAUSED, fps:-1, win:0
+06-09 14:48:13.294  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 0
+06-09 14:48:13.294  1169  1173 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:13.294  1169  1173 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:48:13.295  1169  1173 I MTK_APPList: [notifyPID] 24536
+06-09 14:48:13.296  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:48:13.305  1830  3105 I mtkpower_client: perf_lock_acq, hdl:0, dur:400, num:10, pid:1830, tid:3105
+06-09 14:48:13.309  1830  3105 I mtkpower_client: ret_hdl:431051
+06-09 14:48:13.309  1188  1240 I libPowerHal: [perfLockAcq] idx:0 hdl:431051 hint:-1 pid:1830 tid:3105 duration:400 lock_user:system_server => ret_hdl:431051
+06-09 14:48:13.309  1188  1240 I libPowerHal: [setGPUFreq] system_server user set gpu freq min:0, max:-1
+06-09 14:48:13.309  1188  1240 I libPowerHal: system_server: set gpu opp level: 0
+06-09 14:48:13.309  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:13.310  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (0, 0); Hard min/max = (40, 0)
+06-09 14:48:13.310  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (0, 0)
+06-09 14:48:13.310  1188  1240 I libPowerHal: system_server: set gpu opp level: 0
+06-09 14:48:13.310  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:13.310  1188  1240 I libPowerHal: [PE] system_server update cmd:400000 param:3000000 pr:3
+06-09 14:48:13.310  1188  1240 I libPowerHal: [PE] system_server update cmd:400100 param:3000000 pr:3
+06-09 14:48:13.310  1188  1240 I libPowerHal: [PE] system_server update cmd:400200 param:3000000 pr:3
+06-09 14:48:13.311  1188  1240 I libPowerHal: [setDvfsrcDevFreqOpp] opp:0, freq:8533000000
+06-09 14:48:13.311  1188  1240 I libPowerHal: [PE] system_server update cmd:1000000 param:0 pr:3
+06-09 14:48:13.311  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(-1): -1 cluster[2] min(system_server): 3000000 max(-1): -1
+06-09 14:48:13.311  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431051
+06-09 14:48:13.324  1264  1264 I BufferQueueProducer: [com.mi.android.globallauncher/com.miui.home.launcher.Launcher#158212](this:0xb4000070532e0a90,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.08 dur=5539.04 max=5497.51 min=8.15
+06-09 14:48:13.327  1830  2520 I mtkpower_client: perf_lock_acq, hdl:431049, dur:1000, num:6, pid:1830, tid:2520
+06-09 14:48:13.328  1188  1240 I libPowerHal: [perfLockAcq] idx:1 hdl:431052 hint:21 pid:1188 tid:1188 duration:10000 lock_user:vendor.mediatek => ret_hdl:431052
+06-09 14:48:13.329  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PROCESS_CREATE update cmd:1408300, param:100, pr:3
+06-09 14:48:13.329  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PROCESS_CREATE update cmd:300c000, param:15, pr:3
+06-09 14:48:13.329  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PROCESS_CREATE update cmd:808000 param:1 pr:3
+06-09 14:48:13.329  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PROCESS_CREATE update cmd:1468000 param:0 pr:3
+06-09 14:48:13.329  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431052
+06-09 14:48:13.330  1188  1240 I libPowerHal: [perfLockRel] hdl:431045, idx:-1
+06-09 14:48:13.331  1830  2520 I mtkpower_client: ret_hdl:431053
+06-09 14:48:13.332  1188  1240 I libPowerHal: [perfLockAcq] idx:2 hdl:431053 hint:-1 pid:1830 tid:2520 duration:1000 lock_user:system_server => ret_hdl:431053
+06-09 14:48:13.332  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431053
+06-09 14:48:13.710  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431051
+06-09 14:48:13.710  1188  1240 I libPowerHal: [perfLockRel] hdl:431051, idx:0
+06-09 14:48:13.710  1188  1240 I libPowerHal: [unsetGPUFreq] current min:0, max:0; scn_gpu_min:0, scn_gpu_max:-1; scn_gpu_min(HL):-1, scn_gpu_max(HL):-1
+06-09 14:48:13.710  1188  1240 I libPowerHal: system_server: set gpu opp level: 40
+06-09 14:48:13.711  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:13.711  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (40, 0); Hard min/max = (40, 0)
+06-09 14:48:13.711  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (40, 0)
+06-09 14:48:13.711  1188  1240 I libPowerHal: system_server: set gpu opp level: 40
+06-09 14:48:13.711  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:13.711  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:1000000 pr:3
+06-09 14:48:13.711  1188  1240 I libPowerHal: [PD] system_server update cmd:400100 param:1000000 pr:3
+06-09 14:48:13.711  1188  1240 I libPowerHal: [PD] system_server update cmd:400200 param:1000000 pr:3
+06-09 14:48:13.712  1188  1240 I libPowerHal: [PD] system_server update cmd:1000000 param:-1 pr:6
+06-09 14:48:13.712  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 1000000 max(-1): -1 cluster[1] min(system_server): 1000000 max(-1): -1 cluster[2] min(system_server): -1 max(-1): -1
+06-09 14:48:13.712  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431051
+06-09 14:48:13.979  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.99 dur=1006.54 max=998.21 min=8.32
+06-09 14:48:13.979  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=2.98 dur=1006.22 max=621.47 min=8.36
+06-09 14:48:14.021  1830  5240 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai.ui.MainActivity pid=18316 activityId:138977030 state:1
+06-09 14:48:14.021  1169  4695 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid=18316, activityId=138977030, uid=10458, state:RESUMED, fps:-1, win:0
+06-09 14:48:14.021  1830  5240 E mtkpower_client: addForegroundAPP: Add FG app failed!!!
+06-09 14:48:14.021  1169  4695 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:48:14.021  1169  4695 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid:18316, activityId:138977030, fps:-1, isMultiWindow:0
+06-09 14:48:14.021  1169  4695 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:14.021  1169  4695 I MTK_APPList: [notifyAPPstate] foreground:com.example.vitaai, pid:18316, activityId:138977030, uid:10458
+06-09 14:48:14.021  1169  4695 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:48:14.022  1169  4695 I MTK_APPList: [notifyPID] 18316
+06-09 14:48:14.022  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18316
+06-09 14:48:14.023  1169  4695 I MTK_APPList: [notifyAPPstate] pc:0, com.mi.android.globallauncher => com.example.vitaai
+06-09 14:48:14.025  1830  2402 D AudioSystem: +setParameters(): foregroundUid=10458;bluetoothlowlatencystatus=false 
+06-09 14:48:14.026  1251  2404 D AudioFlingerImpl: setGameParameters keyvalue: bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:14.026  1251  2404 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:14.027  1118 14787 D AudioALSAHardware: +setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:14.027  1118 14787 D AudioALSAHardware: -setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:14.027  1251  2404 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:14.027  1251  2404 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:14.027  1251  2404 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:14.027  1251  2404 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:14.027  1251  2404 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:48:14.127  1830  1886 D AudioSystem: +setParameters(): gamebooster=false 
+06-09 14:48:14.127  1251  2404 D AudioFlingerImpl: setGameParameters keyvalue: gamebooster=false
+06-09 14:48:14.127  1251  2404 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): gamebooster=false
+06-09 14:48:14.128  1118 14787 D AudioALSAHardware: +setParameters(): gamebooster=false
+06-09 14:48:14.128  1118 14787 D AudioALSAHardware: -setParameters(): gamebooster=false
+06-09 14:48:14.128  1251  2404 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): gamebooster=false
+06-09 14:48:14.128  1251  2404 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): gamebooster=false
+06-09 14:48:14.129  1251  2404 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): gamebooster=false
+06-09 14:48:14.129  1251  2404 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): gamebooster=false
+06-09 14:48:14.130  1251  2404 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): gamebooster=false
+06-09 14:48:14.265  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=64.66 dur=1144.48 max=300.39 min=6.72
+06-09 14:48:14.333  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431053
+06-09 14:48:14.333  1188  1240 I libPowerHal: [perfLockRel] hdl:431053, idx:2
+06-09 14:48:14.333  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:-1 pr:6
+06-09 14:48:14.333  1830  2520 I mtkpower_client: perf_lock_rel, hdl:431053, pid: 1830, tid:2520
+06-09 14:48:14.333  1188  1240 I libPowerHal: [PD] system_server update cmd:400100 param:-1 pr:6
+06-09 14:48:14.333  1188  1240 I libPowerHal: [PD] system_server update cmd:400200 param:-1 pr:6
+06-09 14:48:14.334  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(-1): -1 max(-1): -1 cluster[1] min(-1): -1 max(-1): -1 cluster[2] min(-1): -1 max(-1): -1
+06-09 14:48:14.334  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431053
+06-09 14:48:14.334  1188  1240 I libPowerHal: [perfLockRel] hdl:431053, idx:-1
+06-09 14:48:14.408  1830  1964 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.mi.android.globallauncher/com.miui.home.launcher.Launcher pid=24536 activityId:266253374 state:0
+06-09 14:48:14.408  1169  1173 I MTK_APPList: [notifyAPPstate] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid=24536, activityId=266253374, uid=10158, state:PAUSED, fps:-1, win:0
+06-09 14:48:14.409  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:48:14.409  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid:18316, activityId:138977030, fps:-1, isMultiWindow:0
+06-09 14:48:14.409  1169  1173 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:14.409  1169  1173 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:48:14.410  1169  1173 I MTK_APPList: [notifyPID] 18316
+06-09 14:48:14.410  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18316
+06-09 14:48:14.442  1188  4593 I libPowerHal: [mtkPowerHint] hint:21, hold:6000, ext:0, ext_hold:0
+06-09 14:48:14.442  1188  4593 I mtkpower@impl: [setMode] type:5, enabled:0
+06-09 14:48:14.442  1188  1240 I libPowerHal: [perfLockAcq] idx:0 hdl:431054 hint:21 pid:1188 tid:1188 duration:6000 lock_user:vendor.mediatek => ret_hdl:431054
+06-09 14:48:14.443  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431054
+06-09 14:48:14.444  1188  1240 I libPowerHal: [perfLockRel] hdl:431052, idx:1
+06-09 14:48:14.444  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431052
+06-09 14:48:14.628  1264  1264 I BufferQueueProducer: [com.miui.securitycenter/.FloatingWindow#157904](this:0xb400007053093320,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=5.75 dur=9036.34 max=8053.66 min=7.83
+06-09 14:48:15.208  1830  5240 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai pid=18316 activityId:18316 state:3
+06-09 14:48:15.211  1169  4695 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai, pid=18316, activityId=18316, uid=10458, state:DEAD, fps:-1, win:0
+06-09 14:48:15.211  1169  4695 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 0
+06-09 14:48:15.211  1169  4695 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:15.211  1169  4695 I MTK_APPList: [notifyAPPstate] pack:com.example.vitaai, pid:18316, STATE_DEAD
+06-09 14:48:15.211  1169  4695 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:48:15.212  1830  5240 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai.ui.MainActivity pid=18316 activityId:138977030 state:0
+06-09 14:48:15.212  1169  4695 I MTK_APPList: [notifyPID] 18316
+06-09 14:48:15.213  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18316
+06-09 14:48:15.214  1169  1173 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid=18316, activityId=138977030, uid=10458, state:PAUSED, fps:-1, win:0
+06-09 14:48:15.214  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 0
+06-09 14:48:15.214  1169  1173 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:15.214  1169  1173 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:48:15.216  1169  1173 I MTK_APPList: [notifyPID] 18316
+06-09 14:48:15.216  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18316
+06-09 14:48:15.267  1830  2216 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai pid=18316 activityId:18316 state:3
+06-09 14:48:15.267  1169  1172 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai, pid=18316, activityId=18316, uid=10458, state:DEAD, fps:-1, win:0
+06-09 14:48:15.267  1169  1172 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 0
+06-09 14:48:15.267  1169  1172 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:15.267  1169  1172 I MTK_APPList: [notifyAPPstate] pack:com.example.vitaai, pid:18316, STATE_DEAD
+06-09 14:48:15.267  1169  1172 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:48:15.269  1830  2216 I mtkpower_client: perf_lock_acq, hdl:431051, dur:400, num:10, pid:1830, tid:2216
+06-09 14:48:15.270  1169  1172 I MTK_APPList: [notifyPID] 18316
+06-09 14:48:15.271  1830  2216 I mtkpower_client: ret_hdl:431055
+06-09 14:48:15.271  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18316
+06-09 14:48:15.273  1830  2216 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.mi.android.globallauncher/com.miui.home.launcher.Launcher pid=24536 activityId:266253374 state:1
+06-09 14:48:15.273  1169  1173 I MTK_APPList: [notifyAPPstate] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid=24536, activityId=266253374, uid=10158, state:RESUMED, fps:-1, win:0
+06-09 14:48:15.273  1830  2216 E mtkpower_client: addForegroundAPP: Add FG app failed!!!
+06-09 14:48:15.273  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:48:15.273  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid:24536, activityId:266253374, fps:-1, isMultiWindow:0
+06-09 14:48:15.273  1169  1173 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:15.273  1169  1173 I MTK_APPList: [notifyAPPstate] foreground:com.mi.android.globallauncher, pid:24536, activityId:266253374, uid:10158
+06-09 14:48:15.273  1169  1173 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:48:15.274  1188  1240 I libPowerHal: [perfLockAcq] idx:1 hdl:431055 hint:-1 pid:1830 tid:2216 duration:400 lock_user:system_server => ret_hdl:431055
+06-09 14:48:15.274  1188  1240 I libPowerHal: [setGPUFreq] system_server user set gpu freq min:0, max:-1
+06-09 14:48:15.274  1188  1240 I libPowerHal: system_server: set gpu opp level: 0
+06-09 14:48:15.274  1169  1173 I MTK_APPList: [notifyPID] 24536
+06-09 14:48:15.274  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:15.275  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (0, 0); Hard min/max = (40, 0)
+06-09 14:48:15.275  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (0, 0)
+06-09 14:48:15.275  1188  1240 I libPowerHal: system_server: set gpu opp level: 0
+06-09 14:48:15.275  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:15.275  1188  1240 I libPowerHal: [PE] system_server update cmd:400000 param:3000000 pr:3
+06-09 14:48:15.275  1188  1240 I libPowerHal: [PE] system_server update cmd:400100 param:3000000 pr:3
+06-09 14:48:15.275  1188  1240 I libPowerHal: [PE] system_server update cmd:400200 param:3000000 pr:3
+06-09 14:48:15.276  1188  1240 I libPowerHal: [setDvfsrcDevFreqOpp] opp:0, freq:8533000000
+06-09 14:48:15.276  1188  1240 I libPowerHal: [PE] system_server update cmd:1000000 param:0 pr:3
+06-09 14:48:15.276  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(-1): -1 cluster[2] min(system_server): 3000000 max(-1): -1
+06-09 14:48:15.276  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431055
+06-09 14:48:15.276  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:48:15.276  1188  1240 I libPowerHal: [perfLockAcq] idx:2 hdl:431056 hint:64 pid:1188 tid:1188 duration:10000 lock_user:vendor.mediatek => ret_hdl:431056
+06-09 14:48:15.276  1169  1173 I MTK_APPList: [notifyAPPstate] pc:1, com.example.vitaai => com.mi.android.globallauncher
+06-09 14:48:15.276  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_HOT_LAUNCH update cmd:404200 param:3350000 pr:3
+06-09 14:48:15.276  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(-1): -1 cluster[2] min(system_server): 3000000 max(MTKPOWER_HINT_HOT_LAUNCH): -1
+06-09 14:48:15.276  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431056
+06-09 14:48:15.282  1830  2402 D AudioSystem: +setParameters(): foregroundUid=10158;bluetoothlowlatencystatus=false 
+06-09 14:48:15.283  1251  2406 D AudioFlingerImpl: setGameParameters keyvalue: bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:15.283  1251  2406 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:15.285  1118 14787 D AudioALSAHardware: +setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:15.285  1118 14787 D AudioALSAHardware: -setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:15.285  1251  2406 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:15.286  1251  2406 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:15.287  1251  2406 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:15.287  1251  2406 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:15.288  1251  2406 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:48:15.311  1830  2520 I mtkpower_client: perf_lock_acq, hdl:431053, dur:1000, num:6, pid:1830, tid:2520
+06-09 14:48:15.312  1830  2520 I mtkpower_client: ret_hdl:431057
+06-09 14:48:15.312  1188  1240 I libPowerHal: [perfLockAcq] idx:3 hdl:431057 hint:-1 pid:1830 tid:2520 duration:1000 lock_user:system_server => ret_hdl:431057
+06-09 14:48:15.312  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431057
+06-09 14:48:15.340  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.93 dur=1075.09 max=1075.09 min=1075.09
+06-09 14:48:15.389  1830  1886 D AudioSystem: +setParameters(): gamebooster=false 
+06-09 14:48:15.389  1251  1251 D AudioFlingerImpl: setGameParameters keyvalue: gamebooster=false
+06-09 14:48:15.389  1251  1251 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): gamebooster=false
+06-09 14:48:15.390  1118 14787 D AudioALSAHardware: +setParameters(): gamebooster=false
+06-09 14:48:15.390  1118 14787 D AudioALSAHardware: -setParameters(): gamebooster=false
+06-09 14:48:15.390  1251  1251 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): gamebooster=false
+06-09 14:48:15.390  1251  1251 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): gamebooster=false
+06-09 14:48:15.391  1251  1251 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): gamebooster=false
+06-09 14:48:15.391  1251  1251 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): gamebooster=false
+06-09 14:48:15.392  1251  1251 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): gamebooster=false
+06-09 14:48:15.436  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=13.72 dur=1457.36 max=673.79 min=7.93
+06-09 14:48:15.442  1830  2631 I mtkpower_client: perf_lock_acq, hdl:431046, dur:3000, num:6, pid:1830, tid:2631
+06-09 14:48:15.443  1830  2631 I mtkpower_client: ret_hdl:431058
+06-09 14:48:15.443  1830  2631 I mtkpower_client: perf_lock_rel, hdl:431058, pid: 1830, tid:2631
+06-09 14:48:15.444  1188  1240 I libPowerHal: cmdSetting - unknown cmd:340c300, scmd:(null) ,param_1:1
+06-09 14:48:15.444  1188  1240 I libPowerHal: [perfLockAcq] idx:4 hdl:431058 hint:-1 pid:1830 tid:2631 duration:3000 lock_user:system_server => ret_hdl:431058
+06-09 14:48:15.444  1188  1240 I libPowerHal: end_default_hold_time HindID : 57
+06-09 14:48:15.444  1188  1240 I libPowerHal: [disableScenarioByHintId] Disable HindID : 21
+06-09 14:48:15.444  1188  1240 I libPowerHal: [disableScenarioByHintId] disableScenarioByHintId: HindID : 21
+06-09 14:48:15.444  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PROCESS_CREATE update cmd:1408300 param:0, pr:6
+06-09 14:48:15.444  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PROCESS_CREATE update cmd:300c000 param:0, pr:6
+06-09 14:48:15.445  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PROCESS_CREATE update cmd:808000 param:0 pr:6
+06-09 14:48:15.445  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PROCESS_CREATE update cmd:1468000 param:1 pr:6
+06-09 14:48:15.445  1188  1240 I libPowerHal: [disableScenarioByHintId] Disable HindID : 57
+06-09 14:48:15.445  1188  1240 I libPowerHal: [PE] system_server update ONESHOT(set) cmd:3410300 param:57 pr:3
+06-09 14:48:15.445  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431058
+06-09 14:48:15.446  1188  1240 I libPowerHal: [perfLockRel] hdl:431058, idx:4
+06-09 14:48:15.446  1188  1240 I libPowerHal: end_default_hold_time HindID : 57
+06-09 14:48:15.446  1188  1240 I libPowerHal: [disableScenarioByHintId] Disable HindID : 21
+06-09 14:48:15.446  1188  1240 I libPowerHal: [disableScenarioByHintId] Disable HindID : 57
+06-09 14:48:15.446  1188  1240 I libPowerHal: [PD] system_server update ONESHOT(unset) cmd:3410300 param:57 pr:3
+06-09 14:48:15.446  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431058
+06-09 14:48:15.636  1264  1264 I BufferQueueProducer: [com.miui.securitycenter/.FloatingWindow#157904](this:0xb400007053093320,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=74.42 dur=1007.73 max=391.26 min=7.78
+06-09 14:48:15.677  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431055
+06-09 14:48:15.677  1188  1240 I libPowerHal: [perfLockRel] hdl:431055, idx:1
+06-09 14:48:15.677  1188  1240 I libPowerHal: [unsetGPUFreq] current min:0, max:0; scn_gpu_min:0, scn_gpu_max:-1; scn_gpu_min(HL):-1, scn_gpu_max(HL):-1
+06-09 14:48:15.677  1188  1240 I libPowerHal: system_server: set gpu opp level: 40
+06-09 14:48:15.677  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:15.677  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (40, 0); Hard min/max = (40, 0)
+06-09 14:48:15.677  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (40, 0)
+06-09 14:48:15.677  1188  1240 I libPowerHal: system_server: set gpu opp level: 40
+06-09 14:48:15.677  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:48:15.677  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:1000000 pr:3
+06-09 14:48:15.677  1188  1240 I libPowerHal: [PD] system_server update cmd:400100 param:1000000 pr:3
+06-09 14:48:15.677  1188  1240 I libPowerHal: [PD] system_server update cmd:400200 param:1000000 pr:3
+06-09 14:48:15.678  1188  1240 I libPowerHal: [PD] system_server update cmd:1000000 param:-1 pr:6
+06-09 14:48:15.678  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 1000000 max(-1): -1 cluster[1] min(system_server): 1000000 max(-1): -1 cluster[2] min(system_server): -1 max(MTKPOWER_HINT_HOT_LAUNCH): -1
+06-09 14:48:15.678  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431055
+06-09 14:48:15.712  1830  1964 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.mi.android.globallauncher/com.miui.home.launcher.Launcher pid=24536 activityId:266253374 state:1
+06-09 14:48:15.712  1169  1172 I MTK_APPList: [notifyAPPstate] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid=24536, activityId=266253374, uid=10158, state:RESUMED, fps:-1, win:0
+06-09 14:48:15.712  1169  1172 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:48:15.712  1169  1172 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid:24536, activityId:266253374, fps:-1, isMultiWindow:0
+06-09 14:48:15.712  1169  1172 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:48:15.712  1169  1172 I MTK_APPList: [notifyAPPstate] foreground:com.mi.android.globallauncher, pid:24536, activityId:266253374, uid:10158
+06-09 14:48:15.712  1169  1172 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:48:15.713  1830  1964 E mtkpower_client: addForegroundAPP: Add FG app failed!!!
+06-09 14:48:15.713  1169  1172 I MTK_APPList: [notifyPID] 24536
+06-09 14:48:15.714  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:48:15.905  1188  1240 I libPowerHal: [perfLockRel] hdl:431056, idx:2
+06-09 14:48:15.906  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_HOT_LAUNCH update cmd:404200 param:-1 pr:6
+06-09 14:48:15.906  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 1000000 max(-1): -1 cluster[1] min(system_server): 1000000 max(-1): -1 cluster[2] min(system_server): -1 max(-1): -1
+06-09 14:48:15.906  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431056
+06-09 14:48:15.978  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.00 dur=1998.83 max=1990.75 min=8.09
+06-09 14:48:16.305  1264  1264 I BufferQueueProducer: [com.mi.android.globallauncher/com.miui.home.launcher.Launcher#158249](this:0xb4000070530e2ee0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=115.73 dur=1002.32 max=16.84 min=7.76
+06-09 14:48:16.313  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431057
+06-09 14:48:16.313  1188  1240 I libPowerHal: [perfLockRel] hdl:431057, idx:3
+06-09 14:48:16.313  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:-1 pr:6
+06-09 14:48:16.313  1188  1240 I libPowerHal: [PD] system_server update cmd:400100 param:-1 pr:6
+06-09 14:48:16.313  1188  1240 I libPowerHal: [PD] system_server update cmd:400200 param:-1 pr:6
+06-09 14:48:16.314  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(-1): -1 max(-1): -1 cluster[1] min(-1): -1 max(-1): -1 cluster[2] min(-1): -1 max(-1): -1
+06-09 14:48:16.314  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431057
+06-09 14:48:16.327  1830  2520 I mtkpower_client: perf_lock_rel, hdl:431057, pid: 1830, tid:2520
+06-09 14:48:16.329  1188  1240 I libPowerHal: [perfLockRel] hdl:431057, idx:-1
+06-09 14:48:16.477  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=84.43 dur=1137.00 max=344.70 min=7.04
+06-09 14:48:17.038  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:48:17.053  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:48:17.995  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.50 dur=2017.51 max=2017.51 min=2017.51
+06-09 14:48:17.995  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=7.03 dur=2559.09 max=2017.54 min=8.23
+06-09 14:48:18.127  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=2.42 dur=1649.87 max=927.72 min=138.70
+06-09 14:48:18.297  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:48:18.305  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:48:19.011  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.97 dur=1015.60 max=1001.14 min=14.46
+06-09 14:48:19.033  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.93 dur=1037.98 max=1023.36 min=14.61
+06-09 14:48:19.132  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.99 dur=1005.41 max=1005.41 min=1005.41
+06-09 14:48:20.446  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431054
+06-09 14:48:20.447  1188  1240 I libPowerHal: [perfLockRel] hdl:431054, idx:-1
+06-09 14:48:22.009  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.33 dur=2998.49 max=2998.49 min=2998.49
+06-09 14:48:22.028  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.33 dur=2994.70 max=2994.70 min=2994.70
+06-09 14:48:22.124  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.33 dur=2991.52 max=2991.52 min=2991.52
+06-09 14:48:23.303  1830  2314 W NetworkPolicy: shared quota unsupported; generating rule for each iface
+06-09 14:48:26.035  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.25 dur=4007.32 max=4007.32 min=4007.32
+06-09 14:48:26.036  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.25 dur=4026.28 max=4026.28 min=4026.28
+06-09 14:48:26.126  1264  1264 I BufferQueueProducer: [com.miui.securitycenter/.FloatingWindow#157904](this:0xb400007053093320,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=2.67 dur=10490.11 max=10014.90 min=7.94

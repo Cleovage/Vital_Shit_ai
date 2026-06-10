@@ -6,9 +6,11 @@ import com.example.vitaai.data.local.RoutePointEntity
 import com.example.vitaai.data.local.VitaDao
 import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.data.local.WorkoutTemplateEntity
+import com.example.vitaai.data.local.WorkoutSessionWithSets
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.combine
 import java.time.Instant
 import java.time.ZoneId
 import javax.inject.Inject
@@ -43,34 +45,116 @@ class WorkoutRepository @Inject constructor(
 ) {
     fun observeTemplates(): Flow<List<WorkoutTemplateEntity>> = dao.observeWorkoutTemplates()
 
-    fun observeRecentSessions(limit: Int = 8): Flow<List<WorkoutSessionEntity>> = flow {
-        while (true) {
-            val now = Instant.now()
-            val thirtyDaysAgo = now.minus(java.time.Duration.ofDays(30))
-            
-            val sessions = healthConnectManager.readExerciseSessions(thirtyDaysAgo, now)
-                .sortedByDescending { it.startTime }
-                .take(limit)
-                .map { record ->
-                    WorkoutSessionEntity(
-                        id = 0L, 
-                        templateId = "",
-                        title = record.title ?: "Workout",
-                        category = "HC",
-                        startTimeMillis = record.startTime.toEpochMilli(),
-                        endTimeMillis = record.endTime.toEpochMilli(),
-                        durationSeconds = java.time.Duration.between(record.startTime, record.endTime).seconds,
-                        totalSets = 0,
-                        totalReps = 0,
-                        calories = 0.0,
-                        avgHeartRate = 0.0,
-                        distanceMeters = 0.0,
-                        notes = record.notes ?: "",
-                        completed = true
-                    )
+    fun observeExerciseSets(sessionId: Long): Flow<List<com.example.vitaai.data.local.ExerciseSetEntity>> = dao.observeExerciseSets(sessionId)
+
+    fun observeRoutePoints(sessionId: Long): Flow<List<com.example.vitaai.data.local.RoutePointEntity>> = dao.observeRoutePoints(sessionId)
+
+    fun observeRecentSessionsWithSets(limit: Int = 8): Flow<List<WorkoutSessionWithSets>> {
+        return dao.observeRecentWorkoutSessionsWithSets(limit).combine(flow {
+            while (true) {
+                try {
+                    if (healthConnectManager.hasAllPermissions()) {
+                        val now = Instant.now()
+                        val thirtyDaysAgo = now.minus(java.time.Duration.ofDays(30))
+                        
+                        val sessions = healthConnectManager.readExerciseSessions(thirtyDaysAgo, now)
+                            .sortedByDescending { it.startTime }
+                            .take(limit)
+                            .map { record ->
+                                WorkoutSessionWithSets(
+                                    session = WorkoutSessionEntity(
+                                        id = 0L, 
+                                        templateId = "",
+                                        title = record.title ?: "Workout",
+                                        category = "HC",
+                                        startTimeMillis = record.startTime.toEpochMilli(),
+                                        endTimeMillis = record.endTime.toEpochMilli(),
+                                        durationSeconds = java.time.Duration.between(record.startTime, record.endTime).seconds,
+                                        totalSets = 0,
+                                        totalReps = 0,
+                                        calories = 0.0,
+                                        avgHeartRate = 0.0,
+                                        distanceMeters = 0.0,
+                                        notes = record.notes ?: "",
+                                        completed = true
+                                    ),
+                                    sets = emptyList()
+                                )
+                            }
+                        emit(sessions)
+                    } else {
+                        emit(emptyList<WorkoutSessionWithSets>())
+                    }
+                } catch (t: Throwable) {
+                    android.util.Log.e("WorkoutRepository", "Failed to query HC sessions", t)
+                    emit(emptyList<WorkoutSessionWithSets>())
                 }
-            emit(sessions)
-            delay(30000)
+                delay(20000)
+            }
+        }) { localSessions, hcSessions ->
+            val merged = localSessions.toMutableList()
+            for (hc in hcSessions) {
+                val alreadyExists = localSessions.any { local ->
+                    Math.abs(local.session.startTimeMillis - hc.session.startTimeMillis) < 60000
+                }
+                if (!alreadyExists) {
+                    merged.add(hc)
+                }
+            }
+            merged.sortedByDescending { it.session.startTimeMillis }.take(limit)
+        }
+    }
+
+    fun observeRecentSessions(limit: Int = 8): Flow<List<WorkoutSessionEntity>> {
+        return dao.observeRecentWorkoutSessions(limit).combine(flow {
+            while (true) {
+                try {
+                    if (healthConnectManager.hasAllPermissions()) {
+                        val now = Instant.now()
+                        val thirtyDaysAgo = now.minus(java.time.Duration.ofDays(30))
+                        
+                        val sessions = healthConnectManager.readExerciseSessions(thirtyDaysAgo, now)
+                            .sortedByDescending { it.startTime }
+                            .take(limit)
+                            .map { record ->
+                                WorkoutSessionEntity(
+                                    id = 0L, 
+                                    templateId = "",
+                                    title = record.title ?: "Workout",
+                                    category = "HC",
+                                    startTimeMillis = record.startTime.toEpochMilli(),
+                                    endTimeMillis = record.endTime.toEpochMilli(),
+                                    durationSeconds = java.time.Duration.between(record.startTime, record.endTime).seconds,
+                                    totalSets = 0,
+                                    totalReps = 0,
+                                    calories = 0.0,
+                                    avgHeartRate = 0.0,
+                                    distanceMeters = 0.0,
+                                    notes = record.notes ?: "",
+                                    completed = true
+                                )
+                            }
+                        emit(sessions)
+                    } else {
+                        emit(emptyList<WorkoutSessionEntity>())
+                    }
+                } catch (t: Throwable) {
+                    android.util.Log.e("WorkoutRepository", "Failed to query HC sessions", t)
+                    emit(emptyList<WorkoutSessionEntity>())
+                }
+                delay(20000)
+            }
+        }) { localSessions, hcSessions ->
+            val merged = localSessions.toMutableList()
+            for (hc in hcSessions) {
+                val alreadyExists = localSessions.any { local ->
+                    Math.abs(local.startTimeMillis - hc.startTimeMillis) < 60000
+                }
+                if (!alreadyExists) {
+                    merged.add(hc)
+                }
+            }
+            merged.sortedByDescending { it.startTimeMillis }.take(limit)
         }
     }
 
@@ -79,9 +163,26 @@ class WorkoutRepository @Inject constructor(
         return dao.getWorkoutTemplate(id)
     }
 
+    suspend fun saveTemplate(template: WorkoutTemplateEntity) {
+        dao.insertWorkoutTemplates(listOf(template))
+    }
+
     suspend fun seedDefaultTemplatesIfNeeded() {
-        if (dao.templateCount() > 0) return
-        dao.insertWorkoutTemplates(defaultTemplates())
+        val count = dao.templateCount()
+        if (count == 0) {
+            dao.insertWorkoutTemplates(defaultTemplates())
+        } else {
+            if (dao.getWorkoutTemplate("adaptive_strength") == null) {
+                dao.insertWorkoutTemplates(listOf(
+                    WorkoutTemplateEntity("adaptive_strength", "Adaptive Strength", "Strength", androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING, TRACKING_STRENGTH, false, 90, "AI-adjusted strength protocol targeted for current fatigue profile.", "sets")
+                ))
+            }
+            if (dao.getWorkoutTemplate("mobility_recovery") == null) {
+                dao.insertWorkoutTemplates(listOf(
+                    WorkoutTemplateEntity("mobility_recovery", "Recovery Mobility", "Mobility", androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_YOGA, TRACKING_MOBILITY, false, 0, "Guided mobility routine emphasizing breathing, hips, and shoulders.", "time")
+                ))
+            }
+        }
     }
 
     suspend fun saveWorkoutSession(
@@ -188,7 +289,13 @@ class WorkoutRepository @Inject constructor(
             template("swimming_pool", "Swimming Pool", "Swimming", ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL, TRACKING_CARDIO, false, 0, "Pool swim timer without GPS.", "time"),
             template("swimming_open", "Open-water Swim", "Swimming", ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_OPEN_WATER, TRACKING_CARDIO, true, 0, "Open-water swim with GPS route when permission is granted.", "distance"),
             template("yoga", "Yoga", "Mobility", ExerciseSessionRecord.EXERCISE_TYPE_YOGA, TRACKING_MOBILITY, false, 0, "Timer, HR, breath pacing, and session notes.", "time"),
-            template("hiit", "HIIT", "HIIT", ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING, TRACKING_BODYWEIGHT, false, 30, "Fast intervals with rep taps and rest prompts.", "rounds")
+            template("hiit", "HIIT", "HIIT", ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING, TRACKING_BODYWEIGHT, false, 30, "Fast intervals with rep taps and rest prompts.", "rounds"),
+            template("kettlebell_flow", "Kettlebell Flow", "Strength", ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING, TRACKING_STRENGTH, false, 90, "Dynamic kettlebell circuits combining strength and coordination.", "sets"),
+            template("pilates_core", "Pilates Core", "Mobility", ExerciseSessionRecord.EXERCISE_TYPE_PILATES, TRACKING_MOBILITY, false, 45, "Mat-based core stability and structural alignment drills.", "time"),
+            template("swim_interval", "Swim Intervals", "Swimming", ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL, TRACKING_CARDIO, false, 60, "Pool laps with timed interval rests and target pacing.", "time"),
+            template("tabata_protocol", "Tabata Protocol", "HIIT", ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING, TRACKING_BODYWEIGHT, false, 10, "Ultra-short recovery intervals: 20s effort, 10s rest.", "rounds"),
+            template("adaptive_strength", "Adaptive Strength", "Strength", ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING, TRACKING_STRENGTH, false, 90, "AI-adjusted strength protocol targeted for current fatigue profile.", "sets"),
+            template("mobility_recovery", "Recovery Mobility", "Mobility", ExerciseSessionRecord.EXERCISE_TYPE_YOGA, TRACKING_MOBILITY, false, 0, "Guided mobility routine emphasizing breathing, hips, and shoulders.", "time")
         )
     }
 
@@ -206,4 +313,6 @@ class WorkoutRepository @Inject constructor(
         val start = Instant.now().atZone(zone).toLocalDate().atStartOfDay(zone).toInstant()
         return start.toEpochMilli() to Instant.now().toEpochMilli()
     }
+
+    suspend fun getUserWeight(): Double? = healthConnectManager.readLatestWeight()
 }

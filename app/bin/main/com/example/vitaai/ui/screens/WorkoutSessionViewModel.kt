@@ -3,6 +3,7 @@ package com.example.vitaai.ui.screens
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.vitaai.data.CalorieCalculator
 import com.example.vitaai.data.RoutePointDraft
 import com.example.vitaai.data.TRACKING_CARDIO
 import com.example.vitaai.data.WorkoutRepository
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.Instant
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -30,9 +32,12 @@ data class WorkoutSessionUiState(
     val liveHeartRate: Int = 0,
     val distanceMeters: Double = 0.0,
     val routePointCount: Int = 0,
+    val calories: Double = 0.0,
     val saving: Boolean = false,
     val savedSessionId: Long? = null,
-    val error: String? = null
+    val error: String? = null,
+    val currentWeightKg: Double = 20.0,
+    val currentPace: String = "--"
 )
 
 @HiltViewModel
@@ -53,9 +58,11 @@ class WorkoutSessionViewModel @Inject constructor(
     private val route = mutableListOf<RoutePointDraft>()
     private val sets = mutableListOf<WorkoutSetDraft>()
     private val heartRates = mutableListOf<Int>()
+    private var userWeightKg: Double = 75.0
 
     init {
         viewModelScope.launch {
+            userWeightKg = workoutRepository.getUserWeight() ?: 75.0
             val template = workoutRepository.getTemplate(templateId)
             _uiState.value = _uiState.value.copy(template = template, error = if (template == null) "Workout not found" else null)
         }
@@ -72,18 +79,58 @@ class WorkoutSessionViewModel @Inject constructor(
 
     fun pause() {
         _uiState.value = _uiState.value.copy(running = false)
+        timerJob?.cancel()
+        locationJob?.cancel()
     }
 
     fun addRep() {
         val nextReps = _uiState.value.currentReps + 1
+        val nextTotalReps = _uiState.value.totalReps + 1
+        val template = _uiState.value.template
+        val nextCalories = if (template != null) {
+            if (template.trackingMode == TRACKING_CARDIO) {
+                CalorieCalculator.estimateCardioCalories(
+                    templateId = templateId,
+                    durationSeconds = _uiState.value.elapsedSeconds,
+                    distanceMeters = _uiState.value.distanceMeters,
+                    weightKg = userWeightKg
+                )
+            } else {
+                CalorieCalculator.estimateStrengthCalories(
+                    templateId = templateId,
+                    durationSeconds = _uiState.value.elapsedSeconds,
+                    completedSets = _uiState.value.completedSets,
+                    totalReps = nextTotalReps,
+                    weightKg = userWeightKg
+                )
+            }
+        } else 0.0
+
         _uiState.value = _uiState.value.copy(
             currentReps = nextReps,
-            totalReps = _uiState.value.totalReps + 1
+            totalReps = nextTotalReps,
+            calories = nextCalories
         )
     }
 
-    fun completeSet(weightKg: Double = 0.0) {
+    fun setWeight(weight: Double) {
+        _uiState.value = _uiState.value.copy(currentWeightKg = weight.coerceAtLeast(0.0))
+    }
+    
+    fun adjustWeight(delta: Double) {
+        val next = _uiState.value.currentWeightKg + delta
+        _uiState.value = _uiState.value.copy(currentWeightKg = next.coerceAtLeast(0.0))
+    }
+
+    fun adjustReps(delta: Int) {
+        val nextReps = (_uiState.value.currentReps + delta).coerceAtLeast(0)
+        val nextTotalReps = (_uiState.value.totalReps + delta).coerceAtLeast(0)
+        _uiState.value = _uiState.value.copy(currentReps = nextReps, totalReps = nextTotalReps)
+    }
+
+    fun completeSet() {
         val template = _uiState.value.template ?: return
+        val weightKg = _uiState.value.currentWeightKg
         val reps = _uiState.value.currentReps.coerceAtLeast(if (template.trackingMode == TRACKING_CARDIO) 0 else 1)
         val setNumber = sets.size + 1
         sets += WorkoutSetDraft(
@@ -93,9 +140,26 @@ class WorkoutSessionViewModel @Inject constructor(
             weightKg = weightKg,
             durationSeconds = _uiState.value.elapsedSeconds
         )
+        val nextCalories = if (template.trackingMode == TRACKING_CARDIO) {
+            CalorieCalculator.estimateCardioCalories(
+                templateId = templateId,
+                durationSeconds = _uiState.value.elapsedSeconds,
+                distanceMeters = _uiState.value.distanceMeters,
+                weightKg = userWeightKg
+            )
+        } else {
+            CalorieCalculator.estimateStrengthCalories(
+                templateId = templateId,
+                durationSeconds = _uiState.value.elapsedSeconds,
+                completedSets = setNumber,
+                totalReps = _uiState.value.totalReps,
+                weightKg = userWeightKg
+            )
+        }
         _uiState.value = _uiState.value.copy(
             currentReps = 0,
-            completedSets = setNumber
+            completedSets = setNumber,
+            calories = nextCalories
         )
         startRest(template.defaultRestSeconds)
     }
@@ -130,13 +194,34 @@ class WorkoutSessionViewModel @Inject constructor(
         }
     }
 
+    private fun calculatePace(seconds: Long, distanceMeters: Double): String {
+        if (distanceMeters <= 0.0 || seconds <= 0) return "--"
+        val distKm = distanceMeters / 1000.0
+        val paceSecs = (seconds / distKm).roundToInt()
+        val mins = paceSecs / 60
+        val secs = paceSecs % 60
+        return String.format(Locale.US, "%02d:%02d/KM", mins, secs)
+    }
+
     private fun startTimer() {
         if (timerJob?.isActive == true) return
         timerJob = viewModelScope.launch {
             while (true) {
                 delay(1000)
                 if (_uiState.value.running) {
-                    _uiState.value = _uiState.value.copy(elapsedSeconds = _uiState.value.elapsedSeconds + 1)
+                    val nextElapsed = _uiState.value.elapsedSeconds + 1
+                    val template = _uiState.value.template
+                    val avgHr = if (heartRates.isEmpty()) 0.0 else heartRates.average()
+                    val nextCalories = if (template != null) {
+                        estimateCalories(template.trackingMode, nextElapsed, avgHr)
+                    } else 0.0
+                    val pace = calculatePace(nextElapsed, _uiState.value.distanceMeters)
+                    
+                    _uiState.value = _uiState.value.copy(
+                        elapsedSeconds = nextElapsed,
+                        calories = nextCalories,
+                        currentPace = pace
+                    )
                 }
             }
         }
@@ -158,9 +243,12 @@ class WorkoutSessionViewModel @Inject constructor(
                     accuracyMeters = location.accuracy,
                     timestampMillis = location.time
                 )
+                val dist = distanceMeters(route)
+                val pace = calculatePace(_uiState.value.elapsedSeconds, dist)
                 _uiState.value = _uiState.value.copy(
                     routePointCount = route.size,
-                    distanceMeters = distanceMeters(route)
+                    distanceMeters = dist,
+                    currentPace = pace
                 )
             }
         }
@@ -185,13 +273,22 @@ class WorkoutSessionViewModel @Inject constructor(
     }
 
     private fun estimateCalories(mode: String, seconds: Long, avgHr: Double): Double {
-        val minutes = seconds / 60.0
-        val base = when (mode) {
-            TRACKING_CARDIO -> 8.0
-            else -> 5.5
+        return if (mode == TRACKING_CARDIO) {
+            CalorieCalculator.estimateCardioCalories(
+                templateId = templateId,
+                durationSeconds = seconds,
+                distanceMeters = _uiState.value.distanceMeters,
+                weightKg = userWeightKg
+            )
+        } else {
+            CalorieCalculator.estimateStrengthCalories(
+                templateId = templateId,
+                durationSeconds = seconds,
+                completedSets = _uiState.value.completedSets,
+                totalReps = _uiState.value.totalReps,
+                weightKg = userWeightKg
+            )
         }
-        val heartBoost = if (avgHr > 110) 1.15 else 1.0
-        return minutes * base * heartBoost
     }
 
     private fun distanceMeters(points: List<RoutePointDraft>): Double {

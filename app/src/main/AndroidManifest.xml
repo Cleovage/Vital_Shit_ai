@@ -72,6 +72,10 @@
             android:name=".notifications.BedtimeReceiver"
             android:exported="false" />
 
+        <receiver
+            android:name=".notifications.WakeUpReceiver"
+            android:exported="false" />
+
         <activity-alias
             android:name="ViewPermissionUsageActivity"
             android:exported="true"

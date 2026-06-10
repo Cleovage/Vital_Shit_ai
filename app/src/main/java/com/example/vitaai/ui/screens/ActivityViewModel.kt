@@ -29,7 +29,8 @@ data class ActivityHealthData(
     val stepGoal: Long = 10_000L,
     val exerciseTrend: List<Float> = emptyList(),
     val caloriesTrend: List<Float> = emptyList(),
-    val proteinTrend: List<Float> = emptyList()
+    val proteinTrend: List<Float> = emptyList(),
+    val activeCaloriesTrend: List<Float> = emptyList()
 )
 
 @HiltViewModel
@@ -45,7 +46,8 @@ class ActivityViewModel @Inject constructor(
     private data class TrendData(
         val exercise: List<Float> = emptyList(),
         val calories: List<Float> = emptyList(),
-        val protein: List<Float> = emptyList()
+        val protein: List<Float> = emptyList(),
+        val activeCalories: List<Float> = emptyList()
     )
 
     private val _trends = MutableStateFlow(TrendData())
@@ -62,7 +64,8 @@ class ActivityViewModel @Inject constructor(
             stepGoal = goals.stepGoal,
             exerciseTrend = trends.exercise,
             caloriesTrend = trends.calories,
-            proteinTrend = trends.protein
+            proteinTrend = trends.protein,
+            activeCaloriesTrend = trends.activeCalories
         )
     }.stateIn(
         scope = viewModelScope,
@@ -87,6 +90,9 @@ class ActivityViewModel @Inject constructor(
                     ),
                     protein = HealthMetrics.trendValues(
                         vitaRepository.getMetricTrend(HealthMetricType.PROTEIN, days = 7)
+                    ),
+                    activeCalories = HealthMetrics.trendValues(
+                        vitaRepository.getMetricTrend(HealthMetricType.ACTIVE_CALORIES, days = 7)
                     )
                 )
             }

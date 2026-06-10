@@ -1,0 +1,953 @@
+﻿--------- beginning of main
+06-09 14:52:57.624  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.66 dur=3029.56 max=3013.48 min=16.07
+06-09 14:52:57.625  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.66 dur=3030.11 max=3014.20 min=15.91
+06-09 14:52:57.743  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.50 dur=4026.56 max=3028.14 min=998.42
+--------- beginning of system
+06-09 14:52:58.474  1830  2314 W NetworkPolicy: shared quota unsupported; generating rule for each iface
+06-09 14:52:58.624  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=2.00 dur=1000.49 max=993.41 min=7.09
+06-09 14:52:58.747  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=1.00 dur=1003.78 max=1003.78 min=1003.78
+06-09 14:53:00.024  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.25 dur=2398.87 max=1406.37 min=10.37
+06-09 14:53:00.036  1264  1264 I BufferQueueProducer: [com.mi.android.globallauncher/com.miui.home.launcher.Launcher#158249](this:0xb4000070530e2ee0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.02 dur=60005.95 max=60005.95 min=60005.95
+06-09 14:53:00.036  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.71 dur=1411.73 max=1411.73 min=1411.73
+06-09 14:53:00.142  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.72 dur=1395.06 max=1395.06 min=1395.06
+06-09 14:53:02.614  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.39 dur=2577.40 max=2577.40 min=2577.40
+06-09 14:53:02.614  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.39 dur=2590.34 max=2590.34 min=2590.34
+06-09 14:53:02.735  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.39 dur=2593.22 max=2593.22 min=2593.22
+06-09 14:53:04.931  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.86 dur=2317.48 max=2300.91 min=16.57
+06-09 14:53:04.932  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.86 dur=2318.24 max=2301.38 min=16.86
+06-09 14:53:05.051  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.43 dur=2316.37 max=2316.37 min=2316.37
+06-09 14:53:06.627  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.18 dur=1695.90 max=932.75 min=763.15
+06-09 14:53:06.645  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.17 dur=1713.25 max=934.82 min=778.43
+06-09 14:53:06.742  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=1.18 dur=1690.69 max=919.61 min=771.08
+06-09 14:53:07.439  1830  2520 I mtkpower_client: perf_lock_acq, hdl:431057, dur:1000, num:6, pid:1830, tid:2520
+06-09 14:53:07.441  1830  2520 I mtkpower_client: ret_hdl:431066
+06-09 14:53:07.441  1188  1240 I libPowerHal: [perfLockAcq] idx:0 hdl:431066 hint:-1 pid:1830 tid:2520 duration:1000 lock_user:system_server => ret_hdl:431066
+06-09 14:53:07.441  1188  1240 I libPowerHal: [PE] system_server update cmd:400000 param:1000000 pr:3
+06-09 14:53:07.441  1188  1240 I libPowerHal: [PE] system_server update cmd:400100 param:1000000 pr:3
+06-09 14:53:07.441  1188  1240 I libPowerHal: [PE] system_server update cmd:400200 param:1000000 pr:3
+06-09 14:53:07.441  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 1000000 max(-1): -1 cluster[1] min(system_server): 1000000 max(-1): -1 cluster[2] min(system_server): -1 max(-1): -1
+06-09 14:53:07.441  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431066
+06-09 14:53:07.712  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.94 dur=1067.03 max=1067.03 min=1067.03
+06-09 14:53:07.712  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.92 dur=1084.94 max=1084.94 min=1084.94
+06-09 14:53:07.749  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=36.75 dur=1006.91 max=707.60 min=4.80
+06-09 14:53:07.810  1830  2520 I mtkpower_client: perf_lock_rel, hdl:431066, pid: 1830, tid:2520
+06-09 14:53:07.811  1188  1240 I libPowerHal: [perfLockRel] hdl:431066, idx:0
+06-09 14:53:07.812  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:-1 pr:6
+06-09 14:53:07.812  1188  1240 I libPowerHal: [PD] system_server update cmd:400100 param:-1 pr:6
+06-09 14:53:07.812  1188  1240 I libPowerHal: [PD] system_server update cmd:400200 param:-1 pr:6
+06-09 14:53:07.812  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(-1): -1 max(-1): -1 cluster[1] min(-1): -1 max(-1): -1 cluster[2] min(-1): -1 max(-1): -1
+06-09 14:53:07.812  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431066
+06-09 14:53:07.839  1830  2039 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.mi.android.globallauncher/com.miui.home.launcher.Launcher pid=24536 activityId:266253374 state:0
+06-09 14:53:07.840  1169  1172 I MTK_APPList: [notifyAPPstate] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid=24536, activityId=266253374, uid=10158, state:PAUSED, fps:-1, win:0
+06-09 14:53:07.840  1169  1172 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 0
+06-09 14:53:07.840  1169  1172 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:53:07.840  1169  1172 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:53:07.841  1169  1172 I MTK_APPList: [notifyPID] 24536
+06-09 14:53:07.842  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:53:07.861  1830  2215 W SurfaceControl: Invalid layer stack -1
+06-09 14:53:07.866  1830  1964 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.mi.android.globallauncher/com.miui.home.launcher.Launcher pid=24536 activityId:266253374 state:0
+06-09 14:53:07.866  1169  1173 I MTK_APPList: [notifyAPPstate] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid=24536, activityId=266253374, uid=10158, state:PAUSED, fps:-1, win:0
+06-09 14:53:07.866  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 0
+06-09 14:53:07.866  1169  1173 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:53:07.866  1169  1173 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:53:07.867  1169  1173 I MTK_APPList: [notifyPID] 24536
+06-09 14:53:07.868  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:53:07.868  1830  2351 D AudioSystem: +setParameters(): screen_state=off 
+06-09 14:53:07.871  1251  1396 D AudioFlingerImpl: setGameParameters keyvalue: screen_state=off
+06-09 14:53:07.871  1251  1396 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): screen_state=off
+06-09 14:53:07.879  1118 14787 D AudioALSAHardware: +setParameters(): screen_state=off
+06-09 14:53:07.879  1118 14787 D AudioALSAHardware: -setParameters(): screen_state=off
+06-09 14:53:07.880  1251  1396 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): screen_state=off
+06-09 14:53:07.880  1251  1396 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): screen_state=off
+06-09 14:53:07.880  1251  1396 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): screen_state=off
+06-09 14:53:07.880  1251  1396 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): screen_state=off
+06-09 14:53:07.880  1251  1396 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): screen_state=off
+06-09 14:53:08.066  1830  2593 I SurfaceControl: Excessive delay in setPowerMode(), delay=212ms
+06-09 14:53:08.067  1188  1201 I mtkpower@impl: [setMode] type:9, enabled:1
+06-09 14:53:08.068  1188  1201 I mtkpower@impl: [setMode] Mode::DISPLAY_INACTIVE: 1
+06-09 14:53:08.069  1264  1264 I BufferQueueProducer: [com.mi.android.globallauncher/com.miui.home.launcher.Launcher#158249](this:0xb4000070530e2ee0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.12 dur=8033.54 max=8033.54 min=8033.54
+06-09 14:53:08.070  1188  1201 I mtkpower@impl: [setMode] type:7, enabled:0
+06-09 14:53:08.073  1188  1240 I libPowerHal: [perfUserScnDisableAll] 
+06-09 14:53:08.073  1188  1240 I libPowerHal: [setInteractive] enable: 0
+06-09 14:53:08.073  1188  1201 I mtkpower@impl: [setMode] Disable All
+06-09 14:53:08.195  1525  1550 I misight : OnEvent EventPrivacyCompliance event=923120001
+06-09 14:53:08.203  1525  1550 D misight : ProcessEvent eventId=923120001 not found in config
+06-09 14:53:08.203  1525  1550 I misight : OnEvent event 923120001 param compliance process failed
+06-09 14:53:08.483  2939  2939 I SurfaceControl: setLayerWithAOD to screenFade-container#128 by tc=12622913617728, isShow?true
+06-09 14:53:08.645  1264  1264 I BufferQueueProducer: [Wallpaper BBQ wrapper#20547](this:0xb400007052ddf370,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.05 dur=1369215.57 max=1368446.51 min=5.17
+06-09 14:53:08.703  1188  1201 I mtkpower@impl: [setMode] type:9, enabled:1
+06-09 14:53:08.704  1188  1201 I mtkpower@impl: [setMode] Mode::DISPLAY_INACTIVE: 1
+06-09 14:53:08.715  1830  2351 D AudioSystem: +setParameters(): screen_state=off 
+06-09 14:53:08.716  1251  2463 D AudioFlingerImpl: setGameParameters keyvalue: screen_state=off
+06-09 14:53:08.716  1251  2463 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): screen_state=off
+06-09 14:53:08.717  1118 14787 D AudioALSAHardware: +setParameters(): screen_state=off
+06-09 14:53:08.717  1118 14787 D AudioALSAHardware: -setParameters(): screen_state=off
+06-09 14:53:08.717  1251  2463 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): screen_state=off
+06-09 14:53:08.717  1251  2463 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): screen_state=off
+06-09 14:53:08.717  1251  2463 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): screen_state=off
+06-09 14:53:08.718  1251  2463 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): screen_state=off
+06-09 14:53:08.718  1251  2463 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): screen_state=off
+06-09 14:53:08.876  1830  2593 I SurfaceControl: Excessive delay in setPowerMode(), delay=173ms
+06-09 14:53:08.879  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.71 dur=1166.50 max=809.02 min=357.48
+06-09 14:53:08.879  1264  1264 I BufferQueueProducer: [gxzw_anim#158261](this:0xb4000070530f6dd0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.42 dur=1408.78 max=1383.86 min=24.92
+06-09 14:53:08.879  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.71 dur=1167.06 max=809.36 min=357.69
+06-09 14:53:08.886  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=7.91 dur=1137.13 max=1064.10 min=7.52
+06-09 14:53:09.257  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.257  1251  2463 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.257  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.258  1251  2463 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.258  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.258  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.258  1251  2463 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.259  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.259  1251  2463 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.259  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.259  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.259  1251  2463 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.259  1251  2463 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.259  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.259  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.260  1251  2474 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.260  1251  2406 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.260  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.260  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.260  1251  2406 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.260  1251  2474 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.260  1251  2406 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.260  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.260  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.260  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.261  1251  1395 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.261  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.261  1251  2464 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.261  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.261  1251  1395 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.261  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.261  1251  2463 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.261  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.261  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.261  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.262  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.262  1251  2463 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.262  1251  2421 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.262  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.262  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.262  1251  2463 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.262  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.262  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.262  1251  2441 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.263  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.263  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.263  1251  2441 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.263  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.263  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.263  1251  2441 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.263  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.263  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.263  1251  2447 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.263  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.264  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.264  1251  2447 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.264  1251  1435 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.264  1251  2463 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.264  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.264  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.264  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.264  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.264  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.264  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.265  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.265  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.265  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.265  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.265  1251  1435 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.265  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.265  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.265  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.266  1251  2447 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.266  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.266  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.267  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.267  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.267  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.267  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.268  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:09.435  1264  1264 I BufferQueueProducer: [NotificationShade#158266](this:0xb4000070530f4040,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=62.56 dur=1007.11 max=451.14 min=7.97
+06-09 14:53:09.691  1188  1201 I mtkpower@impl: [setMode] type:5, enabled:1
+06-09 14:53:09.719  1188  1240 I libPowerHal: [perfLockAcq] idx:0 hdl:431067 hint:21 pid:1188 tid:1188 duration:10000 lock_user:vendor.mediatek => ret_hdl:431067
+06-09 14:53:09.721  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PROCESS_CREATE update cmd:1408300, param:100, pr:3
+06-09 14:53:09.721  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PROCESS_CREATE update cmd:300c000, param:15, pr:3
+06-09 14:53:09.721  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PROCESS_CREATE update cmd:808000 param:1 pr:3
+06-09 14:53:09.721  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PROCESS_CREATE update cmd:1468000 param:0 pr:3
+06-09 14:53:09.721  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431067
+06-09 14:53:09.722  1188  1240 I libPowerHal: [perfLockRel] hdl:431054, idx:-1
+06-09 14:53:10.074  1188  1201 I mtkpower@impl: [setMode] type:5, enabled:0
+06-09 14:53:10.087  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=83.28 dur=1200.77 max=359.05 min=7.02
+06-09 14:53:10.170  1600  1816 I mtkpower_client: perf_lock_acq, hdl:0, dur:500, num:16, pid:1600, tid:1816
+06-09 14:53:10.171  1407  1407 I mtkpower_client: perf_lock_acq, hdl:0, dur:50, num:2, pid:1407, tid:1407
+06-09 14:53:10.171  1600  1816 I mtkpower_client: ret_hdl:431068
+06-09 14:53:10.171  1600  1816 I mtkpower_client: perf_lock_acq, hdl:0, dur:300, num:12, pid:1600, tid:1816
+06-09 14:53:10.172  1600  1816 I mtkpower_client: ret_hdl:431069
+06-09 14:53:10.175  1188  1240 I libPowerHal: cmdSetting - unknown cmd:1410000, scmd:(null) ,param_1:1
+06-09 14:53:10.175  1188  1240 I libPowerHal: [perfLockAcq] idx:1 hdl:431068 hint:-1 pid:1600 tid:1816 duration:500 lock_user:binder:1600_2 => ret_hdl:431068
+06-09 14:53:10.175  1188  1240 I libPowerHal: [setGPUFreq] binder:1600_2 user set gpu freq min:0, max:-1
+06-09 14:53:10.175  1188  1240 I libPowerHal: binder:1600_2: set gpu opp level: 0
+06-09 14:53:10.176  1188  1240 I libPowerHal: binder:1600_2: set gpu opp level max: 0
+06-09 14:53:10.176  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (0, 0); Hard min/max = (40, 0)
+06-09 14:53:10.176  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (0, 0)
+06-09 14:53:10.176  1188  1240 I libPowerHal: binder:1600_2: set gpu opp level: 0
+06-09 14:53:10.176  1188  1240 I libPowerHal: binder:1600_2: set gpu opp level max: 0
+06-09 14:53:10.177  1188  1240 I libPowerHal: [PE] binder:1600_2 update cmd:400000 param:1900000 pr:3
+06-09 14:53:10.177  1188  1240 I libPowerHal: [PE] binder:1600_2 update cmd:400100 param:2600000 pr:3
+06-09 14:53:10.177  1188  1240 I libPowerHal: [PE] binder:1600_2 update cmd:404100 param:2600000 pr:3
+06-09 14:53:10.177  1188  1240 I libPowerHal: [PE] binder:1600_2 update cmd:400200 param:2850000 pr:3
+06-09 14:53:10.177  1188  1240 I libPowerHal: [PE] binder:1600_2 update cmd:404200 param:2850000 pr:3
+06-09 14:53:10.177  1188  1240 I libPowerHal: [PE] binder:1600_2 update cmd:1000000 param:0 pr:3
+06-09 14:53:10.177  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(binder:1600_2): 1900000 max(-1): -1 cluster[1] min(binder:1600_2): 2600000 max(binder:1600_2): 2600000 cluster[2] min(binder:1600_2): 2850000 max(binder:1600_2): 2850000
+06-09 14:53:10.177  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431068
+06-09 14:53:10.177  1188  1240 I libPowerHal: cmdSetting - unknown cmd:1410000, scmd:(null) ,param_1:1
+06-09 14:53:10.177  1188  1240 I libPowerHal: [perfLockAcq] idx:2 hdl:431069 hint:-1 pid:1600 tid:1816 duration:300 lock_user:binder:1600_2 => ret_hdl:431069
+06-09 14:53:10.177  1188  1240 I libPowerHal: [setGPUFreq] binder:1600_2 user set gpu freq min:0, max:-1
+06-09 14:53:10.177  1188  1240 I libPowerHal: binder:1600_2: set gpu opp level max: 0
+06-09 14:53:10.178  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (0, 0); Hard min/max = (40, 0)
+06-09 14:53:10.178  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (0, 0)
+06-09 14:53:10.178  1188  1240 I libPowerHal: binder:1600_2: set gpu opp level: 0
+06-09 14:53:10.178  1188  1240 I libPowerHal: binder:1600_2: set gpu opp level max: 0
+06-09 14:53:10.178  1188  1240 I libPowerHal: [PE] binder:1600_2 update cmd:400000 param:2000000 pr:3
+06-09 14:53:10.178  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(binder:1600_2): 2000000 max(-1): -1 cluster[1] min(binder:1600_2): 2600000 max(binder:1600_2): 2600000 cluster[2] min(binder:1600_2): 2850000 max(binder:1600_2): 2850000
+06-09 14:53:10.178  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431069
+06-09 14:53:10.178  1407  1407 I mtkpower_client: ret_hdl:431070
+06-09 14:53:10.178  1188  1240 I libPowerHal: [perfLockAcq] idx:3 hdl:431070 hint:-1 pid:1407 tid:1407 duration:50 lock_user:touch_boost => ret_hdl:431070
+06-09 14:53:10.178  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431070
+06-09 14:53:10.188  1830  2520 I mtkpower_client: perf_lock_acq, hdl:431066, dur:1000, num:6, pid:1830, tid:2520
+06-09 14:53:10.189  1188  4593 I mtkpower@impl: [setMode] type:9, enabled:0
+06-09 14:53:10.189  1188  4593 I mtkpower@impl: [setMode] Mode::DISPLAY_INACTIVE: 0
+06-09 14:53:10.189  1830  2520 I mtkpower_client: ret_hdl:431071
+06-09 14:53:10.189  1188  1240 I libPowerHal: [perfLockAcq] idx:4 hdl:431071 hint:-1 pid:1830 tid:2520 duration:1000 lock_user:system_server => ret_hdl:431071
+06-09 14:53:10.189  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431071
+06-09 14:53:10.210  1264  1264 I BufferQueueProducer: [gxzw_anim#158261](this:0xb4000070530f6dd0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=57.10 dur=1331.09 max=674.74 min=7.96
+06-09 14:53:10.219  1407  1407 I mtkpower_client: perf_lock_rel, hdl:431070, tid:1407
+06-09 14:53:10.220  1188  1240 I libPowerHal: [perfLockRel] hdl:431070, idx:3
+06-09 14:53:10.221  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431070
+06-09 14:53:10.230  1830  2351 D AudioSystem: +setParameters(): screen_state=on 
+06-09 14:53:10.231  1251  1396 D AudioFlingerImpl: setGameParameters keyvalue: screen_state=on
+06-09 14:53:10.231  1251  1396 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): screen_state=on
+06-09 14:53:10.231  1118 14786 D AudioALSAHardware: +setParameters(): screen_state=on
+06-09 14:53:10.231  1118 14786 D AudioALSAHardware: -setParameters(): screen_state=on
+06-09 14:53:10.232  1251  1396 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): screen_state=on
+06-09 14:53:10.232  1251  1396 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): screen_state=on
+06-09 14:53:10.232  1251  1396 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): screen_state=on
+06-09 14:53:10.232  1251  1396 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): screen_state=on
+06-09 14:53:10.232  1251  1396 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): screen_state=on
+06-09 14:53:10.334  1600  1813 I mtkpower_client: perf_lock_rel, hdl:431069, tid:1813
+06-09 14:53:10.335  1188  1240 I libPowerHal: [perfLockRel] hdl:431069, idx:2
+06-09 14:53:10.335  1188  1240 I libPowerHal: [unsetGPUFreq] current min:0, max:0; scn_gpu_min:0, scn_gpu_max:-1; scn_gpu_min(HL):-1, scn_gpu_max(HL):-1
+06-09 14:53:10.335  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (0, 0); Hard min/max = (40, 0)
+06-09 14:53:10.335  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (0, 0)
+06-09 14:53:10.335  1188  1240 I libPowerHal: binder:1600_2: set gpu opp level: 0
+06-09 14:53:10.335  1188  1240 I libPowerHal: binder:1600_2: set gpu opp level max: 0
+06-09 14:53:10.335  1188  1240 I libPowerHal: [PD] binder:1600_2 update cmd:400000 param:1900000 pr:3
+06-09 14:53:10.336  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(binder:1600_2): 1900000 max(-1): -1 cluster[1] min(binder:1600_2): 2600000 max(binder:1600_2): 2600000 cluster[2] min(binder:1600_2): 2850000 max(binder:1600_2): 2850000
+06-09 14:53:10.336  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431069
+06-09 14:53:10.348  1188  4593 I mtkpower@impl: [setMode] type:5, enabled:1
+06-09 14:53:10.352  1830  3101 I mtkpower_client: perf_lock_acq, hdl:0, dur:400, num:10, pid:1830, tid:3101
+06-09 14:53:10.354  1188  1240 I libPowerHal: [perfLockAcq] idx:2 hdl:431072 hint:-1 pid:1830 tid:3101 duration:400 lock_user:system_server => ret_hdl:431072
+06-09 14:53:10.354  1188  1240 I libPowerHal: [setGPUFreq] system_server user set gpu freq min:0, max:-1
+06-09 14:53:10.354  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:53:10.354  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (0, 0); Hard min/max = (40, 0)
+06-09 14:53:10.354  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (0, 0)
+06-09 14:53:10.354  1188  1240 I libPowerHal: system_server: set gpu opp level: 0
+06-09 14:53:10.354  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:53:10.354  1188  1240 I libPowerHal: [PE] system_server update cmd:400000 param:3000000 pr:3
+06-09 14:53:10.354  1188  1240 I libPowerHal: [PE] system_server update cmd:400100 param:3000000 pr:3
+06-09 14:53:10.354  1188  1240 I libPowerHal: [PE] system_server update cmd:400200 param:3000000 pr:3
+06-09 14:53:10.354  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(system_server): -1 cluster[2] min(system_server): 3000000 max(system_server): 3000000
+06-09 14:53:10.354  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431072
+06-09 14:53:10.355  1830  3101 I mtkpower_client: ret_hdl:431072
+06-09 14:53:10.357  1188  1240 I libPowerHal: [perfLockAcq] idx:3 hdl:431073 hint:22 pid:1188 tid:1188 duration:10000 lock_user:vendor.mediatek => ret_hdl:431073
+06-09 14:53:10.357  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_PACK_SWITCH update cmd:400200 param:3350000 pr:3
+06-09 14:53:10.357  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(system_server): -1 cluster[2] min(MTKPOWER_HINT_PACK_SWITCH): 3250000 max(MTKPOWER_HINT_PACK_SWITCH): -1
+06-09 14:53:10.357  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431073
+06-09 14:53:10.363  1830  3101 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai.ui.MainActivity pid=18757 activityId:157741554 state:1
+06-09 14:53:10.364  1830  3101 E mtkpower_client: addForegroundAPP: Add FG app failed!!!
+06-09 14:53:10.364  1169  1172 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid=18757, activityId=157741554, uid=10458, state:RESUMED, fps:-1, win:0
+06-09 14:53:10.364  1169  1172 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:53:10.364  1169  1172 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid:18757, activityId:157741554, fps:-1, isMultiWindow:0
+06-09 14:53:10.364  1169  1172 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:53:10.364  1169  1172 I MTK_APPList: [notifyAPPstate] foreground:com.example.vitaai, pid:18757, activityId:157741554, uid:10458
+06-09 14:53:10.364  1169  1172 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:53:10.364  1169  1172 I MTK_APPList: [notifyPID] 18757
+06-09 14:53:10.364  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18757
+06-09 14:53:10.365  1169  1172 I MTK_APPList: [notifyAPPstate] pc:1, com.mi.android.globallauncher => com.example.vitaai
+06-09 14:53:10.392  2939  3449 I SurfaceControl: setLayerWithAOD to screenFade-container#128 by tc=12622913618253, isShow?false
+06-09 14:53:10.393  1830  2402 D AudioSystem: +setParameters(): foregroundUid=10458;bluetoothlowlatencystatus=false 
+06-09 14:53:10.393  1251  2427 D AudioFlingerImpl: setGameParameters keyvalue: bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:53:10.393  1251  2427 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:53:10.396  1118 14786 D AudioALSAHardware: +setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:53:10.396  1118 14786 D AudioALSAHardware: -setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:53:10.396  1251  2427 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:53:10.396  1251  2427 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:53:10.397  1251  2427 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:53:10.397  1251  2427 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:53:10.397  1251  2427 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10458
+06-09 14:53:10.406  1188  4593 I mtkpower@impl: [setMode] type:7, enabled:1
+06-09 14:53:10.408  1188  4593 I mtkpower@impl: [setMode] Restore All
+06-09 14:53:10.409  1188  1240 I libPowerHal: [perfUserScnRestoreAll] 
+06-09 14:53:10.409  1188  1240 I libPowerHal: [setInteractive] enable: 1
+06-09 14:53:10.420  1525  1550 I misight : OnEvent EventPrivacyCompliance event=923120001
+06-09 14:53:10.422  1525  1550 D misight : ProcessEvent eventId=923120001 not found in config
+06-09 14:53:10.422  1525  1550 I misight : OnEvent event 923120001 param compliance process failed
+06-09 14:53:10.478  1264  1264 I BufferQueueProducer: [Wallpaper BBQ wrapper#20547](this:0xb400007052ddf370,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.55 dur=1833.22 max=1833.22 min=1833.22
+06-09 14:53:10.486  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.62 dur=1606.97 max=1606.97 min=1606.97
+06-09 14:53:10.486  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.62 dur=1607.44 max=1607.44 min=1607.44
+06-09 14:53:10.501  1830  1886 D AudioSystem: +setParameters(): gamebooster=false 
+06-09 14:53:10.503  1251  1251 D AudioFlingerImpl: setGameParameters keyvalue: gamebooster=false
+06-09 14:53:10.503  1251  1251 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): gamebooster=false
+06-09 14:53:10.503  1118 14786 D AudioALSAHardware: +setParameters(): gamebooster=false
+06-09 14:53:10.503  1118 14786 D AudioALSAHardware: -setParameters(): gamebooster=false
+06-09 14:53:10.504  1251  1251 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): gamebooster=false
+06-09 14:53:10.504  1251  1251 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): gamebooster=false
+06-09 14:53:10.504  1251  1251 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): gamebooster=false
+06-09 14:53:10.504  1251  1251 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): gamebooster=false
+06-09 14:53:10.504  1251  1251 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): gamebooster=false
+06-09 14:53:10.565  2939 20705 I AudioTrackImpl: before scaleVolumeForVideo L:0.501187 R:0.501187 and the pakage is com.android.systemui
+06-09 14:53:10.566  2939 20705 D AudioTrack: AudioTrack::setVolume L:0.501187 R:0.501187 sessionid=76369
+06-09 14:53:10.566  2939 20705 I AudioTrack: start(13430): prior state:STATE_STOPPED packageName: com.android.systemui
+06-09 14:53:10.567  1251  1251 D AF::Track: setFadeIn isFadeNeeded = 0
+06-09 14:53:10.574  1251  1251 D AudioPolicyManagerCustomImpl: hifiAudio_startOutputSamplerate() +output = 29  portId = 13430 samplerate = 44100 HifiState = 1 stream 1, session 76369
+06-09 14:53:10.580  1251  1251 D AudioPolicyManagerCustomImpl: getMaxTrackSampleRate 48000
+06-09 14:53:10.581  1251  1251 D APM_AudioPolicyManager: startOutput() output 29, portId 13430, stream 1, session 76369, sample_rate 44100, format 0x1, channel_mask 0x3, appname com.android.systemui)
+06-09 14:53:10.582  1251  1251 D APM_AudioPolicyManager: setOutputDevices caller startSource[[portId:8][io:29, fast]] prevDevice {AUDIO_DEVICE_OUT_SPEAKER, @:}
+06-09 14:53:10.583  1251  1251 D APM::AudioPolicyEngine: getDevices ForStrategy() strategy 0, device 0x1 avadevice 0x1, 0x2, 0x10000, 0x100000 sfu [0]:0, [1]:0, [4]:11
+06-09 14:53:10.584  1251  1251 D APM::AudioPolicyEngine: getDevices ForStrategy() strategy 0, device 0x1 avadevice 0x1, 0x2, 0x10000, 0x100000 sfu [0]:0, [1]:0, [4]:11
+06-09 14:53:10.585  1251  1251 D APM_AudioPolicyManager: setOutputDevices caller startSource[[portId:8][io:29, fast]] changing device to {AUDIO_DEVICE_OUT_SPEAKER, @:}
+06-09 14:53:10.585  1251  1251 D APM_AudioPolicyManager: [MTK_APM_Route]setOutputDevices mIoHandle 29 : changing device 0x2 to 0x2, delayMs = 0, force = 1, skipMuteDelay = 0, skipDelayMTK = 0, caller startSource[[portId:8][io:29, fast]]
+06-09 14:53:10.589  1251  1714 D AudioFlinger_Threads: updateWakeLockUids_l AudioOut_1D uids:
+06-09 14:53:10.590  1251  1714 I AudioFlinger_Threads: mideviceType: 2
+06-09 14:53:10.604  1118 14786 D AudioALSAStreamManager: calculateOutLatencyAndFrames(), flags 0x4, latency 10, frame count 256
+06-09 14:53:10.604  1118 14786 D AudioALSAHardware: +createAudioPatch() num_sources [1] , num_sinks [1], handle [0x0], current mAudioHalPatchVector size 5
+06-09 14:53:10.604  1118 14786 D AudioALSAStreamManager: +setParameters(), IOport = 29, keyValuePairs = routing=2
+06-09 14:53:10.604  1118 14786 D AudioALSAStreamManager: setParameters(), Send to mStreamOutVector[2], flag 4
+06-09 14:53:10.604  1118 14786 D AudioALSAStreamOut: value_str = 2 devices count = 1
+06-09 14:53:10.613  1118 14786 W aurisys_controller: lib_name misoundfpsop, scene 1, no active handler!!
+06-09 14:53:10.613  1118 14786 D AudioALSAStreamOut: updatePolicyDevice(), flag: 0x4, device: 0x2
+06-09 14:53:10.614  1118 14786 D AudioALSAUltrasoundOutOfCallController: isUltrasoundStream: 109: flags is 4
+06-09 14:53:10.614  1118 14786 D AudioALSAStreamManager: getMode(), mAudioMode = 0
+06-09 14:53:10.615  1118 14786 W AudioALSAStreamManager: routingOutputDevice(), flag: 0x4, output_devices == current_output_devices(0x2), return
+06-09 14:53:10.615  1118 14786 D AudioALSAUltrasoundOutOfCallController: isUltrasoundStream: 109: flags is 4
+06-09 14:53:10.615  1118 14786 D AudioALSAHardware: -createAudioPatch() num_sources [1] , num_sinks [1], handle [0x1403]
+06-09 14:53:10.620  1251  1251 D APM_AudioPolicyManager: setOutputDevices() AF::createAudioPatch returned 0 patchHandle 31284 num_sources 1 num_sinks 1
+06-09 14:53:10.634  1251  1251 W APM::AudioPolicyEngine::ProductStrategy: getVolumeGroupForStreamType: no volume group for AUDIO_STREAM_DEFAULT, using default
+06-09 14:53:10.635  1251  1251 W APM::AudioPolicyEngine::ProductStrategy: getVolumeGroupForStreamType: no volume group for AUDIO_STREAM_DEFAULT, using default
+06-09 14:53:10.635  1251  1251 W APM::AudioPolicyEngine::ProductStrategy: getVolumeGroupForStreamType: no volume group for AUDIO_STREAM_DEFAULT, using default
+06-09 14:53:10.635  1251  1251 W APM::AudioPolicyEngine::ProductStrategy: getVolumeGroupForStreamType: no volume group for AUDIO_STREAM_DEFAULT, using default
+06-09 14:53:10.635  1251  1251 W APM::AudioPolicyEngine::ProductStrategy: getVolumeGroupForStreamType: no volume group for AUDIO_STREAM_DEFAULT, using default
+06-09 14:53:10.639  1251  1620 D AudioSystem: +setParameters(): volumeDevice=2;volumeIndex=0;volumeStreamType=1 
+06-09 14:53:10.640  1251  1620 D AudioFlinger: +thread->setParameters(): io = 13, volumeDevice=2;volumeIndex=0;volumeStreamType=1
+06-09 14:53:10.640  1251  1686 D AudioFlinger_Threads: updateWakeLockUids_l AudioOut_D uids:
+06-09 14:53:10.640  1118 14787 D AudioALSAStreamOut: +setParameters(): flag 2
+06-09 14:53:10.642  1118 14787 D AudioALSAStreamManager: setVolumeIndex() stream= 1, device= 0x2, index= 0
+06-09 14:53:10.642  1118 14787 D AudioALSAStreamManager: getCRSStatus: 4846: mCRSStatus = 0
+06-09 14:53:10.642  1118 14787 D AudioMTKGainController: updatedevpower(), set Dev_Power enable(1) total_power 539 power : 539 
+06-09 14:53:10.643  1118 14787 D AudioMTKGainController: setNormalVolume(), mSceneIndex = 0, stream 1, devices 0x2, index 0, mode 0x0, gainDevice 0x2
+06-09 14:53:10.645  1251  1620 D AudioFlinger: -thread->setParameters(): io = 13, volumeDevice=2;volumeIndex=0;volumeStreamType=1
+06-09 14:53:10.646  1251  1251 W APM::AudioPolicyEngine::ProductStrategy: getVolumeGroupForStreamType: no volume group for AUDIO_STREAM_DEFAULT, using default
+06-09 14:53:10.646  1251  1251 W APM::AudioPolicyEngine::ProductStrategy: getVolumeGroupForStreamType: no volume group for AUDIO_STREAM_DEFAULT, using default
+06-09 14:53:10.646  1251  1251 W APM::AudioPolicyEngine::ProductStrategy: getVolumeGroupForStreamType: no volume group for AUDIO_STREAM_DEFAULT, using default
+06-09 14:53:10.646  1251  1251 W APM::AudioPolicyEngine::ProductStrategy: getVolumeGroupForStreamType: no volume group for AUDIO_STREAM_DEFAULT, using default
+06-09 14:53:10.646  1251  1251 W APM::AudioPolicyEngine::ProductStrategy: getVolumeGroupForStreamType: no volume group for AUDIO_STREAM_DEFAULT, using default
+06-09 14:53:10.653  1251  1620 D AudioSystem: +setParameters(): volume_change=0;flags=4 
+06-09 14:53:10.653  1251  1620 D AudioFlingerImpl: setGameParameters keyvalue: flags=4;volume_change=0
+06-09 14:53:10.653  1251  1620 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): flags=4;volume_change=0
+06-09 14:53:10.654  1118 14787 D AudioALSAHardware: +setParameters(): flags=4;volume_change=0
+06-09 14:53:10.654  1118 14787 D AudioALSAHardware: -setParameters(): flags=4;volume_change=0
+06-09 14:53:10.654  1251  1620 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): flags=4;volume_change=0
+06-09 14:53:10.654  1251  1620 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): flags=4;volume_change=0
+06-09 14:53:10.655  1251  1620 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): flags=4;volume_change=0
+06-09 14:53:10.655  1251  1620 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): flags=4;volume_change=0
+06-09 14:53:10.656  1251  1620 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): flags=4;volume_change=0
+06-09 14:53:10.657  1548  1548 I mtkpower_client: perf_lock_acq, hdl:0, dur:0, num:2, pid:1548, tid:1548
+06-09 14:53:10.658  1251  1251 D AudioFlinger_Threads: addTrack_l() mActiveSRCTrackIdVector.size() = 0, before mActiveSRCTrackIdVector.push_back(10822)
+06-09 14:53:10.658  1188  1240 I libPowerHal: [perfLockAcq] idx:5 hdl:431074 hint:-1 pid:1548 tid:1548 duration:0 lock_user:camerahalserver => ret_hdl:431074
+06-09 14:53:10.658  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:240c000, param:100, pr:3
+06-09 14:53:10.658  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431074
+06-09 14:53:10.659  1548  1548 I mtkpower_client: ret_hdl:431074
+06-09 14:53:10.660  1251  2425 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.660  1251  1714 D AudioFlinger_Threads: updateWakeLockUids_l AudioOut_1D uids:1000 
+06-09 14:53:10.660  1251  2447 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.660  1251  2427 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.660  1251  1714 D AudioFlinger_Threads: 0xb40000773d213520: threadLoop_write write data to hw, mixerStatus 2, muted count 124
+06-09 14:53:10.665  1118  1712 D AudioALSAStreamOut: write(), flag 0x4, usePolicyDevice/standbyByHifi: 1/0, output_devices: 0x2 -> latest policyDevice 0x2 (ori policyDevice 0x2)
+06-09 14:53:10.665  1118  1712 D AudioALSAStreamManager: +syncSharedOutDevice(), originDevice/routingSharedOutDevice: 0x2/0x2, mAudioMode: 0
+06-09 14:53:10.665  1118  1712 D AudioMTKGainController: setNormalVolume(), mSceneIndex = 0, stream 1, devices 0x2, index 0, mode 0x0, gainDevice 0x2
+06-09 14:53:10.665  1118  1712 D AudioALSAStreamOut: open(), flags 4
+06-09 14:53:10.665  1118  1712 D AudioALSAStreamManager: +createPlaybackHandler(), mAudioMode = 0, output_devices = 0x2, isMixerOut = 0, isBypassAurisys = 0, flag = 4, isIEMsSource = 0, isIEMsOn = 0
+06-09 14:53:10.665  1118  1712 D AudioALSAStreamManager: needEnableVoip(), output_devices = 0x2, flags: 0x4, mAvailableOutputFlags: 0x7803f, enable: 0
+06-09 14:53:10.666  1118  1712 D AudioSpeechEnhanceInfo: IsAPDMNRTuningEnable(), 0
+06-09 14:53:10.667  1251  1396 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.668  1251  1435 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.669  1251  2427 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.674  1118  1712 E aurisys_controller: is_bypass_aurisys_lib(), scene: -1 table is NULL!!!
+06-09 14:53:10.674  1118  1712 D AudioALSAPlaybackHandlerBase: transferAudioFormatToPcmFormat(), audio_format(0x4) => pcm_format(0x3)
+06-09 14:53:10.674  1118  1712 D AudioALSAPlaybackHandlerDsp: open(), flag 0x4, mDevice = 0x2, mConfig: channels = 2, rate = 48000, period_size = 256, period_count = 2, format = 3 avail_min = 0
+06-09 14:53:10.674  1251  1396 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.677  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431068
+06-09 14:53:10.677  1188  1240 I libPowerHal: [perfLockRel] hdl:431068, idx:1
+06-09 14:53:10.678  1188  1240 I libPowerHal: [unsetGPUFreq] current min:0, max:0; scn_gpu_min:0, scn_gpu_max:-1; scn_gpu_min(HL):-1, scn_gpu_max(HL):-1
+06-09 14:53:10.678  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (0, 0); Hard min/max = (40, 0)
+06-09 14:53:10.678  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (0, 0)
+06-09 14:53:10.678  1188  1240 I libPowerHal: binder:1600_2: set gpu opp level: 0
+06-09 14:53:10.678  1188  1240 I libPowerHal: binder:1600_2: set gpu opp level max: 0
+06-09 14:53:10.678  1188  1240 I libPowerHal: [PD] binder:1600_2 update cmd:404100 param:-1 pr:6
+06-09 14:53:10.678  1188  1240 I libPowerHal: [PD] binder:1600_2 update cmd:404200 param:-1 pr:6
+06-09 14:53:10.678  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(-1): -1 cluster[2] min(MTKPOWER_HINT_PACK_SWITCH): 3250000 max(-1): -1
+06-09 14:53:10.678  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431068
+06-09 14:53:10.678  1251  1435 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.684  1251  2447 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.684  1251  2425 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.694  1251  2425 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.698  1251  1396 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.724  1251  1396 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.728  1118  1712 D AudioALSAPlaybackHandlerBase: openPcmDriverWithFlag(), pcm device = 92 flag = 0xc mPcm = 0xb4000078179d4550
+06-09 14:53:10.731  1118  1712 D AudioDspStreamManager: dataPassToCodec output_devices = 0x2 mAudioOutputFlags = 4 devicecount = 1 ret = 1
+06-09 14:53:10.732  1118  1712 D AudioDspStreamManager: dataPasstoDspAfe output_devices = 0x2 Flags = 4 isUseAdspPlaybackTask = 1 ret = 1
+06-09 14:53:10.732  1118  1712 D AudioDspStreamManager: setDspRuntimeEn(), task_scene = 32, condition = 1
+06-09 14:53:10.732  1118  1712 D AudioDspStreamManager: setDspRefRuntimeEn(), task_scene = 32, condition = 1
+06-09 14:53:10.733  1118  1712 D aurisys_utility: input dev: 0x0 0x0, fmt = 0x4, fs: 48000, max fs: 48000, ch: 2, max ch: 3, ch maks: 0xc, hw_info_mask: 0x0; output dev: 0x2 0x0, fmt = 0x4, fs: 48000, max fs: 48000, ch: 2, max ch: 4, ch maks: 0x3, hw_info_mask: 0xc; task_scene: 32, audio_mode: 0, stream_type: 1, output_flags: 0x800, input_source: 0, input_flags: 0x800; network_info: 0, enhancement_feature_mask: 0x0
+06-09 14:53:10.733  1118  1712 D AudioDspStreamManager: CreateAurisysLibManager(), custom_info = SetAudioCustomScene=;, voip = 0
+06-09 14:53:10.734  1118  1712 D aurisys_utility: lib, working fs: 48000, fmt: 0x3, frame = 10, b_interleave = 0, num_ul_ref_buf_array = 0, num_dl_ref_buf_array = 1
+06-09 14:53:10.734  1118  1712 D aurisys_utility: dl in[type:2], ch: 2, ch_mask: 0x3, buf fs: 48000, buf content fs: 48000, fmt: 0x3; dl out[type:3], ch: 2, ch_mask: 0x3, buf fs: 48000, buf content fs: 48000, fmt: 0x3
+06-09 14:53:10.734  1118  1712 D aurisys_utility: dl ref[type:5], ch: 2, ch_mask: 0x3, buf fs: 48000, buf content fs: 48000, fmt: 0x3
+06-09 14:53:10.734  1118  1712 D aurisys_lib_handler: [LIB] fsm_smartpa_parse_query_param_buf_size_by_custom_info(), get param buf size 0 for enh mode SetAudioCustomScene=; from file /vendor/etc/smartpa_param_fs, task_scene:32, audio_mode:0, stream_type:1, network_info:0, output_flags:2048, audio_usage:0
+06-09 14:53:10.735  1118  1712 D aurisys_lib_handler: [LIB] fsm_query_box_id(), can't open file
+06-09 14:53:10.735  1118  1712 D aurisys_lib_handler: [LIB] fsm preset_name=preset_system.bin
+06-09 14:53:10.735  1118  1712 D aurisys_lib_handler: [LIB] fsm_smartpa_parse_query_param_buf_size_by_custom_info(), the param file is /vendor/etc/smartpa_param_fs/preset_system.bin
+06-09 14:53:10.735  1118  1712 D aurisys_lib_handler: [LIB] fsm_smartpa_parse_query_param_buf_size_by_custom_info(), the specified file does not exist using default:/vendor/etc/smartpa_param_fs/preset_default.bin
+06-09 14:53:10.743  1118  1712 D aurisys_lib_handler: [LIB] fsm_smartpa_parse_query_param_buf_size_by_custom_info(), success to get param file length=4832
+06-09 14:53:10.743  1118  1712 D aurisys_lib_handler: [LIB] fsm_query_box_id(), can't open file
+06-09 14:53:10.743  1118  1712 D aurisys_lib_handler: [LIB] fsm preset_name=preset_system.bin
+06-09 14:53:10.743  1118  1712 D aurisys_lib_handler: [LIB] fsm_smartpa_parse_parsing_param_file_by_custom_info(), param file is /vendor/etc/smartpa_param_fs/preset_system.bin
+06-09 14:53:10.743  1118  1712 D aurisys_lib_handler: [LIB] fsm_smartpa_parse_parsing_param_file_by_custom_info(), the specified file does not exist using default:/vendor/etc/smartpa_param_fs/preset_default.bin
+06-09 14:53:10.743  1118  1712 D aurisys_lib_handler: [LIB] fsm_smartpa_parse_parsing_param_file_by_custom_info(), success to read 4832 param!
+06-09 14:53:10.743  1118  1712 D aurisys_lib_handler: aurisys_arsi_parsing_param_file(), gProductInfo "platform=MT6899,device=rodin,model=2412DPC0AI", file_path "/vendor/etc/smartpa_param_fs", enhancement_mode 0, param_buf_size 4832, data_size 4832, custom_info SetAudioCustomScene=;
+06-09 14:53:10.748  1251  1396 D APM_AudioPolicyManager: listAudioPorts mAvailableInputDevices 0x80000004, 0x80000040, 0x80000080, 0x80000100, 0x80002000, 0x90000000
+06-09 14:53:10.775  1118  1712 D AudioALSADeviceConfigManager: ApplyDeviceTurnonSequenceByName() DeviceName = I2S0_TO_CAPTURE4 descriptor->DeviceStatusCounte = 0, Ctlsize=4
+06-09 14:53:10.778  1118  1712 D AudioALSADeviceConfigManager: ApplyDeviceTurnonSequenceByName() DeviceName = PLAYBACK11_TO_I2S1 descriptor->DeviceStatusCounte = 0, Ctlsize=4
+06-09 14:53:10.778  1118  1712 D AudioALSADeviceConfigManager: ApplyDeviceTurnonSequenceByName() DeviceName = SPK_OUT_DEVICE_CTRL_PRE_PMU descriptor->DeviceStatusCounte = 0, Ctlsize=4
+06-09 14:53:10.778  1118  1712 D AudioALSADeviceConfigManager: ApplyDeviceTurnonSequenceByName(), AudioALSAStreamManager::isCloseControlMixerCtl = -1
+06-09 14:53:10.778  1118  1712 D AudioDspStreamManager: openPlaybackTask(), mPlaybackDlConfig: channels = 2, rate = 48000, period_size = 256, period_count = 8, format = 3, mPlaybackIVConfig: channels = 2, rate = 48000, period_size = 256, period_count = 8, format = 1, mPlaybackUlConfig: channels = 2, rate = 48000, period_size = 256, period_count = 4, format = 3, mDspConfig: channels = 2, rate = 48000, period_size = 256, period_count = 4, format = 3
+06-09 14:53:10.782  1830  2216 D AudioSystem: +setParameters(): cameraFacing=front 
+06-09 14:53:10.788  1251  1396 D AudioFlingerImpl: setGameParameters keyvalue: cameraFacing=front
+06-09 14:53:10.788  1251  1396 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): cameraFacing=front
+06-09 14:53:10.791  1118 14787 D AudioALSAHardware: +setParameters(): cameraFacing=front
+06-09 14:53:10.791  1118 14787 D AudioALSAHardware: -setParameters(): cameraFacing=front
+06-09 14:53:10.791  1251  1396 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): cameraFacing=front
+06-09 14:53:10.792  1251  1396 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): cameraFacing=front
+06-09 14:53:10.793  1251  1396 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): cameraFacing=front
+06-09 14:53:10.793  1251  1396 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): cameraFacing=front
+06-09 14:53:10.794  1251  1396 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): cameraFacing=front
+06-09 14:53:10.804  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431072
+06-09 14:53:10.804  1188  1240 I libPowerHal: [perfLockRel] hdl:431072, idx:2
+06-09 14:53:10.804  1188  1240 I libPowerHal: [unsetGPUFreq] current min:0, max:0; scn_gpu_min:0, scn_gpu_max:-1; scn_gpu_min(HL):-1, scn_gpu_max(HL):-1
+06-09 14:53:10.804  1188  1240 I libPowerHal: system_server: set gpu opp level: 40
+06-09 14:53:10.804  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:53:10.805  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (40, 0); Hard min/max = (40, 0)
+06-09 14:53:10.805  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (40, 0)
+06-09 14:53:10.805  1188  1240 I libPowerHal: system_server: set gpu opp level: 40
+06-09 14:53:10.805  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:53:10.806  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:1300000 pr:3
+06-09 14:53:10.806  1188  1240 I libPowerHal: [PD] system_server update cmd:1000000 param:-1 pr:6
+06-09 14:53:10.806  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(MTKPOWER_HINT_PACK_SWITCH): 1300000 max(-1): -1 cluster[1] min(system_server): 3000000 max(-1): -1 cluster[2] min(MTKPOWER_HINT_PACK_SWITCH): 3250000 max(-1): -1
+06-09 14:53:10.806  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431072
+06-09 14:53:10.840  1830  2520 I mtkpower_client: perf_lock_rel, hdl:431071, pid: 1830, tid:2520
+06-09 14:53:10.858  1188  1240 I libPowerHal: [perfLockRel] hdl:431071, idx:4
+06-09 14:53:10.858  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431071
+06-09 14:53:10.859  1830  2520 I mtkpower_client: perf_lock_acq, hdl:431071, dur:1000, num:6, pid:1830, tid:2520
+06-09 14:53:10.864  1118  1712 D AudioDspStreamManager: addPlaybackHandler() mDspStreamState = 1
+06-09 14:53:10.864  1118  1712 D AudioDspStreamManager: -addPlaybackHandler(), playbackHandler = 12970367442887774336 0xb4000078279e1080
+06-09 14:53:10.864  1118  1712 E aurisys_controller: is_bypass_aurisys_lib(), scene: -1 table is NULL!!!
+06-09 14:53:10.864  1118  1712 D AudioALSAPlaybackHandlerBase: CreateAurisysLibManager, ph type: 7, voip: 0, mAurisysScenario: 1
+06-09 14:53:10.864  1118  1712 D aurisys_utility: input dev: 0x80000004 0x0, fmt = 0x3, fs: 48000, max fs: 48000, ch: 2, max ch: 2, ch maks: 0x3, hw_info_mask: 0x0; output dev: 0x2 0x0, fmt = 0x3, fs: 48000, max fs: 48000, ch: 2, max ch: 2, ch maks: 0x3, hw_info_mask: 0xc; task_scene: 2, audio_mode: 0, stream_type: 1, output_flags: 0x4, input_source: 0, input_flags: 0x0; network_info: 0, enhancement_feature_mask: 0x0
+06-09 14:53:10.864  1118  1712 D aurisys_utility: lib, working fs: 48000, fmt: 0x3, frame = 1, b_interleave = 0, num_ul_ref_buf_array = 0, num_dl_ref_buf_array = 0
+06-09 14:53:10.864  1118  1712 D aurisys_utility: dl in[type:2], ch: 2, ch_mask: 0x3, buf fs: 48000, buf content fs: 48000, fmt: 0x3; dl out[type:3], ch: 2, ch_mask: 0x3, buf fs: 48000, buf content fs: 48000, fmt: 0x3
+06-09 14:53:10.864  1118  1712 D aurisys_utility: lib, working fs: 48000, fmt: 0x3, frame = 1, b_interleave = 0, num_ul_ref_buf_array = 0, num_dl_ref_buf_array = 0
+06-09 14:53:10.864  1118  1712 D aurisys_utility: dl in[type:2], ch: 2, ch_mask: 0x3, buf fs: 48000, buf content fs: 48000, fmt: 0x3; dl out[type:3], ch: 2, ch_mask: 0x3, buf fs: 48000, buf content fs: 48000, fmt: 0x3
+06-09 14:53:10.866  1118  1712 D aurisys_lib_handler: aurisys_arsi_parsing_param_file(), gProductInfo "platform=MT6899,device=rodin,model=2412DPC0AI", file_path "/vendor/etc", enhancement_mode 0, param_buf_size 128, data_size 128, custom_info SetAudioCustomScene=;
+06-09 14:53:10.866  1118  1712 D aurisys_lib_handler: aurisys_arsi_parsing_param_file(), gProductInfo "platform=MT6899,device=rodin,model=2412DPC0AI", file_path "/vendor/etc", enhancement_mode 0, param_buf_size 128, data_size 128, custom_info SetAudioCustomScene=;
+06-09 14:53:10.866  1118  1712 D aurisys_lib_handler: aurisys_arsi_create_handler(), lib_name misoundfpsop, [queried_size] dram:448 [avail_size] dram:4294967295
+06-09 14:53:10.866  1118  1712 D aurisys_lib_handler: aurisys_arsi_create_handler(), lib_name misoundfpsop, 0xb4000079a79ce980, process_type 1, arsi_handler 0xb400007937aab1d0, retval 0x0 
+06-09 14:53:10.866  1118  1712 D aurisys_lib_handler: aurisys_arsi_create_handler(), arsi_query_process_unit_bytes, ul 0, dl 384, retval 0
+06-09 14:53:10.866  1118  1712 D aurisys_lib_handler: aurisys_arsi_create_handler(), lib_name misoundcrossfade, [queried_size] dram:432 [avail_size] dram:4294967295
+06-09 14:53:10.866  1118  1712 D aurisys_lib_handler: aurisys_arsi_create_handler(), lib_name misoundcrossfade, 0xb4000079a79d07b0, process_type 1, arsi_handler 0xb4000079179e2ed0, retval 0x0 
+06-09 14:53:10.866  1118  1712 D aurisys_lib_handler: aurisys_arsi_create_handler(), arsi_query_process_unit_bytes, ul 0, dl 384, retval 0
+06-09 14:53:10.866  1118  1712 D aurisys_lib_manager: DL Lib, lib_name misoundfpsop, 0xb4000079a79ce980, sample_rate: 48000 => 48000, num_channels: 2 => 2, audio_format: 0x3 => 0x3, interleave: 1 => 0, frame: 0 => 1
+06-09 14:53:10.866  1118  1712 D aurisys_lib_manager: DL Lib, lib_name misoundcrossfade, 0xb4000079a79d07b0, sample_rate: 48000 => 48000, num_channels: 2 => 2, audio_format: 0x3 => 0x3, interleave: 0 => 0, frame: 1 => 1
+06-09 14:53:10.866  1118  1712 D aurisys_lib_manager: DL out, sample_rate: 48000 => 48000, num_channels: 2 => 2, audio_format: 0x3 => 0x4, interleave: 0 => 1, frame: 1 => 0
+06-09 14:53:10.866  1118  1712 D AudioALSAPlaybackHandlerDsp: MisoundEnable 0
+06-09 14:53:10.866  1118  1712 W aurisys_controller: lib_name misound_dsp, scene 1, no active handler!!
+06-09 14:53:10.866  1118  1712 W aurisys_controller: lib_name misound_dsp, scene 3, no active handler!!
+06-09 14:53:10.866  1118  1712 W aurisys_controller: lib_name misound_dsp, scene 11, no active handler!!
+06-09 14:53:10.867  1118  1712 D AudioALSAHardwareResourceManager: +startOutputDevice(), new_devices = 0x2, mOutputDevices = 0x0, mStartOutputDevicesCount = 0 SampleRate = 48000
+06-09 14:53:10.867  1118  1712 D AudioMTKGainController: updatedevpower(), set Dev_Power enable(1) total_power 14780 power : 14241 
+06-09 14:53:10.867  1118  1712 D AudioSmartPaController: +dspOnBoardSpeakerOn(), SampleRate: 48000, MD_type: 0, isI2sInEchoRefEn: 0
+06-09 14:53:10.867  1118  1712 D AudioDspStreamManager: +startDevice() Devices 0x2 mOutputDeviceCount 0x0
+06-09 14:53:10.867  1118  1712 D AudioDspStreamManager: dataPassToCodec output_devices = 0x2 mAudioOutputFlags = 4 devicecount = 1 ret = 1
+06-09 14:53:10.867  1118  1712 D AudioDspStreamManager: dataPasstoDspAfe output_devices = 0x2 Flags = 4 isUseAdspPlaybackTask = 1 ret = 1
+06-09 14:53:10.867  1118  1712 D AudioDspStreamManager: startTasks_l() mDspStreamState = DSP_STREAM_START
+06-09 14:53:10.867  1118  1712 D AudioALSAHardwareResourceManager: notifyOutputDeviceStatusChange(), device = 2, status = 0, sampleRate = 48000, mOpenSpeakerPathCount = 1
+06-09 14:53:10.867  1118  1712 D AudioALSAStreamManager: speakerStatusChangeCb(), status = 0, sampleRate = 48000
+06-09 14:53:10.867  1118  1712 D AudioALSAVoiceWakeUpController: setSpeakerSampleRate(), sampleRate = 48000
+06-09 14:53:10.867  1118  1712 D AudioALSAVoiceWakeUpController: updateSpeakerPlaybackStatus(), isSpeakerPlaying = 1
+06-09 14:53:10.867  1118  1712 D AudioALSAVoiceWakeUpController: +setBargeInEnable(), enable = 1
+06-09 14:53:10.867  1118  1712 D AudioALSAVoiceWakeUpController: setBargeInEnable(), format = 0, channels = 2, rate = 48000, period_size = 480, period_count = 4
+06-09 14:53:10.867  1118  1712 D AudioALSAVoiceWakeUpController: setBargeInEnable(), Interconn VOW_BARGE_IN_ECHO_SPEAKER_HIFI3
+06-09 14:53:10.867  1118  1712 D AudioALSADeviceConfigManager: ApplyDeviceTurnonSequenceByName() DeviceName = VOW_BARGE_IN_ECHO_SPEAKER_HIFI3 descriptor->DeviceStatusCounte = 0, Ctlsize=14
+06-09 14:53:10.868  1118  1712 D AudioALSAVoiceWakeUpController: setBargeInEnable(), set vow bargein capture path = Capture_9
+06-09 14:53:10.871  1548 20749 I mtkpower_client: perf_lock_acq, hdl:0, dur:0, num:2, pid:1548, tid:20749
+06-09 14:53:10.871  1548 20749 I mtkpower_client: ret_hdl:431075
+06-09 14:53:10.872  1548  1548 I mtkpower_client: perf_lock_acq, hdl:0, dur:0, num:46, pid:1548, tid:1548
+06-09 14:53:10.873  1548  1548 I mtkpower_client: ret_hdl:431076
+06-09 14:53:10.874  1118  1712 D AudioALSAVoiceWakeUpController: setBargeInEnable(), mBargeInPcm = 0xb4000078179daa90, pcmUlRet = 0
+06-09 14:53:10.875  1188  1240 I libPowerHal: [perfLockAcq] idx:1 hdl:431075 hint:-1 pid:1548 tid:20749 duration:0 lock_user:camerahalserver => ret_hdl:431075
+06-09 14:53:10.875  1188  1240 I libPowerHal: [PE] camerahalserver update ONESHOT(set) cmd:1448300 param:20749 pr:3
+06-09 14:53:10.875  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431075
+06-09 14:53:10.875  1188  1240 I libPowerHal: [perfLockAcq] idx:2 hdl:431076 hint:-1 pid:1548 tid:1548 duration:0 lock_user:camerahalserver => ret_hdl:431076
+06-09 14:53:10.875  1188  1240 I libPowerHal: [setClusterCores] scn:camerahalserver set cpu core[0] min:4 max:4
+06-09 14:53:10.875  1188  1240 I libPowerHal: [setClusterCores] scn:camerahalserver set cpu core[1] min:3 max:3
+06-09 14:53:10.875  1188  1240 I libPowerHal: [setClusterCores] scn:camerahalserver set cpu core[2] min:0 max:1
+06-09 14:53:10.875  1188  1240 I libPowerHal: [setClusterCores] [CORE_CTL_SET_LIMIT_CPUS] cid:0 min:4 max:4
+06-09 14:53:10.876  1188  1240 I libPowerHal: [setClusterCores] [CORE_CTL_SET_LIMIT_CPUS] cid:1 min:3 max:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [setClusterCores] [CORE_CTL_SET_LIMIT_CPUS] cid:2 min:0 max:1
+06-09 14:53:10.876  1188  1240 I libPowerHal: [setClusterCores] camerahalserver: set core_ctrl: 4 -1 3 -1 -1 -1 
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:143c100, param:2, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:1404100, param:1, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:1404300, param:1, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:2060100, param:1548, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:3800000, param:1, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:3800100, param:10, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:3800200, param:10, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:3800300, param:20, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:3804000, param:33, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:3808000, param:1000, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:3808100, param:1000, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:3808200, param:1000, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:3808300, param:10, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:3808400, param:40, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [PE] camerahalserver update cmd:3808500, param:33, pr:3
+06-09 14:53:10.876  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431076
+06-09 14:53:10.885  1118  1712 D AudioALSAVoiceWakeUpController: setBargeInEnable(), VOW_BARGEIN_ON set, irq = 26, ret = 0
+06-09 14:53:10.891  1118  1712 D AudioALSAVoiceWakeUpController: -setBargeInEnable(), mBargeInPcm = 0xb4000078179daa90, mBargeInEnable = 1
+06-09 14:53:10.892  1118  1712 D AudioDspStreamManager: getDspTaskLatency() dsp_stream_latency ret:[512] mAudioOutputFlags[4]
+06-09 14:53:10.892  1118  1712 D AudioALSAStreamOut: open: 2035: open(), flags 4
+06-09 14:53:10.892  1118  1712 D AudioALSAStreamManager: setLRCrossFade update rotation: 0 -> 0
+06-09 14:53:10.892  1118  1712 W aurisys_controller: lib_name misoundcrossfade, scene 0, no active handler!!
+06-09 14:53:10.892  1118  1712 D aurisys_lib_handler: lib_name misoundcrossfade, 0xb4000079a79d07b0, ADB_CMD_KEY_VALUE: set 512, 22, misoundCrossFadeMode=0, retval 0
+06-09 14:53:10.892  1118  1712 D AudioALSAStreamOut: open: 2072: open(), setLRcross, flags 4
+06-09 14:53:10.892  1118  1712 D AudioALSAStreamOut: -open(), flags 4
+06-09 14:53:10.892  1118  1712 D AudioALSAHardwareCustom: [DEBUG] setDeviceStatusChanged: devices=[0x2], status=[1], isFast=[1]
+06-09 14:53:10.892  1118  1712 D aurisys_lib_handler: lib_name misoundfpsop, 0xb4000079a79ce980, ADB_CMD_KEY_VALUE: set 512, 19, MisGameOp_Configs=5, retval 0
+06-09 14:53:10.892  1118  1712 D AudioALSAHardwareCustom: [DEBUG] setCachedParam2soundfx: targetScenario PLAYBACK_LOW_LATENCY
+06-09 14:53:10.892  1118  1712 W aurisys_controller: MISOUND not found for any <library>!! return fail!!
+06-09 14:53:10.892  1118  1712 D AudioALSAHardwareCustom: [DEBUG] setCachedParam2soundfx: mMisoundEnable is 0
+06-09 14:53:10.892  1118  1712 D aurisys_lib_handler: lib_name misoundfpsop, 0xb4000079a79ce980, ADB_CMD_KEY_VALUE: set 512, 18, MisGameOp_Enable=0, retval 0
+06-09 14:53:10.892  1118  1712 D aurisys_lib_handler: lib_name misoundfpsop, 0xb4000079a79ce980, ADB_CMD_KEY_VALUE: set 512, 22, MisGameOp_EffectType=0, retval 0
+06-09 14:53:10.892  1118  1712 D aurisys_lib_handler: lib_name misoundfpsop, 0xb4000079a79ce980, ADB_CMD_KEY_VALUE: set 512, 23, MisGameOp_EffectRatio=0, retval 0
+06-09 14:53:10.892  1118  1712 D aurisys_lib_handler: lib_name misoundfpsop, 0xb4000079a79ce980, ADB_CMD_KEY_VALUE: set 512, 30, MisGameOp_SystemLevel=1.000000, retval 0
+06-09 14:53:10.893  1118  1712 D aurisys_lib_handler: lib_name misoundfpsop, 0xb4000079a79ce980, ADB_CMD_KEY_VALUE: set 512, 19, MisGameOp_Configs=5, retval 0
+06-09 14:53:10.893  1251  1714 D AudioFlinger_Threads: stream out write(0) process 229 ms
+06-09 14:53:10.895  1118  1712 E AudioALSAPlaybackHandlerBase: -getHardwareBufferInfo(), pcm_get_htimestamp fail, ret = -1, pcm_get_error =  flag = 0x4
+06-09 14:53:10.896  1118  1712 E AudioALSAPlaybackHandlerBase: -getHardwareBufferInfo(), pcm_get_htimestamp fail, ret = -1, pcm_get_error =  flag = 0x4
+06-09 14:53:10.909  1251  1714 W AudioFlinger_Threads: write blocked for 245 msecs, 6 delayed writes, thread 29
+06-09 14:53:10.926  1830  2520 I mtkpower_client: ret_hdl:431077
+06-09 14:53:10.926  1188  1240 I libPowerHal: [perfLockAcq] idx:4 hdl:431077 hint:-1 pid:1830 tid:2520 duration:1000 lock_user:system_server => ret_hdl:431077
+06-09 14:53:10.926  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431077
+06-09 14:53:11.023  1548 20749 I mtkpower_client: perf_lock_rel, hdl:431075, tid:20749
+06-09 14:53:11.025  1188  1240 I libPowerHal: [perfLockRel] hdl:431075, idx:1
+06-09 14:53:11.025  1188  1240 I libPowerHal: [PD] camerahalserver update ONESHOT(unset) cmd:1448300 param:20749 pr:3
+06-09 14:53:11.025  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431075
+06-09 14:53:11.109  1548 28194 I mtkpower_client: perf_lock_rel, hdl:431076, tid:28194
+06-09 14:53:11.110  1188  1240 I libPowerHal: [perfLockRel] hdl:431076, idx:2
+06-09 14:53:11.110  1188  1240 I libPowerHal: [setClusterCores] [CORE_CTL_SET_LIMIT_CPUS] cid:0 min:4 max:4
+06-09 14:53:11.110  1188  1240 I libPowerHal: [setClusterCores] [CORE_CTL_SET_LIMIT_CPUS] cid:1 min:3 max:3
+06-09 14:53:11.110  1188  1240 I libPowerHal: [setClusterCores] [CORE_CTL_SET_LIMIT_CPUS] cid:2 min:0 max:1
+06-09 14:53:11.110  1188  1240 I libPowerHal: [setClusterCores] camerahalserver: set core_ctrl: -1 -1 -1 -1 -1 -1 
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:143c100 param:1, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:1404100 param:0, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:1404300 param:0, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:2060100 param:0, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:3800000 param:1, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:3800100 param:10, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:3800200 param:10, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:3800300 param:20, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:3804000 param:33, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:3808000 param:60, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:3808100 param:40, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:3808200 param:0, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:3808300 param:15, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:3808400 param:20, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:3808500, param:33, pr:6
+06-09 14:53:11.110  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431076
+06-09 14:53:11.150  1548 28194 I mtkpower_client: perf_lock_rel, hdl:431074, tid:28194
+06-09 14:53:11.152  1188  1240 I libPowerHal: [perfLockRel] hdl:431074, idx:5
+06-09 14:53:11.152  1188  1240 I libPowerHal: [PD] camerahalserver update cmd:240c000 param:50, pr:6
+06-09 14:53:11.153  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431074
+06-09 14:53:11.164  1251  1435 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.164  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.166  1251  1435 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.167  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.168  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.168  1251  2447 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.169  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.169  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.169  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.170  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.170  1251  1435 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.170  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.171  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.171  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.172  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.172  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.174  1188  4593 I libPowerHal: [mtkPowerHint] hint:21, hold:6000, ext:0, ext_hold:0
+06-09 14:53:11.174  1188  1240 I libPowerHal: [perfLockRel] hdl:431073, idx:3
+06-09 14:53:11.173  1251  2447 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.175  1251  2447 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.175  1251  1435 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.175  1251  2447 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.177  1251  1435 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.177  1188  1201 I mtkpower@impl: [setMode] type:5, enabled:0
+06-09 14:53:11.177  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PACK_SWITCH update cmd:400000 param:1000000 pr:3
+06-09 14:53:11.177  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PACK_SWITCH update cmd:400100 param:1000000 pr:3
+06-09 14:53:11.177  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PACK_SWITCH update cmd:400200 param:1000000 pr:3
+06-09 14:53:11.178  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 1000000 max(-1): -1 cluster[1] min(system_server): 1000000 max(-1): -1 cluster[2] min(system_server): -1 max(-1): -1
+06-09 14:53:11.178  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431073
+06-09 14:53:11.178  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.178  1188  1240 I libPowerHal: [perfLockAcq] idx:1 hdl:431078 hint:21 pid:1188 tid:1188 duration:6000 lock_user:vendor.mediatek => ret_hdl:431078
+06-09 14:53:11.179  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431078
+06-09 14:53:11.179  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.179  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.179  1188  1240 I libPowerHal: [perfLockRel] hdl:431067, idx:0
+06-09 14:53:11.179  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.179  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431067
+06-09 14:53:11.180  1251  2421 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.180  1251  2421 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.181  1251  1435 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.181  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.182  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.182  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.182  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.183  1251  1435 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.183  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.183  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.183  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.183  1251  1435 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.184  1251  2404 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.184  1251  1435 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.185  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.185  1251  2447 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.185  1251  2447 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.186  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.186  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.186  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.186  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.186  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.187  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.187  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.187  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.187  1251  1251 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.187  1251  2441 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.187  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.187  1251  2441 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.187  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.187  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.188  1251  2441 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.188  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.188  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.188  1251  2449 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.188  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.188  1251  2449 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.188  1251  2449 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.188  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:53:11.189  1251  2449 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.189  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.189  1251  2406 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.189  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.189  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.189  1251  2406 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.190  1251  2406 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.190  1251  2406 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.190  1251  1435 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.190  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.190  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.190  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.191  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.191  1251  1396 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.191  1251  2425 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.191  1251  2427 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.192  1251  2406 I AF::TrackHandle: opChanged OP_PLAY_AUDIO callback received for 
+06-09 14:53:11.195  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:53:11.242  1118 14786 D AudioALSAHardware: +setParameters(): ultrasound-mute=0
+06-09 14:53:11.242  1118 14786 D AudioALSAHardware: setParameters: 1888: setParameters(), ultrasound-mute, value=0
+06-09 14:53:11.242  1118 14786 D AudioALSAUltrasoundOutOfCallController: setEngineMute: 1751: setEngineMute(), ultrasound-unmute resume
+06-09 14:53:11.243  1118 14786 D AudioALSAUltrasoundOutOfCallController: setEngineMute: 1764: setEngineMute(), ultrasound-mute, mutestate=0, ultrasound_mute_state=0
+06-09 14:53:11.243  1118 14786 D AudioALSAHardware: -setParameters(): ultrasound-mute=0
+06-09 14:53:11.343  1251  1714 D AF::Track: getNextBuffer, track(0xb40000759a4da870) get null buffer, mState 6, mFillingStatus 3
+06-09 14:53:11.359  1251  1714 E AudioFlinger_Threads: threadLoop: track(sessionID = 76369) ACTIVE underrun due to thread sleep of 768 frames
+06-09 14:53:11.359  1251  1714 D AudioFlinger_Threads: 0xb40000773d213520:threadLoop_write write muted data to hw, mixerStatus 0 start, mId 29, mBytesWritten 172032
+06-09 14:53:11.359  2939 20705 D AudioTrack: stop(13430): 0xb400007e418b0f80, prior state:STATE_ACTIVE packageName: com.android.systemui
+06-09 14:53:11.359  2939 20705 D AudioTrack: stop(13430): prior state:STATE_ACTIVE
+06-09 14:53:11.359  1251  1395 D AF::Track: setFadeOut isFadeNeeded = 0 isFadingOut = 0
+06-09 14:53:11.359  1251  1395 D AF::Track: setFadeOut Done
+06-09 14:53:11.359  2939 20705 D AudioTrack: stop(13430): 0xb400007e418b0f80 stop done
+06-09 14:53:11.423  1251  1714 D AudioTrackShared: this(0xb4000075da4f98b0), mCblk(0x773eb04000), front(21), mIsOut 1, setStreamEndDone() FUTEX_WAKE
+06-09 14:53:11.423  1251  1714 D AudioFlinger_Threads: removeTracks_l(10822): removing track on session 76369
+06-09 14:53:11.425  1251  1714 D AudioFlinger_Threads: removeTracks_l() mActiveSRCTrackIdVector.size() = 1, before mActiveSRCTrackIdVector.erase(10822).
+06-09 14:53:11.425  1251  1714 D AudioFlinger_Threads: updateWakeLockUids_l AudioOut_1D uids:
+06-09 14:53:11.425  1251  1621 D AudioPolicyManagerCustomImpl: hifiAudio_stopOutputSamplerate() -output = 29, porId = 13430, samplerate = 44100  HifiState = 1,  stream 1, session 76369
+06-09 14:53:11.425  1251  1621 D APM_AudioPolicyManager: stopOutput portId 13430
+06-09 14:53:11.425  1251  1621 D APM_AudioPolicyManager: stoptOutput() output 29, portId 13430, stream 1, session 76369, sample_rate 44100, format 0x1, channel_mask 0x3, appname com.android.systemui)
+06-09 14:53:11.425  1251  1621 D APM_AudioPolicyManager: setOutputDevices caller gainTable_routeAndApplyVolumeFromStopSource[[portId:8][io:29, fast]] prevDevice {AUDIO_DEVICE_OUT_SPEAKER, @:}
+06-09 14:53:11.425  1251  1621 D APM::AudioPolicyEngine: getDevices ForStrategy() strategy 0, device 0x1 avadevice 0x1, 0x2, 0x10000, 0x100000 sfu [0]:0, [1]:0, [4]:11
+06-09 14:53:11.426  1251  1621 D APM::AudioPolicyEngine: getDevices ForStrategy() strategy 0, device 0x1 avadevice 0x1, 0x2, 0x10000, 0x100000 sfu [0]:0, [1]:0, [4]:11
+06-09 14:53:11.859  1830  2520 I mtkpower_client: perf_lock_rel, hdl:431077, pid: 1830, tid:2520
+06-09 14:53:11.860  1188  1240 I libPowerHal: [perfLockRel] hdl:431077, idx:4
+06-09 14:53:11.860  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:-1 pr:6
+06-09 14:53:11.861  1188  1240 I libPowerHal: [PD] system_server update cmd:400100 param:-1 pr:6
+06-09 14:53:11.861  1188  1240 I libPowerHal: [PD] system_server update cmd:400200 param:-1 pr:6
+06-09 14:53:11.861  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(-1): -1 max(-1): -1 cluster[1] min(-1): -1 max(-1): -1 cluster[2] min(-1): -1 max(-1): -1
+06-09 14:53:11.861  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431077
+06-09 14:53:11.949  1830  3020 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai pid=18757 activityId:18757 state:3
+06-09 14:53:11.950  1169  1172 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai, pid=18757, activityId=18757, uid=10458, state:DEAD, fps:-1, win:0
+06-09 14:53:11.950  1169  1172 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 0
+06-09 14:53:11.950  1169  1172 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:53:11.950  1169  1172 I MTK_APPList: [notifyAPPstate] pack:com.example.vitaai, pid:18757, STATE_DEAD
+06-09 14:53:11.950  1169  1172 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:53:11.951  1169  1172 I MTK_APPList: [notifyPID] 18757
+06-09 14:53:11.952  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18757
+06-09 14:53:11.965  1830  3020 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai.ui.MainActivity pid=18757 activityId:157741554 state:0
+06-09 14:53:11.967  1169  1173 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai.ui.MainActivity, pid=18757, activityId=157741554, uid=10458, state:PAUSED, fps:-1, win:0
+06-09 14:53:11.967  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 0
+06-09 14:53:11.967  1169  1173 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:53:11.967  1169  1173 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:53:11.968  1169  1173 I MTK_APPList: [notifyPID] 18757
+06-09 14:53:11.968  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18757
+06-09 14:53:12.024  1830  3647 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.example.vitaai/com.example.vitaai pid=18757 activityId:18757 state:3
+06-09 14:53:12.024  1169  1173 I MTK_APPList: [notifyAPPstate] com.example.vitaai/com.example.vitaai, pid=18757, activityId=18757, uid=10458, state:DEAD, fps:-1, win:0
+06-09 14:53:12.024  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 0
+06-09 14:53:12.024  1169  1173 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:53:12.024  1169  1173 I MTK_APPList: [notifyAPPstate] pack:com.example.vitaai, pid:18757, STATE_DEAD
+06-09 14:53:12.024  1169  1173 I MTK_APPList: [notifyNetdUID] 10458
+06-09 14:53:12.025  1169  1173 I MTK_APPList: [notifyPID] 18757
+06-09 14:53:12.026  1830  3647 I mtkpower_client: perf_lock_acq, hdl:431072, dur:400, num:10, pid:1830, tid:3647
+06-09 14:53:12.026  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 18757
+06-09 14:53:12.028  1830  3647 I mtkpower_client: ret_hdl:431079
+06-09 14:53:12.028  1188  1240 I libPowerHal: [perfLockAcq] idx:0 hdl:431079 hint:-1 pid:1830 tid:3647 duration:400 lock_user:system_server => ret_hdl:431079
+06-09 14:53:12.028  1188  1240 I libPowerHal: [setGPUFreq] system_server user set gpu freq min:0, max:-1
+06-09 14:53:12.028  1188  1240 I libPowerHal: system_server: set gpu opp level: 0
+06-09 14:53:12.028  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:53:12.028  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (0, 0); Hard min/max = (40, 0)
+06-09 14:53:12.028  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (0, 0)
+06-09 14:53:12.028  1188  1240 I libPowerHal: system_server: set gpu opp level: 0
+06-09 14:53:12.029  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:53:12.029  1188  1240 I libPowerHal: [PE] system_server update cmd:400000 param:3000000 pr:3
+06-09 14:53:12.029  1188  1240 I libPowerHal: [PE] system_server update cmd:400100 param:3000000 pr:3
+06-09 14:53:12.029  1188  1240 I libPowerHal: [PE] system_server update cmd:400200 param:3000000 pr:3
+06-09 14:53:12.029  1188  1240 I libPowerHal: [setDvfsrcDevFreqOpp] opp:0, freq:8533000000
+06-09 14:53:12.029  1188  1240 I libPowerHal: [PE] system_server update cmd:1000000 param:0 pr:3
+06-09 14:53:12.029  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(-1): -1 cluster[2] min(system_server): 3000000 max(-1): -1
+06-09 14:53:12.029  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431079
+06-09 14:53:12.030  1188  1240 I libPowerHal: [perfLockAcq] idx:2 hdl:431080 hint:64 pid:1188 tid:1188 duration:10000 lock_user:vendor.mediatek => ret_hdl:431080
+06-09 14:53:12.030  1188  1240 I libPowerHal: [PE] MTKPOWER_HINT_HOT_LAUNCH update cmd:404200 param:3350000 pr:3
+06-09 14:53:12.030  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(-1): -1 cluster[2] min(system_server): 3000000 max(MTKPOWER_HINT_HOT_LAUNCH): -1
+06-09 14:53:12.030  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431080
+06-09 14:53:12.033  1830  3647 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.mi.android.globallauncher/com.miui.home.launcher.Launcher pid=24536 activityId:266253374 state:1
+06-09 14:53:12.033  1169  1172 I MTK_APPList: [notifyAPPstate] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid=24536, activityId=266253374, uid=10158, state:RESUMED, fps:-1, win:0
+06-09 14:53:12.033  1169  1172 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:53:12.033  1169  1172 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid:24536, activityId:266253374, fps:-1, isMultiWindow:0
+06-09 14:53:12.033  1169  1172 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:53:12.033  1169  1172 I MTK_APPList: [notifyAPPstate] foreground:com.mi.android.globallauncher, pid:24536, activityId:266253374, uid:10158
+06-09 14:53:12.033  1169  1172 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:53:12.033  1830  3647 E mtkpower_client: addForegroundAPP: Add FG app failed!!!
+06-09 14:53:12.033  1169  1172 I MTK_APPList: [notifyPID] 24536
+06-09 14:53:12.034  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:53:12.034  1169  1172 I MTK_APPList: [notifyAPPstate] pc:1, com.example.vitaai => com.mi.android.globallauncher
+06-09 14:53:12.042  1830  2402 D AudioSystem: +setParameters(): foregroundUid=10158;bluetoothlowlatencystatus=false 
+06-09 14:53:12.043  1251  2406 D AudioFlingerImpl: setGameParameters keyvalue: bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:53:12.043  1251  2406 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:53:12.044  1118 14786 D AudioALSAHardware: +setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:53:12.044  1118 14786 D AudioALSAHardware: -setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:53:12.044  1251  2406 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:53:12.044  1251  2406 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:53:12.046  1251  2406 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:53:12.046  1251  2406 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:53:12.047  1251  2406 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): bluetoothlowlatencystatus=false;foregroundUid=10158
+06-09 14:53:12.143  1830  2520 I mtkpower_client: perf_lock_acq, hdl:431077, dur:1000, num:6, pid:1830, tid:2520
+06-09 14:53:12.144  1830  2520 I mtkpower_client: ret_hdl:431081
+06-09 14:53:12.147  1188  1240 I libPowerHal: [perfLockAcq] idx:3 hdl:431081 hint:-1 pid:1830 tid:2520 duration:1000 lock_user:system_server => ret_hdl:431081
+06-09 14:53:12.147  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431081
+06-09 14:53:12.147  1188  1240 I libPowerHal: [perfLockRel] hdl:431080, idx:2
+06-09 14:53:12.147  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_HOT_LAUNCH update cmd:404200 param:-1 pr:6
+06-09 14:53:12.147  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 2100000 max(-1): -1 cluster[1] min(system_server): 3000000 max(-1): -1 cluster[2] min(system_server): 3000000 max(-1): -1
+06-09 14:53:12.147  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431080
+06-09 14:53:12.149  1830  1886 D AudioSystem: +setParameters(): gamebooster=false 
+06-09 14:53:12.149  1251  1396 D AudioFlingerImpl: setGameParameters keyvalue: gamebooster=false
+06-09 14:53:12.149  1251  1396 D AudioFlinger: +mAudioHwDevs(primary)->setParameters(): gamebooster=false
+06-09 14:53:12.150  1118 14786 D AudioALSAHardware: +setParameters(): gamebooster=false
+06-09 14:53:12.150  1118 14786 D AudioALSAHardware: -setParameters(): gamebooster=false
+06-09 14:53:12.150  1251  1396 D AudioFlinger: -mAudioHwDevs(primary)->setParameters(): gamebooster=false
+06-09 14:53:12.150  1251  1396 D AudioFlinger: +mAudioHwDevs(r_submix)->setParameters(): gamebooster=false
+06-09 14:53:12.151  1251  1396 D AudioFlinger: -mAudioHwDevs(r_submix)->setParameters(): gamebooster=false
+06-09 14:53:12.151  1251  1396 D AudioFlinger: +mAudioHwDevs(bluetooth)->setParameters(): gamebooster=false
+06-09 14:53:12.151  1251  1396 D AudioFlinger: -mAudioHwDevs(bluetooth)->setParameters(): gamebooster=false
+06-09 14:53:12.172  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=40.77 dur=2084.94 max=1359.20 min=3.82
+06-09 14:53:12.178  1830  2631 I mtkpower_client: perf_lock_acq, hdl:431058, dur:3000, num:6, pid:1830, tid:2631
+06-09 14:53:12.179  1830  2631 I mtkpower_client: ret_hdl:431082
+06-09 14:53:12.179  1830  2631 I mtkpower_client: perf_lock_rel, hdl:431082, pid: 1830, tid:2631
+06-09 14:53:12.179  1188  1240 I libPowerHal: cmdSetting - unknown cmd:340c300, scmd:(null) ,param_1:1
+06-09 14:53:12.179  1188  1240 I libPowerHal: [perfLockAcq] idx:2 hdl:431082 hint:-1 pid:1830 tid:2631 duration:3000 lock_user:system_server => ret_hdl:431082
+06-09 14:53:12.180  1188  1240 I libPowerHal: end_default_hold_time HindID : 57
+06-09 14:53:12.180  1188  1240 I libPowerHal: [disableScenarioByHintId] Disable HindID : 21
+06-09 14:53:12.180  1188  1240 I libPowerHal: [disableScenarioByHintId] disableScenarioByHintId: HindID : 21
+06-09 14:53:12.180  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PROCESS_CREATE update cmd:1408300 param:0, pr:6
+06-09 14:53:12.180  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PROCESS_CREATE update cmd:300c000 param:0, pr:6
+06-09 14:53:12.181  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PROCESS_CREATE update cmd:808000 param:0 pr:6
+06-09 14:53:12.181  1188  1240 I libPowerHal: [PD] MTKPOWER_HINT_PROCESS_CREATE update cmd:1468000 param:1 pr:6
+06-09 14:53:12.181  1188  1240 I libPowerHal: [disableScenarioByHintId] Disable HindID : 57
+06-09 14:53:12.181  1188  1240 I libPowerHal: [PE] system_server update ONESHOT(set) cmd:3410300 param:57 pr:3
+06-09 14:53:12.181  1188  1240 I libPowerHal: [perfLockAcq] Done for hdl : 431082
+06-09 14:53:12.183  1188  1240 I libPowerHal: [perfLockRel] hdl:431082, idx:2
+06-09 14:53:12.183  1188  1240 I libPowerHal: end_default_hold_time HindID : 57
+06-09 14:53:12.183  1188  1240 I libPowerHal: [disableScenarioByHintId] Disable HindID : 21
+06-09 14:53:12.183  1188  1240 I libPowerHal: [disableScenarioByHintId] Disable HindID : 57
+06-09 14:53:12.183  1188  1240 I libPowerHal: [PD] system_server update ONESHOT(unset) cmd:3410300 param:57 pr:3
+06-09 14:53:12.183  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431082
+06-09 14:53:12.218  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=36.37 dur=1732.34 max=866.70 min=7.84
+06-09 14:53:12.429  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431079
+06-09 14:53:12.429  1188  1240 I libPowerHal: [perfLockRel] hdl:431079, idx:0
+06-09 14:53:12.429  1188  1240 I libPowerHal: [unsetGPUFreq] current min:0, max:0; scn_gpu_min:0, scn_gpu_max:-1; scn_gpu_min(HL):-1, scn_gpu_max(HL):-1
+06-09 14:53:12.430  1188  1240 I libPowerHal: system_server: set gpu opp level: 40
+06-09 14:53:12.430  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:53:12.430  1188  1240 I libPowerHal: [setGPUFreq] Soft min/max = (40, 0); Hard min/max = (40, 0)
+06-09 14:53:12.430  1188  1240 I libPowerHal: [setGPUFreq] final min/max = (40, 0)
+06-09 14:53:12.430  1188  1240 I libPowerHal: system_server: set gpu opp level: 40
+06-09 14:53:12.430  1188  1240 I libPowerHal: system_server: set gpu opp level max: 0
+06-09 14:53:12.430  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:1000000 pr:3
+06-09 14:53:12.430  1188  1240 I libPowerHal: [PD] system_server update cmd:400100 param:1000000 pr:3
+06-09 14:53:12.430  1188  1240 I libPowerHal: [PD] system_server update cmd:400200 param:1000000 pr:3
+06-09 14:53:12.431  1188  1240 I libPowerHal: [PD] system_server update cmd:1000000 param:-1 pr:6
+06-09 14:53:12.431  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(system_server): 1000000 max(-1): -1 cluster[1] min(system_server): 1000000 max(-1): -1 cluster[2] min(system_server): -1 max(-1): -1
+06-09 14:53:12.431  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431079
+06-09 14:53:12.464  1830  1964 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.mi.android.globallauncher/com.miui.home.launcher.Launcher pid=24536 activityId:266253374 state:1
+06-09 14:53:12.467  1169  1173 I MTK_APPList: [notifyAPPstate] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid=24536, activityId=266253374, uid=10158, state:RESUMED, fps:-1, win:0
+06-09 14:53:12.467  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:53:12.467  1830  1964 E mtkpower_client: addForegroundAPP: Add FG app failed!!!
+06-09 14:53:12.468  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid:24536, activityId:266253374, fps:-1, isMultiWindow:0
+06-09 14:53:12.468  1169  1173 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:53:12.468  1169  1173 I MTK_APPList: [notifyAPPstate] foreground:com.mi.android.globallauncher, pid:24536, activityId:266253374, uid:10158
+06-09 14:53:12.468  1169  1173 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:53:12.470  1169  1173 I MTK_APPList: [notifyPID] 24536
+06-09 14:53:12.470  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:53:12.876  1264  1264 I BufferQueueProducer: [com.miui.securitycenter/.FloatingWindow#158308](this:0xb4000070533d8680,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=45.34 dur=1191.11 max=466.48 min=8.13
+06-09 14:53:13.134  1264  1264 I BufferQueueProducer: [com.mi.android.globallauncher/com.miui.home.launcher.Launcher#158311](this:0xb4000070533c7520,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=119.09 dur=1007.64 max=16.94 min=7.47
+06-09 14:53:13.147  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431081
+06-09 14:53:13.147  1188  1240 I libPowerHal: [perfLockRel] hdl:431081, idx:3
+06-09 14:53:13.147  1188  1240 I libPowerHal: [PD] system_server update cmd:400000 param:-1 pr:6
+06-09 14:53:13.147  1188  1240 I libPowerHal: [PD] system_server update cmd:400100 param:-1 pr:6
+06-09 14:53:13.147  1188  1240 I libPowerHal: [PD] system_server update cmd:400200 param:-1 pr:6
+06-09 14:53:13.148  1188  1240 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(-1): -1 max(-1): -1 cluster[1] min(-1): -1 max(-1): -1 cluster[2] min(-1): -1 max(-1): -1
+06-09 14:53:13.148  1188  1240 I libPowerHal: [perfLockRel] Done for hdl : 431081
+06-09 14:53:13.160  1830  2520 I mtkpower_client: perf_lock_rel, hdl:431081, pid: 1830, tid:2520
+06-09 14:53:13.163  1188  1240 I libPowerHal: [perfLockRel] hdl:431081, idx:-1
+06-09 14:53:13.260  1264  1264 I BufferQueueProducer: [LauncherOverlayWindow:com.mi.appfinder#158310](this:0xb4000070533b9150,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.79 dur=1266.89 max=1266.89 min=1266.89
+06-09 14:53:13.273  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=69.05 dur=1100.68 max=307.60 min=6.90
+06-09 14:53:13.356  1118  1712 D AudioALSAStreamOut: pause() 0xb4000078279e1080
+06-09 14:53:13.357  1118  1712 D AudioALSAStreamOut: flush() 0xb4000078279e1080
+06-09 14:53:13.358  1118  1712 D AudioALSAStreamOut: standby(), flag 4
+06-09 14:53:13.358  1118  1712 D AudioALSAStreamOut: standbyStreamOut(), halRequest 0, mDestroy 0, flag 4
+06-09 14:53:13.358  1118  1712 D AudioALSAStreamOut: close_l(), flags 4
+06-09 14:53:13.358  1118  1712 D AudioALSAHardwareResourceManager: +stopOutputDeviceWithoutNotify(), mOutputDevices = 0x2, mStartOutputDevicesCount = 1
+06-09 14:53:13.359  1118  1712 D AudioSmartPaController: +dspOnBoardSpeakerOff()
+06-09 14:53:13.359  1118  1712 D AudioDspStreamManager: +stopDevice() Devices 0x2 mOutputDeviceCount 0x1
+06-09 14:53:13.359  1118  1712 D AudioDspStreamManager: dataPassToCodec output_devices = 0x2 mAudioOutputFlags = 4 devicecount = 1 ret = 1
+06-09 14:53:13.359  1118  1712 D AudioDspStreamManager: dataPasstoDspAfe output_devices = 0x2 Flags = 4 isUseAdspPlaybackTask = 1 ret = 1
+06-09 14:53:13.365  1118  1712 D AudioDspStreamManager: -triggerDsp task_scene = 32 data_type = 16
+06-09 14:53:13.366  1118  1712 D AudioDspStreamManager: stopTasks_l() mDspStreamState = DSP_STREAM_STOP
+06-09 14:53:13.366  1118  1712 D AudioDspStreamManager: -stopDevice() Devices 0x2
+06-09 14:53:13.366  1118  1712 D AudioMTKGainController: updatedevpower(), set Dev_Power enable(0) total_power 0 power : 14780 
+06-09 14:53:13.368  1118  1712 D AudioALSAPlaybackHandlerDsp: -closePcmDriver(), mPcm = 0x0
+06-09 14:53:13.368  1118  1712 D AudioDspStreamManager: removePlaybackHandler() mOutputDeviceCount 0x0
+06-09 14:53:13.369  1118  1712 D AudioALSADeviceConfigManager: ApplyDeviceTurnoffSequenceByName(), DeviceName = SPK_OUT_DEVICE_CTRL_PRE_PMU descriptor->DeviceStatusCounter = 1, Ctlsize=4
+06-09 14:53:13.411  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:53:13.420  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:53:13.449  1830  2314 W NetworkPolicy: shared quota unsupported; generating rule for each iface
+06-09 14:53:13.449  1118  1712 D AudioALSADeviceConfigManager: ApplyDeviceTurnoffSequenceByName(), DeviceName = PLAYBACK11_TO_I2S1 descriptor->DeviceStatusCounter = 1, Ctlsize=4
+06-09 14:53:13.449  1118  1712 D AudioALSADeviceConfigManager: ApplyDeviceTurnoffSequenceByName(), DeviceName = I2S0_TO_CAPTURE4 descriptor->DeviceStatusCounter = 1, Ctlsize=4
+06-09 14:53:13.451  1118  1712 D aurisys_lib_manager: delete_aurisys_lib_manager(), manager 0xb4000079279f2b70
+06-09 14:53:13.452  1118  1712 D AudioDspStreamManager: -closePlaybackTask(), mDspTaskPlaybackActive = 0, mPlaybackUlPcm = 0x0 mPlaybackDlPcm = 0x0, mDspPcm = 0x0
+06-09 14:53:13.452  1118  1712 D AudioALSAHardwareResourceManager: notifyOutputDeviceStatusChange(), device = 2, status = 1, sampleRate = 0, mOpenSpeakerPathCount = 0
+06-09 14:53:13.452  1118  1712 D AudioALSAStreamManager: speakerStatusChangeCb(), status = 1, sampleRate = 0
+06-09 14:53:13.453  1118  1712 D AudioALSAVoiceWakeUpController: updateSpeakerPlaybackStatus(), isSpeakerPlaying = 0
+06-09 14:53:13.453  1118  1712 D AudioALSAVoiceWakeUpController: +setBargeInEnable(), enable = 0
+06-09 14:53:13.465  1118  1712 D AudioALSAVoiceWakeUpController: setBargeInEnable(), VOW_BARGEIN_OFF set, irq = 26, ret = 0
+06-09 14:53:13.467  1118  1712 D AudioALSADeviceConfigManager: ApplyDeviceTurnoffSequenceByName(), DeviceName = VOW_BARGE_IN_ECHO_SPEAKER_HIFI3 descriptor->DeviceStatusCounter = 1, Ctlsize=14
+06-09 14:53:13.476  1118  1712 D AudioALSAVoiceWakeUpController: -setBargeInEnable(), mBargeInPcm = 0x0, mBargeInEnable = 0
+06-09 14:53:13.477  1118  1712 D AudioALSAPlaybackHandlerBase: DestroyAurisysLibManager()
+06-09 14:53:13.477  1118  1712 D aurisys_lib_handler: aurisys_arsi_destroy_handler(), lib_name misoundfpsop, 0xb4000079a79ce980, arsi_destroy_handler, arsi_handler = 0xb400007937aab1d0, retval = 0
+06-09 14:53:13.477  1118  1712 D aurisys_lib_handler: aurisys_arsi_destroy_handler(), lib_name misoundcrossfade, 0xb4000079a79d07b0, arsi_destroy_handler, arsi_handler = 0xb4000079179e2ed0, retval = 0
+06-09 14:53:13.477  1118  1712 D aurisys_lib_manager: delete_aurisys_lib_manager(), manager 0xb4000079279f21d0
+06-09 14:53:13.477  1118  1712 D AudioALSAPlaybackHandlerDsp: -close(), flag 0x4, mDevice = 0x2
+06-09 14:53:13.478  1118  1712 D AudioALSAPlaybackHandlerDsp: ~AudioALSAPlaybackHandlerDsp()
+06-09 14:53:13.478  1118  1712 D AudioALSAStreamManager: routingOutputDeviceForIEMs()
+06-09 14:53:13.908  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:53:13.914  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:53:14.893  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=6.36 dur=2674.97 max=2541.91 min=8.21
+06-09 14:53:14.902  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.68 dur=4415.78 max=3999.71 min=58.30
+06-09 14:53:15.012  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=1.72 dur=1739.55 max=1289.33 min=142.09
+06-09 14:53:15.056  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:53:15.067  6170  9893 I AudioEffect: getParameter: param: 5, param2: -1
+06-09 14:53:17.182  1188  1240 I mtkpower@impl: [powerd_req] TIMER_MSG_PERF_LOCK_TIMEOUT hdl:431078
+06-09 14:53:17.183  1188  1240 I libPowerHal: [perfLockRel] hdl:431078, idx:-1
+06-09 14:53:17.300  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.83 dur=2398.37 max=2391.19 min=7.19
+06-09 14:53:17.301  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.83 dur=2407.25 max=2391.59 min=15.66
+06-09 14:53:17.419  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.42 dur=2407.14 max=2407.14 min=2407.14
+06-09 14:53:18.274  1264  1264 I BufferQueueProducer: [LauncherOverlayWindow:com.mi.appfinder#158310](this:0xb4000070533b9150,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.20 dur=5013.32 max=5013.32 min=5013.32
+06-09 14:53:18.905  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.25 dur=1605.16 max=998.20 min=606.95
+06-09 14:53:18.906  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.25 dur=1605.00 max=997.75 min=607.25
+06-09 14:53:19.043  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=1.23 dur=1624.02 max=966.38 min=657.64
+06-09 14:53:21.314  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.83 dur=2408.66 max=2015.36 min=393.30
+06-09 14:53:21.322  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.83 dur=2416.52 max=2013.72 min=402.80
+06-09 14:53:21.442  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.83 dur=2398.51 max=1998.92 min=399.59
+06-09 14:53:22.890  1264  1264 I BufferQueueProducer: [com.miui.securitycenter/.FloatingWindow#158308](this:0xb4000070533d8680,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.10 dur=10013.36 max=10013.36 min=10013.36
+06-09 14:53:22.908  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.63 dur=1593.73 max=1593.73 min=1593.73
+06-09 14:53:22.913  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.63 dur=1591.08 max=1591.08 min=1591.08
+06-09 14:53:23.279  1264  1264 I BufferQueueProducer: [LauncherOverlayWindow:com.mi.appfinder#158310](this:0xb4000070533b9150,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.20 dur=5005.85 max=5005.85 min=5005.85
+06-09 14:53:23.374  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.52 dur=1932.34 max=1932.34 min=1932.34
+06-09 14:53:23.474  1830  2314 W NetworkPolicy: shared quota unsupported; generating rule for each iface
+06-09 14:53:24.338  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.40 dur=1424.71 max=1417.39 min=7.32
+06-09 14:53:24.338  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=1.40 dur=1429.93 max=1425.11 min=4.82
+06-09 14:53:24.465  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=2.75 dur=1090.45 max=648.28 min=131.15
+06-09 14:53:26.362  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.49 dur=2024.03 max=2024.03 min=2024.03
+06-09 14:53:26.371  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.49 dur=2033.27 max=2033.27 min=2033.27
+06-09 14:53:26.491  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.49 dur=2026.46 max=2026.46 min=2026.46
+06-09 14:53:28.302  1264  1264 I BufferQueueProducer: [LauncherOverlayWindow:com.mi.appfinder#158310](this:0xb4000070533b9150,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.20 dur=5022.23 max=5022.23 min=5022.23
+06-09 14:53:28.414  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=1.04 dur=1922.92 max=1358.62 min=564.29
+06-09 14:53:28.488  1830  2314 W NetworkPolicy: shared quota unsupported; generating rule for each iface
+06-09 14:53:29.321  1830  2216 I mtkpower_client: [PowerHal_Wrap_notifyAppState] com.xiaomi.aicr/com.xiaomi.aicr pid=20409 activityId:20409 state:3
+06-09 14:53:29.322  1169  1173 I MTK_APPList: [notifyAPPstate] com.xiaomi.aicr/com.xiaomi.aicr, pid=20409, activityId=20409, uid=10152, state:DEAD, fps:-1, win:0
+06-09 14:53:29.322  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_count: 1
+06-09 14:53:29.322  1169  1173 I MTK_APPList: [notifyAPPstate] multi_resumed_app_info[0] com.mi.android.globallauncher/com.miui.home.launcher.Launcher, pid:24536, activityId:266253374, fps:-1, isMultiWindow:0
+06-09 14:53:29.322  1169  1173 I MTK_APPList: [getForegroundAPPCount] 1
+06-09 14:53:29.322  1169  1173 I MTK_APPList: [notifyAPPstate] pack:com.xiaomi.aicr, pid:20409, STATE_DEAD
+06-09 14:53:29.322  1169  1173 I MTK_APPList: [notifyNetdUID] 10158
+06-09 14:53:29.323  1169  1173 I MTK_APPList: [notifyPID] 24536
+06-09 14:53:29.324  1188  1240 I libPowerHal: [perfSetSysInfo] pid type:24, 24536
+06-09 14:53:29.384  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.66 dur=3013.45 max=2469.24 min=544.21
+06-09 14:53:29.385  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.66 dur=3022.63 max=2469.45 min=553.18
+06-09 14:53:29.505  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.92 dur=1091.21 max=1091.21 min=1091.21
+06-09 14:53:29.667  1264  1264 I BufferQueueProducer: [com.mi.android.globallauncher/com.miui.home.launcher.Launcher#158311](this:0xb4000070533c7520,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.12 dur=16532.70 max=16524.46 min=8.25
+06-09 14:53:30.925  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.65 dur=1540.67 max=1540.67 min=1540.67
+06-09 14:53:30.925  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.65 dur=1540.52 max=1540.52 min=1540.52
+06-09 14:53:31.037  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=1.31 dur=1532.22 max=1290.94 min=241.27
+06-09 14:53:33.467  1830  2314 W NetworkPolicy: shared quota unsupported; generating rule for each iface
+06-09 14:53:34.948  1264  1264 I BufferQueueProducer: [StatusBar1#127](this:0xb4000070532be7d0,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.50 dur=4023.21 max=4015.69 min=7.52
+06-09 14:53:34.956  1264  1264 I BufferQueueProducer: [StatusBar#123](this:0xb4000070532b0400,id:-1,api:0,p:-1,c:1264) queueBuffer: fps=0.50 dur=4031.34 max=4023.72 min=7.62
+06-09 14:53:35.052  1264  1264 I BufferQueueProducer: [FramebufferSurface](this:0xb400007072de1770,id:-1,api:1,p:1264,c:1264) queueBuffer: fps=0.25 dur=4014.67 max=4014.67 min=4014.67

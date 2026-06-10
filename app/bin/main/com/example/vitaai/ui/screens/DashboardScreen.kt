@@ -1,13 +1,23 @@
 package com.example.vitaai.ui.screens
 
 import android.Manifest
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,26 +31,46 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalDrink
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Whatshot
+import androidx.compose.material.icons.filled.ModeNight
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Coffee
+import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.filled.TrendingFlat
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -48,23 +78,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.ui.platform.LocalContext
 import androidx.health.connect.client.PermissionController
+import androidx.health.connect.client.HealthConnectClient
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.vitaai.data.HealthMetricType
+import com.example.vitaai.data.DailyGoals
+import com.example.vitaai.data.HealthMetrics
 import com.example.vitaai.data.HealthSnapshot
-import com.example.vitaai.data.MoodEntry
 import com.example.vitaai.data.NutritionSummary
 import com.example.vitaai.data.local.WorkoutSessionEntity
-import com.example.vitaai.ui.components.ApexCard
 import com.example.vitaai.ui.components.AuraBackground
-import com.example.vitaai.ui.theme.Error
-import com.example.vitaai.ui.theme.OnBackground
-import com.example.vitaai.ui.theme.OnPrimary
-import com.example.vitaai.ui.theme.OnSurfaceVariant
-import com.example.vitaai.ui.theme.OutlineVariant
-import com.example.vitaai.ui.theme.Primary
-import com.example.vitaai.ui.theme.SurfaceContainerHigh
+import com.example.vitaai.ui.components.GlassCard
+import com.example.vitaai.ui.components.GlassCardGlow
+import com.example.vitaai.ui.components.PageHeader
+import com.example.vitaai.data.GoalProgress
+import com.example.vitaai.ui.theme.*
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -81,9 +120,11 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
             is DashboardUiState.Success -> DashboardContent(
                 snapshot = state.snapshot,
                 insight = state.insight,
-                mood = state.mood,
                 nutrition = state.nutrition,
                 recentWorkouts = state.recentWorkouts,
+                goalProgress = state.goalProgress,
+                streakDays = state.streakDays,
+                goals = state.goals,
                 viewModel = viewModel,
                 navController = navController
             )
@@ -96,6 +137,7 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
 
 @Composable
 private fun PermissionsScreen(viewModel: DashboardViewModel) {
+    val context = LocalContext.current
     val healthConnectLauncher = rememberLauncherForActivityResult(
         contract = PermissionController.createRequestPermissionResultContract()
     ) { grantedPermissions -> viewModel.onPermissionsResult(grantedPermissions) }
@@ -112,11 +154,21 @@ private fun PermissionsScreen(viewModel: DashboardViewModel) {
         Text(
             "Grant Health Connect access to sync Samsung Health, Google/Fitbit data, and VitaAI logs.",
             textAlign = TextAlign.Center,
-            color = OnSurfaceVariant
+            color = Color.Black.copy(alpha = 0.5f)
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
-            onClick = { healthConnectLauncher.launch(viewModel.getRequestedPermissions()) },
+            onClick = {
+                val sdkStatus = HealthConnectClient.getSdkStatus(context)
+                if (sdkStatus == HealthConnectClient.SDK_AVAILABLE) {
+                    healthConnectLauncher.launch(viewModel.getRequestedPermissions())
+                } else {
+                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                        data = android.net.Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata")
+                    }
+                    context.startActivity(intent)
+                }
+            },
             colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = OnPrimary)
         ) {
             Text("Grant Access")
@@ -125,319 +177,604 @@ private fun PermissionsScreen(viewModel: DashboardViewModel) {
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 private fun DashboardContent(
     snapshot: HealthSnapshot,
     insight: String,
-    mood: MoodEntry?,
     nutrition: NutritionSummary,
     recentWorkouts: List<WorkoutSessionEntity>,
+    goalProgress: GoalProgress,
+    streakDays: Int,
+    goals: DailyGoals,
     viewModel: DashboardViewModel,
     navController: NavController
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding(),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // --- 1. APEX HEADER (Command Center) ---
-        item {
-            Column(Modifier.fillMaxWidth()) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Column {
-                        Text(
-                            text = "COMMAND CENTER",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Primary,
-                            letterSpacing = 1.5.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "OPERATIONAL",
-                            style = MaterialTheme.typography.displaySmall,
-                            color = OnBackground,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Button(
-                        onClick = { navController.navigate("activity") },
-                        colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = OnPrimary),
-                        shape = MaterialTheme.shapes.extraSmall,
-                        modifier = Modifier.height(36.dp)
-                    ) {
-                        Text("INITIATE TRAINING", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
-                    }
-                }
-                Spacer(Modifier.height(12.dp))
-                HorizontalDivider(color = Primary.copy(alpha = 0.2f), thickness = 2.dp)
-            }
-        }
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val pullToRefreshState = rememberPullToRefreshState()
 
-        // --- 2. VITALS HUB ---
-        item {
-            ApexCard(
-                modifier = Modifier.fillMaxWidth(),
-                title = "Critical Vitals"
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(24.dp)
-                ) {
-                    VitalItem(
-                        label = "HEART",
-                        value = if (snapshot.avgHeartRate > 0) snapshot.avgHeartRate.roundToInt().toString() else "--",
-                        unit = "BPM",
-                        icon = Icons.Default.Favorite,
-                        modifier = Modifier.weight(1f)
-                    )
-                    VerticalDivider(color = OutlineVariant.copy(alpha = 0.2f), modifier = Modifier.height(48.dp))
-                    VitalItem(
-                        label = "SLEEP",
-                        value = String.format(Locale.US, "%.1f", snapshot.sleepDurationHours),
-                        unit = "HRS",
-                        icon = Icons.Default.Favorite, // Replace with Bed icon if available
-                        modifier = Modifier.weight(1f)
-                    )
-                    VerticalDivider(color = OutlineVariant.copy(alpha = 0.2f), modifier = Modifier.height(48.dp))
-                    VitalItem(
-                        label = "IDLE",
-                        value = snapshot.basalCalories.roundToInt().toString(),
-                        unit = "KCAL",
-                        icon = Icons.Default.Whatshot,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-        }
-
-        // --- 3. DAILY PERFORMANCE GRID ---
-        item {
-            Text(
-                "DAILY PERFORMANCE",
-                style = MaterialTheme.typography.labelSmall,
-                color = OnSurfaceVariant,
-                letterSpacing = 1.2.sp
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { viewModel.refresh() },
+        state = pullToRefreshState,
+        modifier = Modifier.fillMaxSize(),
+        indicator = {
+            PullToRefreshDefaults.Indicator(
+                state = pullToRefreshState,
+                isRefreshing = isRefreshing,
+                modifier = Modifier.align(Alignment.TopCenter),
+                containerColor = MaterialTheme.colorScheme.surface,
+                color = Primary
             )
         }
-
-        item {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                DashboardMetricTile(
-                    label = "STEPS",
-                    value = snapshot.steps.toString(),
-                    unit = "TOTAL",
-                    icon = Icons.Default.DirectionsRun,
-                    modifier = Modifier.weight(1f),
-                    color = Primary
-                ) {
-                    navController.navigate("metric/${HealthMetricType.STEPS.route}")
-                }
-                DashboardMetricTile(
-                    label = "TOTAL BURN",
-                    value = (snapshot.calories + snapshot.basalCalories).roundToInt().toString(),
-                    unit = "KCAL",
-                    icon = Icons.Default.Whatshot,
-                    modifier = Modifier.weight(1f),
-                    color = Color(0xFFFF5722) // High contrast orange
-                ) {
-                    navController.navigate("metric/${HealthMetricType.ACTIVE_CALORIES.route}")
-                }
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding(),
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 100.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            // --- 1. HEADER ---
+            item {
+                PageHeader(title = "VitaAI", kicker = "Health companion")
             }
-        }
 
-        item {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                DashboardMetricTile(
-                    label = "HYDRATION",
-                    value = String.format(Locale.US, "%.1f", maxOf(snapshot.hydrationLiters, nutrition.hydrationMl / 1000.0)),
-                    unit = "LITERS",
-                    icon = Icons.Default.LocalDrink,
-                    modifier = Modifier.weight(1f),
-                    color = Color(0xFF00B0FF) // Technical Blue
-                ) {
-                    navController.navigate("nutrition")
-                }
-                DashboardMetricTile(
-                    label = "PROTEIN",
-                    value = nutrition.proteinGrams.roundToInt().toString(),
-                    unit = "GRAMS",
-                    icon = Icons.Default.Restaurant,
-                    modifier = Modifier.weight(1f),
-                    color = Color(0xFFE91E63) // Performance Pink
-                ) {
-                    navController.navigate("nutrition")
-                }
+            // --- 2. READINESS SCORE CARD ---
+            item {
+                val readinessScore = HealthMetrics.computeReadinessScore(snapshot)
+                ReadinessScoreCard(
+                    score = readinessScore,
+                    snapshot = snapshot,
+                    insight = insight,
+                    onClick = { navController.navigate("circadian") }
+                )
             }
-        }
 
-        // --- 4. FUELING & OPTIMIZATION ---
-        item {
-            ApexCard(
-                modifier = Modifier.fillMaxWidth(),
-                title = "Fueling Status"
-            ) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    MacroBar(nutrition)
+            // --- 3. METRICS GRID (2x2 Bento) ---
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Text(
-                            text = "${nutrition.calories.roundToInt()} KCAL INTAKE",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = OnSurfaceVariant
+                        MetricCard(
+                            icon = Icons.Default.Whatshot,
+                            label = "Active energy",
+                            value = HealthMetrics.formatActiveEnergyKcal(snapshot.calories),
+                            tone = "amber",
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("metric/active_calories") }
+                        )
+                        MetricCard(
+                            icon = Icons.Default.FitnessCenter,
+                            label = "Training",
+                            value = HealthMetrics.formatTrainingMinutes(snapshot.exerciseMinutes),
+                            tone = "cyan",
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("activity") }
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        MetricCard(
+                            icon = Icons.Default.Restaurant,
+                            label = "Protein",
+                            value = HealthMetrics.formatProteinGrams(nutrition.proteinGrams),
+                            tone = "yellow",
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("nutrition") }
+                        )
+                        MetricCard(
+                            icon = Icons.Default.ModeNight,
+                            label = "Sleep",
+                            value = HealthMetrics.formatSleepHours(snapshot.sleepDurationHours),
+                            tone = "blue",
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("circadian") }
+                        )
+                    }
+                }
+            }
+
+            // --- 4. TODAY'S INSIGHTS SECTION ---
+            item {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Today's Insights & Tips",
+                    style = VitaTextStyles.cardSectionTitle,
+                    color = Color(0xFF0F172A)
+                )
+            }
+
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    TipCard(
+                        icon = Icons.Default.Lightbulb,
+                        title = "Recovery Prioritization",
+                        description = HealthMetrics.recoveryTip(snapshot.sleepDurationHours),
+                        tone = "rose",
+                        onClick = { navController.navigate("circadian") }
+                    )
+                    TipCard(
+                        icon = Icons.Default.Coffee,
+                        title = "Afternoon Energy Dip",
+                        description = insight.ifBlank {
+                            "Based on your synced activity, a short walk or mobility break can help sustain afternoon energy."
+                        },
+                        tone = "emerald",
+                        onClick = { navController.navigate("activity") }
+                    )
+                    TipCard(
+                        icon = Icons.Default.WaterDrop,
+                        title = "Hydration Check-in",
+                        description = HealthMetrics.hydrationPaceMessage(
+                            hydrationLiters = maxOf(snapshot.hydrationLiters, nutrition.hydrationMl / 1000.0),
+                            goalLiters = goals.hydrationGoalLiters
+                        ),
+                        tone = "blue",
+                        onClick = { navController.navigate("nutrition") }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MetricCard(
+    icon: ImageVector,
+    label: String,
+    value: String,
+    tone: String,
+    modifier: Modifier = Modifier,
+    trendPercent: Float? = null, // positive = up, negative = down, null = no trend
+    onClick: () -> Unit = {}
+) {
+    val (iconBgColor, iconColor) = when (tone) {
+        "amber" -> Color(0xFFFEF3C7) to Color(0xFFB45309)
+        "cyan" -> Color(0xFFCFFAFE) to Color(0xFF0E7490)
+        "yellow" -> Color(0xFFFEF9C3) to Color(0xFFA16207)
+        "blue" -> Color(0xFFDBEAFE) to Color(0xFF1D4ED8)
+        else -> Color.Black.copy(alpha = 0.05f) to Color.Black.copy(alpha = 0.6f)
+    }
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.96f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMediumLow
+        ),
+        label = "metricScale"
+    )
+
+    GlassCard(
+        modifier = modifier
+            .graphicsLayer { scaleX = scale; scaleY = scale },
+        onClick = onClick
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(iconBgColor),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = label,
+                    tint = iconColor,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            Column {
+                Text(
+                    text = label,
+                    style = VitaTextStyles.metricLabel,
+                    color = Color.Black.copy(alpha = 0.50f)
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = value,
+                    style = VitaTextStyles.metricCompact,
+                    color = Color(0xFF0F172A)
+                )
+                // Trend indicator
+                if (trendPercent != null) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    val isUp = trendPercent >= 0f
+                    val trendColor = if (isUp) Color(0xFF059669) else Color(0xFFDC2626)
+                    val trendIcon = if (isUp) Icons.AutoMirrored.Filled.TrendingUp else Icons.AutoMirrored.Filled.TrendingDown
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Icon(
+                            imageVector = trendIcon,
+                            contentDescription = if (isUp) "Trending up" else "Trending down",
+                            tint = trendColor,
+                            modifier = Modifier.size(12.dp)
                         )
                         Text(
-                            text = "OPTIMAL RANGE",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Primary
+                            text = "${if (isUp) "+" else ""}${"%.0f".format(trendPercent)}%",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.SemiBold
+                            ),
+                            color = trendColor
                         )
                     }
                 }
             }
         }
+    }
+}
 
-        // --- 5. TACTICAL INSIGHTS ---
-        item {
-            ApexCard(
-                modifier = Modifier.fillMaxWidth(),
-                title = "Tactical Analysis",
-                containerColor = Primary.copy(alpha = 0.05f)
+@Composable
+private fun TipCard(
+    icon: ImageVector,
+    title: String,
+    description: String,
+    tone: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
+    val (iconBgColor, iconColor) = when (tone) {
+        "rose" -> Color(0xFFFFE4E6) to Color(0xFFE11D48)
+        "emerald" -> Color(0xFFD1FAE5) to Color(0xFF059669)
+        "blue" -> Color(0xFFDBEAFE) to Color(0xFF2563EB)
+        else -> Color.Black.copy(alpha = 0.05f) to Color.Black.copy(alpha = 0.6f)
+    }
+
+    GlassCard(
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(iconBgColor),
+                contentAlignment = Alignment.Center
             ) {
-                Row(
-                    Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Box(
-                        Modifier
-                            .size(4.dp, 40.dp)
-                            .background(Primary, MaterialTheme.shapes.extraSmall)
-                    )
-                    Text(
-                        text = insight.uppercase(),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = OnBackground,
-                        fontWeight = FontWeight.Medium,
-                        lineHeight = 18.sp
-                    )
-                }
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = iconColor,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = VitaTextStyles.cardTitle,
+                    color = Color(0xFF0F172A)
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = description,
+                    style = VitaTextStyles.bodyPrimary,
+                    color = Color.Black.copy(alpha = 0.55f)
+                )
             }
         }
+    }
+}
 
-        // --- 6. MOOD LOG ---
-        item {
-            ApexCard(
+@Composable
+private fun ReadinessScoreCard(
+    score: Int,
+    snapshot: HealthSnapshot,
+    insight: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val badgeColor = Color(0xFF047857)
+    val badgeBgColor = Color(0xFFECFDF5)
+    val badgeBorderColor = Color(0xFFA7F3D0)
+
+    val targetSweep = (score / 100f * 360f).coerceIn(0f, 360f)
+    val animatedSweep by animateFloatAsState(
+        targetValue = targetSweep,
+        animationSpec = tween(durationMillis = 1800, easing = FastOutSlowInEasing),
+        label = "readinessSweep"
+    )
+
+    val infiniteTransition = rememberInfiniteTransition(label = "readinessRing")
+    val ringRotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 40000, easing = LinearEasing)
+        ),
+        label = "ringRotation"
+    )
+
+    val arcCyan = Color(0xFF06B6D4)
+    val arcBlue = Color(0xFF3B82F6)
+
+    val sleepPct = HealthMetrics.sleepProgressPercent(snapshot.sleepDurationHours)
+    val heartPct = HealthMetrics.heartRecoveryPercent(snapshot)
+    val readinessBadge = HealthMetrics.readinessLabel(score)
+
+    Box(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .size(180.dp)
+                .align(Alignment.TopEnd)
+                .graphicsLayer {
+                    translationX = 40f
+                    translationY = -40f
+                }
+                .blur(60.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(arcCyan.copy(alpha = 0.25f), Color.Transparent)
+                    ),
+                    shape = CircleShape
+                )
+        )
+        Box(
+            modifier = Modifier
+                .size(140.dp)
+                .align(Alignment.BottomStart)
+                .graphicsLayer {
+                    translationX = -30f
+                    translationY = 30f
+                }
+                .blur(50.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(arcBlue.copy(alpha = 0.18f), Color.Transparent)
+                    ),
+                    shape = CircleShape
+                )
+        )
+
+        GlassCardGlow(
+            modifier = Modifier.fillMaxWidth().clickable { onClick() },
+            glowColor = arcCyan
+        ) {
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                title = "Condition Check"
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(Modifier.padding(16.dp)) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        (1..5).forEach { index ->
-                            val score = index * 2
-                            val selected = mood?.score == score
-                            val backgroundColor by animateColorAsState(
-                                targetValue = if (selected) Primary else SurfaceContainerHigh,
-                                label = "moodBackground$score"
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Readiness",
+                            style = VitaTextStyles.cardOverline,
+                            color = Color.Black.copy(alpha = 0.45f)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(badgeBgColor)
+                                .border(1.dp, badgeBorderColor, CircleShape)
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = readinessBadge,
+                                style = VitaTextStyles.badge,
+                                color = badgeColor
                             )
-                            val textColor by animateColorAsState(
-                                targetValue = if (selected) OnPrimary else Primary,
-                                label = "moodText$score"
+                        }
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        Text(
+                            text = score.toString(),
+                            style = VitaTextStyles.metricHero,
+                            color = Color(0xFF0F172A)
+                        )
+                        Text(
+                            text = "%",
+                            style = VitaTextStyles.metricUnit,
+                            color = Color.Black.copy(alpha = 0.3f),
+                            modifier = Modifier.padding(bottom = 8.dp, start = 2.dp)
+                        )
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ModeNight,
+                                contentDescription = "Sleep",
+                                tint = Color(0xFF3B82F6),
+                                modifier = Modifier.size(16.dp)
                             )
-                            val scale by animateFloatAsState(
-                                targetValue = if (selected) 1f else 0.94f,
-                                label = "moodScale$score"
+                            Text(
+                                text = "Sleep",
+                                style = VitaTextStyles.metricRowLabel,
+                                color = Color.Black.copy(alpha = 0.40f)
                             )
-                            Box(
-                                modifier = Modifier
-                                    .size(42.dp)
-                                    .graphicsLayer(scaleX = scale, scaleY = scale)
-                                    .background(backgroundColor, MaterialTheme.shapes.extraSmall)
-                                    .border(
-                                        width = 1.dp,
-                                        color = if (selected) Primary else OutlineVariant.copy(alpha = 0.2f),
-                                        shape = MaterialTheme.shapes.extraSmall
-                                    )
-                                    .clickable { viewModel.recordMood(score) },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(index.toString(), color = textColor, fontWeight = FontWeight.Bold)
-                            }
+                            Text(
+                                text = "$sleepPct%",
+                                style = VitaTextStyles.metricRowValue,
+                                color = Color(0xFF0F172A)
+                            )
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Favorite,
+                                contentDescription = "HRV",
+                                tint = Color(0xFFF43F5E),
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "Heart",
+                                style = VitaTextStyles.metricRowLabel,
+                                color = Color.Black.copy(alpha = 0.40f)
+                            )
+                            Text(
+                                text = "$heartPct%",
+                                style = VitaTextStyles.metricRowValue,
+                                color = Color(0xFF0F172A)
+                            )
                         }
                     }
                 }
+
+                Box(
+                    modifier = Modifier.size(144.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        val canvasSize = size.minDimension
+                        val strokeWidth = 9.dp.toPx()
+                        val radius = (canvasSize - strokeWidth) / 2f
+                        val topLeft = Offset(
+                            (size.width - canvasSize + strokeWidth) / 2f,
+                            (size.height - canvasSize + strokeWidth) / 2f
+                        )
+                        val arcSize = Size(canvasSize - strokeWidth, canvasSize - strokeWidth)
+
+                        drawArc(
+                            color = Color(0xFF0F172A).copy(alpha = 0.06f),
+                            startAngle = -90f,
+                            sweepAngle = 360f,
+                            useCenter = false,
+                            topLeft = topLeft,
+                            size = arcSize,
+                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                        )
+
+                        val dashedRadius = radius + strokeWidth * 0.9f
+                        val dashedArcSize = Size(dashedRadius * 2f, dashedRadius * 2f)
+                        val dashedTopLeft = Offset(
+                            (size.width - dashedRadius * 2f) / 2f,
+                            (size.height - dashedRadius * 2f) / 2f
+                        )
+                        rotate(ringRotation) {
+                            drawArc(
+                                color = Color(0xFF0F172A).copy(alpha = 0.2f),
+                                startAngle = -90f,
+                                sweepAngle = 360f,
+                                useCenter = false,
+                                topLeft = dashedTopLeft,
+                                size = dashedArcSize,
+                                style = Stroke(
+                                    width = 1.5.dp.toPx(),
+                                    pathEffect = PathEffect.dashPathEffect(
+                                        intervals = floatArrayOf(2f, 12f),
+                                        phase = 0f
+                                    )
+                                )
+                            )
+                        }
+
+                        val sweepBrush = Brush.sweepGradient(
+                            colors = listOf(arcCyan, arcBlue, arcCyan),
+                            center = Offset(size.width / 2f, size.height / 2f)
+                        )
+                        rotate(-90f) {
+                            drawArc(
+                                brush = sweepBrush,
+                                startAngle = 0f,
+                                sweepAngle = animatedSweep,
+                                useCenter = false,
+                                topLeft = topLeft,
+                                size = arcSize,
+                                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                            )
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(84.dp)
+                            .shadow(
+                                elevation = 8.dp,
+                                shape = CircleShape,
+                                clip = false,
+                                ambientColor = Color.Black.copy(alpha = 0.08f),
+                                spotColor = Color.Black.copy(alpha = 0.08f)
+                            )
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.8f))
+                            .border(1.dp, Color.White.copy(alpha = 0.9f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            tint = Color(0xFF06B6D4),
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .graphicsLayer {
+                        shadowElevation = 8f
+                        shape = RoundedCornerShape(20.dp)
+                        ambientShadowColor = Color.Black.copy(alpha = 0.08f)
+                        spotShadowColor = Color.Black.copy(alpha = 0.10f)
+                    }
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color.Black.copy(alpha = 0.03f))
+                    .border(1.dp, Color.Black.copy(alpha = 0.05f), RoundedCornerShape(20.dp))
+                    .padding(16.dp)
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Text(
+                        text = androidx.compose.ui.text.buildAnnotatedString {
+                            append("Prime condition. ")
+                            addStyle(
+                                style = androidx.compose.ui.text.SpanStyle(fontWeight = FontWeight.Bold),
+                                start = 0,
+                                end = 16
+                            )
+                            append(insight.ifEmpty { "Workout load is balanced. Add a protein-rich meal and 900 ml water to close your Vita ring." })
+                        },
+                        style = VitaTextStyles.bodyPrimary,
+                        color = Color(0xFF0F172A).copy(alpha = 0.8f)
+                    )
+                }
             }
         }
-        
-        item { Spacer(Modifier.height(24.dp)) }
-    }
-}
-
-@Composable
-private fun VitalItem(
-    label: String,
-    value: String,
-    unit: String,
-    icon: ImageVector,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier, horizontalAlignment = Alignment.Start) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, contentDescription = null, tint = Primary.copy(alpha = 0.5f), modifier = Modifier.size(12.dp))
-            Spacer(Modifier.width(4.dp))
-            Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-        }
-        Row(verticalAlignment = Alignment.Bottom) {
-            Text(value, style = MaterialTheme.typography.headlineLarge, color = OnBackground, fontWeight = FontWeight.Bold)
-            Spacer(Modifier.width(4.dp))
-            Text(unit, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant, modifier = Modifier.padding(bottom = 4.dp))
-        }
-    }
-}
-
-@Composable
-private fun DashboardMetricTile(
-    label: String,
-    value: String,
-    unit: String,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    color: Color = Primary,
-    onClick: () -> Unit
-) {
-    ApexCard(modifier = modifier.clickable(onClick = onClick)) {
-        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant, fontWeight = FontWeight.Bold)
-                Icon(icon, contentDescription = label, tint = color.copy(alpha = 0.6f), modifier = Modifier.size(16.dp))
-            }
-            Text(value, style = MaterialTheme.typography.headlineMedium, color = color, fontWeight = FontWeight.Bold)
-            Text(unit, style = androidx.compose.ui.text.TextStyle(
-                fontSize = 8.sp,
-                fontWeight = FontWeight.Medium,
-                color = OnSurfaceVariant.copy(alpha = 0.7f),
-                letterSpacing = 0.5.sp
-            ))
-            
-            // Technical "Progress" Bar (Decorative)
-            Box(Modifier.fillMaxWidth().height(2.dp).background(OutlineVariant.copy(alpha = 0.2f))) {
-                Box(Modifier.fillMaxWidth(0.6f).fillMaxHeight().background(color))
-            }
-        }
-    }
-}
-
-@Composable
-private fun MacroBar(nutrition: NutritionSummary) {
-    val total = (nutrition.proteinGrams + nutrition.carbsGrams + nutrition.fatGrams).coerceAtLeast(1.0)
-    Row(Modifier.fillMaxWidth().height(8.dp).background(SurfaceContainerHigh, MaterialTheme.shapes.small)) {
-        Box(Modifier.weight((nutrition.proteinGrams / total).toFloat().coerceAtLeast(0.05f)).fillMaxSize().background(Primary, MaterialTheme.shapes.small))
-        Box(Modifier.weight((nutrition.carbsGrams / total).toFloat().coerceAtLeast(0.05f)).fillMaxSize().background(Primary.copy(alpha = 0.55f)))
-        Box(Modifier.weight((nutrition.fatGrams / total).toFloat().coerceAtLeast(0.05f)).fillMaxSize().background(Primary.copy(alpha = 0.28f)))
     }
 }

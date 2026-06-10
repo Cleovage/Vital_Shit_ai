@@ -12,45 +12,83 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val repository: VitaRepository,
-    private val moodRepository: MoodRepository,
     private val healthConnectManager: HealthConnectManager,
     private val nutritionRepository: NutritionRepository,
-    private val workoutRepository: WorkoutRepository
+    private val workoutRepository: WorkoutRepository,
+    private val goalsRepository: GoalsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
     val uiState: StateFlow<DashboardUiState> = _uiState
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     private var snapshotJob: Job? = null
 
+    fun refresh() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            loadData()
+            kotlinx.coroutines.delay(800) // Tactile delay for spinner
+            _isRefreshing.value = false
+        }
+    }
+
     init {
-        viewModelScope.launch { workoutRepository.seedDefaultTemplatesIfNeeded() }
+        viewModelScope.launch {
+            try {
+                workoutRepository.seedDefaultTemplatesIfNeeded()
+            } catch (t: Throwable) {
+                android.util.Log.e("DashboardViewModel", "Failed to seed default templates", t)
+            }
+        }
         loadData()
     }
 
     fun loadData() {
         snapshotJob?.cancel()
         viewModelScope.launch {
-            if (!healthConnectManager.hasAllPermissions()) {
-                _uiState.value = DashboardUiState.PermissionsRequired
+            try {
+                if (!healthConnectManager.hasAllPermissions()) {
+                    _uiState.value = DashboardUiState.PermissionsRequired
+                    return@launch
+                }
+            } catch (t: Throwable) {
+                android.util.Log.e("DashboardViewModel", "Failed to check Health Connect permissions", t)
+                _uiState.value = DashboardUiState.Error(t.localizedMessage ?: "Health Connect is unavailable")
                 return@launch
             }
 
             snapshotJob = launch {
                 repository.healthSnapshotFlow
-                    .combine(moodRepository.currentMood) { snapshot, mood -> snapshot to mood }
-                    .combine(nutritionRepository.observeTodaySummary()) { snapshotAndMood, nutrition ->
-                        Triple(snapshotAndMood.first, snapshotAndMood.second, nutrition)
+                    .combine(nutritionRepository.observeTodaySummary()) { snapshot, nutrition ->
+                        snapshot to nutrition
                     }
-                    .combine(workoutRepository.observeRecentSessions(limit = 1)) { values, workouts ->
-                        val insight = repository.getAiInsight(values.first)
+                    .combine(workoutRepository.observeRecentSessions(limit = 3)) { sn, workouts ->
+                        Triple(sn.first, sn.second, workouts)
+                    }
+                    .combine(goalsRepository.observeGoalProgress(repository.healthSnapshotFlow)) { snw, goalProgress ->
+                        snw to goalProgress
+                    }
+                    .combine(goalsRepository.streakDays) { data, streakDays ->
+                        data to streakDays
+                    }
+                    .combine(goalsRepository.goals) { data, goals ->
+                        val (snw_gp, streakDays) = data
+                        val (snw, goalProgress) = snw_gp
+                        val (snapshot, nutrition, workouts) = snw
+                        
+                        val insight = repository.getAiInsight(snapshot)
                         DashboardUiState.Success(
-                            snapshot = values.first,
+                            snapshot = snapshot,
                             insight = insight,
-                            mood = values.second,
-                            nutrition = values.third,
-                            recentWorkouts = workouts
-                        ) as DashboardUiState
+                            nutrition = nutrition,
+                            recentWorkouts = workouts,
+                            goalProgress = goalProgress,
+                            streakDays = streakDays,
+                            goals = goals
+                        )
                     }
                     .catch { e ->
                         _uiState.value = DashboardUiState.Error(e.message ?: "Unknown error")
@@ -76,13 +114,14 @@ class DashboardViewModel @Inject constructor(
 
     fun logWater(oz: Int) {
         viewModelScope.launch {
-            repository.logWater(oz * 0.0295735) // convert oz to liters
+            val ml = oz * 29.5735
+            val waterItem = nutritionRepository.drinkCatalog.firstOrNull { it.name == "Water" }
+                ?: DrinkCatalogItem("Water", "Water", 250.0, 1.0, 0.0, 0.0, 0.0, "Direct hydration with no calories.")
+            nutritionRepository.addDrink(waterItem, ml)
         }
     }
 
-    fun recordMood(score: Int) {
-        moodRepository.recordMood(score)
-    }
+
 }
 
 sealed class DashboardUiState {
@@ -91,9 +130,11 @@ sealed class DashboardUiState {
     data class Success(
         val snapshot: HealthSnapshot, 
         val insight: String,
-        val mood: MoodEntry?,
         val nutrition: NutritionSummary,
-        val recentWorkouts: List<com.example.vitaai.data.local.WorkoutSessionEntity>
+        val recentWorkouts: List<com.example.vitaai.data.local.WorkoutSessionEntity>,
+        val goalProgress: GoalProgress,
+        val streakDays: Int,
+        val goals: DailyGoals
     ) : DashboardUiState()
     data class Error(val message: String) : DashboardUiState()
 }

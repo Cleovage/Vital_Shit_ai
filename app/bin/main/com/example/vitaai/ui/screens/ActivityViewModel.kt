@@ -2,25 +2,101 @@ package com.example.vitaai.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.vitaai.data.CalorieCalculator
+import com.example.vitaai.data.HealthMetricType
+import com.example.vitaai.data.HealthSnapshot
+import com.example.vitaai.data.NutritionRepository
+import com.example.vitaai.data.NutritionSummary
+import com.example.vitaai.data.VitaRepository
+import com.example.vitaai.data.GoalsRepository
+import com.example.vitaai.data.HealthMetrics
 import com.example.vitaai.data.WorkoutRepository
-import com.example.vitaai.data.local.WorkoutSessionEntity
 import com.example.vitaai.data.local.WorkoutTemplateEntity
+import com.example.vitaai.data.local.WorkoutSessionWithSets
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.health.connect.client.records.ExerciseSessionRecord
+
+data class ActivityHealthData(
+    val snapshot: HealthSnapshot = HealthSnapshot(),
+    val nutrition: NutritionSummary = NutritionSummary(),
+    val stepGoal: Long = 10_000L,
+    val exerciseTrend: List<Float> = emptyList(),
+    val caloriesTrend: List<Float> = emptyList(),
+    val proteinTrend: List<Float> = emptyList(),
+    val activeCaloriesTrend: List<Float> = emptyList()
+)
 
 @HiltViewModel
 class ActivityViewModel @Inject constructor(
-    private val workoutRepository: WorkoutRepository
+    private val workoutRepository: WorkoutRepository,
+    private val vitaRepository: VitaRepository,
+    private val nutritionRepository: NutritionRepository,
+    private val goalsRepository: GoalsRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<ActivityUiState>(ActivityUiState.Loading)
     val uiState: StateFlow<ActivityUiState> = _uiState
 
+    private data class TrendData(
+        val exercise: List<Float> = emptyList(),
+        val calories: List<Float> = emptyList(),
+        val protein: List<Float> = emptyList(),
+        val activeCalories: List<Float> = emptyList()
+    )
+
+    private val _trends = MutableStateFlow(TrendData())
+
+    val healthData: StateFlow<ActivityHealthData> = combine(
+        vitaRepository.healthSnapshotFlow,
+        nutritionRepository.observeTodaySummary(),
+        goalsRepository.goals,
+        _trends
+    ) { snapshot, nutrition, goals, trends ->
+        ActivityHealthData(
+            snapshot = snapshot,
+            nutrition = nutrition,
+            stepGoal = goals.stepGoal,
+            exerciseTrend = trends.exercise,
+            caloriesTrend = trends.calories,
+            proteinTrend = trends.protein,
+            activeCaloriesTrend = trends.activeCalories
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = ActivityHealthData()
+    )
+
     init {
         loadWorkouts()
+        loadTrends()
+    }
+
+    private fun loadTrends() {
+        viewModelScope.launch {
+            runCatching {
+                _trends.value = TrendData(
+                    exercise = HealthMetrics.trendValues(
+                        vitaRepository.getMetricTrend(HealthMetricType.EXERCISE_MINUTES, days = 7)
+                    ),
+                    calories = HealthMetrics.trendValues(
+                        vitaRepository.getMetricTrend(HealthMetricType.CALORIES_INTAKE, days = 7)
+                    ),
+                    protein = HealthMetrics.trendValues(
+                        vitaRepository.getMetricTrend(HealthMetricType.PROTEIN, days = 7)
+                    ),
+                    activeCalories = HealthMetrics.trendValues(
+                        vitaRepository.getMetricTrend(HealthMetricType.ACTIVE_CALORIES, days = 7)
+                    )
+                )
+            }
+        }
     }
 
     fun loadWorkouts() {
@@ -34,7 +110,7 @@ class ActivityViewModel @Inject constructor(
 
             combine(
                 workoutRepository.observeTemplates(),
-                workoutRepository.observeRecentSessions()
+                workoutRepository.observeRecentSessionsWithSets()
             ) { templates, sessions ->
                 ActivityUiState.Success(templates, sessions) as ActivityUiState
             }.collect { _uiState.value = it }
@@ -64,7 +140,25 @@ class ActivityViewModel @Inject constructor(
                 )
             }
             
-            // Mock route points for distance if needed (just start/end to get the distance logged if we handled that manually, but WorkoutRepository relies on distance being calculated from RoutePoints if we don't change it. Wait, WorkoutRepository calculates distance from route. I should change WorkoutRepository to accept distance directly or I can pass an empty route and modify WorkoutRepository slightly. Let's pass empty route and modify WorkoutRepository later if needed, or just let distance be 0 for manual right now, but manual distance is good for cardio.)
+            val userWeight = workoutRepository.getUserWeight() ?: 75.0
+            val computedCalories = if (calories > 0.0) calories else {
+                if (template.trackingMode == com.example.vitaai.data.TRACKING_CARDIO) {
+                    CalorieCalculator.estimateCardioCalories(
+                        templateId = template.id,
+                        durationSeconds = durationMinutes * 60L,
+                        distanceMeters = distanceMeters,
+                        weightKg = userWeight
+                    )
+                } else {
+                    CalorieCalculator.estimateStrengthCalories(
+                        templateId = template.id,
+                        durationSeconds = durationMinutes * 60L,
+                        completedSets = sets,
+                        totalReps = reps,
+                        weightKg = userWeight
+                    )
+                }
+            }
             
             workoutRepository.saveWorkoutSession(
                 template = template,
@@ -72,13 +166,59 @@ class ActivityViewModel @Inject constructor(
                 endTime = endTime,
                 totalReps = reps,
                 sets = mockSets,
-                route = emptyList(), // Route will be empty, meaning 0 calculated distance. I will need to update WorkoutRepository to allow overriding distance.
+                route = emptyList(),
                 avgHeartRate = 0.0,
-                calories = calories,
+                calories = computedCalories,
                 notes = "Manual Entry",
                 manualDistanceMeters = distanceMeters
             )
         }
+    }
+
+    fun createTemplate(
+        name: String,
+        description: String,
+        trackingMode: String,
+        defaultRestSeconds: Int,
+        gpsEnabled: Boolean
+    ) {
+        viewModelScope.launch {
+            val category = when (trackingMode) {
+                com.example.vitaai.data.TRACKING_CARDIO -> "Cardio"
+                com.example.vitaai.data.TRACKING_STRENGTH -> "Strength"
+                com.example.vitaai.data.TRACKING_MOBILITY -> "Mobility"
+                else -> "Bodyweight"
+            }
+            val exerciseType = when (trackingMode) {
+                com.example.vitaai.data.TRACKING_CARDIO -> ExerciseSessionRecord.EXERCISE_TYPE_RUNNING
+                com.example.vitaai.data.TRACKING_STRENGTH -> ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING
+                com.example.vitaai.data.TRACKING_MOBILITY -> ExerciseSessionRecord.EXERCISE_TYPE_YOGA
+                else -> ExerciseSessionRecord.EXERCISE_TYPE_CALISTHENICS
+            }
+            val primaryMetric = when (trackingMode) {
+                com.example.vitaai.data.TRACKING_CARDIO -> "pace"
+                com.example.vitaai.data.TRACKING_STRENGTH -> "sets"
+                com.example.vitaai.data.TRACKING_MOBILITY -> "time"
+                else -> "reps"
+            }
+            
+            val newTemplate = WorkoutTemplateEntity(
+                id = java.util.UUID.randomUUID().toString(),
+                name = name,
+                category = category,
+                exerciseType = exerciseType,
+                trackingMode = trackingMode,
+                gpsEnabled = gpsEnabled,
+                defaultRestSeconds = defaultRestSeconds,
+                description = description,
+                primaryMetric = primaryMetric
+            )
+            workoutRepository.saveTemplate(newTemplate)
+        }
+    }
+
+    fun getExerciseSets(sessionId: Long): kotlinx.coroutines.flow.Flow<List<com.example.vitaai.data.local.ExerciseSetEntity>> {
+        return workoutRepository.observeExerciseSets(sessionId)
     }
 }
 
@@ -86,7 +226,7 @@ sealed class ActivityUiState {
     object Loading : ActivityUiState()
     data class Success(
         val templates: List<WorkoutTemplateEntity>,
-        val sessions: List<WorkoutSessionEntity>
+        val sessions: List<WorkoutSessionWithSets>
     ) : ActivityUiState()
     data class Error(val message: String) : ActivityUiState()
 }
