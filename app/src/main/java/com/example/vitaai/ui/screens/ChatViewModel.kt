@@ -63,9 +63,10 @@ class ChatViewModel @Inject constructor(
             try {
                 val aiResponse = runCatching {
                     val snapshot = repository.getDailySnapshot()
-                    repository.getChatbotResponse(text, snapshot)
+                    val history = _messages.value.map { com.example.vitaai.data.ChatMessage(if (it.isUser) "user" else "assistant", it.text) }
+                    repository.getChatbotResponse(history, snapshot)
                 }.getOrElse { e ->
-                    "I'm sorry, I encountered an issue retrieving your health snapshot: ${e.localizedMessage ?: "Unknown error"}"
+                    "I'm sorry, I encountered an issue retrieving your health snapshot or connecting to the AI: ${e.localizedMessage ?: "Unknown error"}"
                 }
                 _messages.value = _messages.value + Message(aiResponse, false)
                 chatRepository.appendMessage(chatId, aiResponse, isUser = false)

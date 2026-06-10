@@ -2,6 +2,7 @@ package com.example.vitaai.ui.screens
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -23,14 +24,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
@@ -39,9 +41,12 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,6 +60,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChatScreen(
     onOpenHistory: () -> Unit = {},
+    onClose: () -> Unit = {},
     viewModel: ChatViewModel = hiltViewModel()
 ) {
     val messages by viewModel.messages.collectAsState()
@@ -94,10 +100,11 @@ fun ChatScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .statusBarsPadding()
-                    .imePadding()
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .imePadding()
                 ) {
                     // ─── ChatGPT-Style Minimalist Top Header ───
                     Row(
@@ -119,17 +126,13 @@ fun ChatScreen(
                                 modifier = Modifier
                                     .size(24.dp)
                                     .clip(CircleShape)
-                                    .background(
-                                        brush = Brush.linearGradient(
-                                            colors = listOf(Color(0xFF06B6D4), Color(0xFF3B82F6))
-                                        )
-                                    ),
+                                    .background(Color(0xFFE8F0FE)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.AutoAwesome,
                                     contentDescription = null,
-                                    tint = Color.White,
+                                    tint = Color(0xFF1F2937),
                                     modifier = Modifier.size(12.dp)
                                 )
                             }
@@ -140,31 +143,31 @@ fun ChatScreen(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 17.sp
                                 ),
-                                color = Color(0xFF0F172A)
+                                color = Color(0xFF202124)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Icon(
                                 imageVector = Icons.Default.KeyboardArrowDown,
                                 contentDescription = null,
-                                tint = Color.Black.copy(alpha = 0.4f),
+                                tint = Color(0xFF5f6368),
                                 modifier = Modifier.size(16.dp)
                             )
                         }
 
                         // Right side action buttons
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            IconButton(onClick = { viewModel.startNewConversation() }) {
-                                Icon(
-                                    imageVector = Icons.Default.Refresh,
-                                    contentDescription = "New conversation",
-                                    tint = Color(0xFF0F172A)
-                                )
-                            }
                             IconButton(onClick = onOpenHistory) {
                                 Icon(
                                     imageVector = Icons.Default.History,
                                     contentDescription = "Chat history",
-                                    tint = Color(0xFF0F172A)
+                                    tint = Color(0xFF5f6368)
+                                )
+                            }
+                            IconButton(onClick = onClose) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Close Chat",
+                                    tint = Color(0xFF5f6368)
                                 )
                             }
                         }
@@ -183,7 +186,7 @@ fun ChatScreen(
                             .fillMaxWidth()
                     ) {
                         if (showWelcome) {
-                            // Centered welcome layout + 2x2 Suggestion Cards
+                            // ─── Centered welcome layout + 2x2 Suggestion Cards ───
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -194,19 +197,15 @@ fun ChatScreen(
                                 Box(
                                     modifier = Modifier
                                         .size(68.dp)
-                                        .shadow(8.dp, CircleShape)
+                                        .shadow(4.dp, CircleShape)
                                         .clip(CircleShape)
-                                        .background(
-                                            brush = Brush.linearGradient(
-                                                colors = listOf(Color(0xFF06B6D4), Color(0xFF3B82F6))
-                                            )
-                                        ),
+                                        .background(Color(0xFFE8F0FE)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.AutoAwesome,
                                         contentDescription = null,
-                                        tint = Color.White,
+                                        tint = Color(0xFF1F2937),
                                         modifier = Modifier.size(32.dp)
                                     )
                                 }
@@ -219,7 +218,7 @@ fun ChatScreen(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 24.sp
                                     ),
-                                    color = Color(0xFF0F172A)
+                                    color = Color(0xFF202124)
                                 )
 
                                 Spacer(modifier = Modifier.height(28.dp))
@@ -312,7 +311,7 @@ fun ChatScreen(
                         Text(
                             text = "VitaAI Coach can make mistakes. Verify important health stats.",
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                            color = Color.Black.copy(alpha = 0.35f),
+                            color = Color(0xFF9aa0a6),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
@@ -334,7 +333,7 @@ fun ChatScreen(
                                 if (total > 0) listState.animateScrollToItem(total - 1)
                             }
                         },
-                        containerColor = Color(0xFF0F172A).copy(alpha = 0.85f),
+                        containerColor = Color(0xFF202124).copy(alpha = 0.85f),
                         contentColor = Color.White,
                         shape = CircleShape
                     ) {
@@ -350,7 +349,7 @@ fun ChatScreen(
     }
 }
 
-// ─── Suggestion Card Composable ───
+// ─── Suggestion Card Composable (Gemini-style) ───
 @Composable
 private fun SuggestionCard(
     title: String,
@@ -362,39 +361,40 @@ private fun SuggestionCard(
     Box(
         modifier = modifier
             .shadow(
-                elevation = 3.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = Color.Black.copy(alpha = 0.04f),
-                spotColor = Color.Black.copy(alpha = 0.04f)
+                elevation = 1.dp,
+                shape = RoundedCornerShape(12.dp),
+                ambientColor = Color.Black.copy(alpha = 0.02f),
+                spotColor = Color.Black.copy(alpha = 0.02f)
             )
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color.White.copy(alpha = 0.8f))
-            .border(1.dp, Color.Black.copy(alpha = 0.07f), RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.White.copy(alpha = 0.9f))
+            .border(1.dp, Color.Black.copy(alpha = 0.05f), RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
-            .padding(14.dp)
+            .padding(16.dp)
     ) {
-        Column {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Text(
                 text = icon,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(bottom = 6.dp)
+                fontSize = 28.sp
             )
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    lineHeight = 18.sp
                 ),
-                color = Color(0xFF0F172A)
+                color = Color(0xFF202124)
             )
-            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodySmall.copy(
-                    fontSize = 11.sp,
-                    lineHeight = 14.sp
+                    fontSize = 12.sp,
+                    lineHeight = 16.sp
                 ),
-                color = Color.Black.copy(alpha = 0.45f)
+                color = Color(0xFF5f6368)
             )
         }
     }
@@ -404,7 +404,7 @@ private fun SuggestionCard(
 @Composable
 private fun ChatBubbleItem(message: Message, viewModel: ChatViewModel) {
     if (message.isUser) {
-        // User message: Sleek right-aligned bubble
+        // User message: Clean right-aligned bubble without ticks
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
@@ -414,48 +414,28 @@ private fun ChatBubbleItem(message: Message, viewModel: ChatViewModel) {
                 modifier = Modifier
                     .widthIn(max = 300.dp)
                     .shadow(
-                        elevation = 4.dp,
+                        elevation = 1.dp,
                         shape = shape,
-                        ambientColor = Color.Black.copy(alpha = 0.08f),
-                        spotColor = Color.Black.copy(alpha = 0.08f)
+                        ambientColor = Color.Black.copy(alpha = 0.04f),
+                        spotColor = Color.Black.copy(alpha = 0.04f)
                     )
                     .clip(shape)
-                    .background(Color(0xFF0F172A))
-                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .background(Color(0xFF202124))
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 Text(
                     text = message.text,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.Normal,
                         lineHeight = 22.sp
                     ),
                     color = Color.White
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(
-                    modifier = Modifier.align(Alignment.End),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        text = formatMessageTime(message.timestamp),
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                        color = Color.White.copy(alpha = 0.55f)
-                    )
-                    Text(
-                        text = "✓✓",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = Color(0xFF34D399) // Emerald-400
-                    )
-                }
             }
         }
     } else {
-        // Assistant message: Clean, bubble-free document style with avatar on left
+        // Assistant message: Clean, left-aligned document style with avatar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -463,23 +443,18 @@ private fun ChatBubbleItem(message: Message, viewModel: ChatViewModel) {
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.Top
         ) {
-            // Glowing AI Avatar
+            // AI Avatar (simplified)
             Box(
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(
-                        brush = Brush.sweepGradient(
-                            colors = listOf(Color(0xFF06B6D4), Color(0xFF3B82F6), Color(0xFF06B6D4))
-                        )
-                    )
-                    .border(1.dp, Color.White.copy(alpha = 0.2f), CircleShape),
+                    .background(Color(0xFFE8F0FE)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.AutoAwesome,
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = Color(0xFF1F2937),
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -490,27 +465,16 @@ private fun ChatBubbleItem(message: Message, viewModel: ChatViewModel) {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "VitaAI Coach",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp
-                        ),
-                        color = Color(0xFF0F172A)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF10B981))
-                    )
-                }
+                Text(
+                    text = "VitaAI Coach",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 12.sp
+                    ),
+                    color = Color(0xFF202124)
+                )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
                     text = message.text,
@@ -518,16 +482,16 @@ private fun ChatBubbleItem(message: Message, viewModel: ChatViewModel) {
                         fontSize = 15.sp,
                         lineHeight = 22.sp
                     ),
-                    color = Color(0xFF0F172A)
+                    color = Color(0xFF202124)
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // Copy to Clipboard and Regenerate actions row
                 val clipboardManager = LocalClipboardManager.current
                 val context = LocalContext.current
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
@@ -540,7 +504,7 @@ private fun ChatBubbleItem(message: Message, viewModel: ChatViewModel) {
                         Icon(
                             imageVector = Icons.Default.ContentCopy,
                             contentDescription = "Copy message",
-                            tint = Color.Black.copy(alpha = 0.35f),
+                            tint = Color(0xFF5f6368),
                             modifier = Modifier.size(14.dp)
                         )
                     }
@@ -553,16 +517,10 @@ private fun ChatBubbleItem(message: Message, viewModel: ChatViewModel) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = "Regenerate",
-                            tint = Color.Black.copy(alpha = 0.35f),
+                            tint = Color(0xFF5f6368),
                             modifier = Modifier.size(14.dp)
                         )
                     }
-
-                    Text(
-                        text = formatMessageTime(message.timestamp),
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                        color = Color.Black.copy(alpha = 0.3f)
-                    )
                 }
             }
         }
@@ -583,17 +541,13 @@ private fun ThinkingIndicatorItem() {
             modifier = Modifier
                 .size(32.dp)
                 .clip(CircleShape)
-                .background(
-                    brush = Brush.sweepGradient(
-                        colors = listOf(Color(0xFF06B6D4), Color(0xFF3B82F6), Color(0xFF06B6D4))
-                    )
-                ),
+                .background(Color(0xFFE8F0FE)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Default.AutoAwesome,
                 contentDescription = null,
-                tint = Color.White,
+                tint = Color(0xFF1F2937),
                 modifier = Modifier.size(16.dp)
             )
         }
@@ -606,10 +560,10 @@ private fun ThinkingIndicatorItem() {
             Text(
                 text = "VitaAI Coach",
                 style = MaterialTheme.typography.labelMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 12.sp
                 ),
-                color = Color(0xFF0F172A)
+                color = Color(0xFF202124)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -621,30 +575,30 @@ private fun ThinkingIndicatorItem() {
             ) {
                 val transition = rememberInfiniteTransition(label = "thinkingDots")
                 val dot1Alpha by transition.animateFloat(
-                    initialValue = 0.2f, targetValue = 1.0f,
+                    initialValue = 0.4f, targetValue = 1.0f,
                     animationSpec = infiniteRepeatable(
                         animation = tween(600, easing = LinearEasing),
                         repeatMode = RepeatMode.Reverse
                     ), label = "tDot1"
                 )
                 val dot2Alpha by transition.animateFloat(
-                    initialValue = 0.2f, targetValue = 1.0f,
+                    initialValue = 0.4f, targetValue = 1.0f,
                     animationSpec = infiniteRepeatable(
                         animation = tween(600, easing = LinearEasing, delayMillis = 200),
                         repeatMode = RepeatMode.Reverse
                     ), label = "tDot2"
                 )
                 val dot3Alpha by transition.animateFloat(
-                    initialValue = 0.2f, targetValue = 1.0f,
+                    initialValue = 0.4f, targetValue = 1.0f,
                     animationSpec = infiniteRepeatable(
                         animation = tween(600, easing = LinearEasing, delayMillis = 400),
                         repeatMode = RepeatMode.Reverse
                     ), label = "tDot3"
                 )
 
-                Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(Color(0xFF0F172A).copy(alpha = dot1Alpha)))
-                Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(Color(0xFF0F172A).copy(alpha = dot2Alpha)))
-                Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(Color(0xFF0F172A).copy(alpha = dot3Alpha)))
+                Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(Color(0xFF202124).copy(alpha = dot1Alpha)))
+                Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(Color(0xFF202124).copy(alpha = dot2Alpha)))
+                Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(Color(0xFF202124).copy(alpha = dot3Alpha)))
             }
         }
     }
@@ -659,105 +613,112 @@ private fun ChatInputBar(
 ) {
     val containerShape = RoundedCornerShape(28.dp)
 
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .navigationBarsPadding(),
-        verticalAlignment = Alignment.CenterVertically
+            .animateContentSize(
+                animationSpec = tween(durationMillis = 300, easing = EaseInOutQuart)
+            )
     ) {
         Row(
             modifier = Modifier
-                .weight(1f)
-                .heightIn(min = 52.dp)
-                .shadow(
-                    elevation = 4.dp,
-                    shape = containerShape,
-                    ambientColor = Color.Black.copy(alpha = 0.05f),
-                    spotColor = Color.Black.copy(alpha = 0.05f)
-                )
-                .clip(containerShape)
-                .background(Color.White.copy(alpha = 0.9f))
-                .border(
-                    width = 1.dp,
-                    color = Color.Black.copy(alpha = 0.08f),
-                    shape = containerShape
-                )
-                .padding(horizontal = 6.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Visual Clip Attachment button
-            IconButton(
-                onClick = {},
-                modifier = Modifier.size(36.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.AttachFile,
-                    contentDescription = "Attach file",
-                    tint = Color.Black.copy(alpha = 0.4f),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(4.dp))
-
-            BasicTextField(
-                value = text,
-                onValueChange = onTextChange,
+            Row(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 4.dp, vertical = 12.dp),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                keyboardActions = KeyboardActions(onSend = {
-                    if (text.isNotBlank()) {
-                        onSend()
-                    }
-                }),
-                textStyle = MaterialTheme.typography.bodyMedium.copy(
-                    fontSize = 15.sp,
-                    color = Color(0xFF0F172A)
-                ),
-                singleLine = false,
-                maxLines = 5,
-                cursorBrush = SolidColor(Primary),
-                decorationBox = { innerTextField ->
-                    Box(contentAlignment = Alignment.CenterStart) {
-                        if (text.isEmpty()) {
-                            Text(
-                                text = "Message VitaAI...",
-                                color = Color.Black.copy(alpha = 0.38f),
-                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp)
-                            )
-                        }
-                        innerTextField()
-                    }
-                }
-            )
-
-            Spacer(modifier = Modifier.width(6.dp))
-
-            // Round up-arrow Send Button
-            val hasText = text.isNotBlank()
-            Box(
-                modifier = Modifier
-                    .padding(end = 4.dp)
-                    .size(36.dp)
-                    .clip(CircleShape)
-                    .background(
-                        if (hasText) Color(0xFF0F172A) else Color.Black.copy(alpha = 0.06f)
+                    .heightIn(min = 52.dp)
+                    .shadow(
+                        elevation = 2.dp,
+                        shape = containerShape,
+                        ambientColor = Color.Black.copy(alpha = 0.03f),
+                        spotColor = Color.Black.copy(alpha = 0.03f)
                     )
-                    .clickable(
-                        enabled = hasText,
-                        onClick = onSend
-                    ),
-                contentAlignment = Alignment.Center
+                    .clip(containerShape)
+                    .background(Color.White.copy(alpha = 0.95f))
+                    .border(
+                        width = 1.dp,
+                        color = Color.Black.copy(alpha = 0.06f),
+                        shape = containerShape
+                    )
+                    .padding(horizontal = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowUpward,
-                    contentDescription = "Send",
-                    tint = if (hasText) Color.White else Color.Black.copy(alpha = 0.3f),
-                    modifier = Modifier.size(18.dp)
+                // Visual Clip Attachment button
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AttachFile,
+                        contentDescription = "Attach file",
+                        tint = Color(0xFF5f6368),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                BasicTextField(
+                    value = text,
+                    onValueChange = onTextChange,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 4.dp, vertical = 12.dp),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                    keyboardActions = KeyboardActions(onSend = {
+                        if (text.isNotBlank()) {
+                            onSend()
+                        }
+                    }),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 15.sp,
+                        color = Color(0xFF202124)
+                    ),
+                    singleLine = false,
+                    maxLines = 5,
+                    cursorBrush = SolidColor(Primary),
+                    decorationBox = { innerTextField ->
+                        Box(contentAlignment = Alignment.CenterStart) {
+                            if (text.isEmpty()) {
+                                Text(
+                                    text = "Message VitaAI...",
+                                    color = Color(0xFF5f6368),
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp)
+                                )
+                            }
+                            innerTextField()
+                        }
+                    }
                 )
+
+                Spacer(modifier = Modifier.width(6.dp))
+
+                // Round up-arrow Send Button
+                val hasText = text.isNotBlank()
+                Box(
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (hasText) Color(0xFF202124) else Color.Black.copy(alpha = 0.04f)
+                        )
+                        .clickable(
+                            enabled = hasText,
+                            onClick = onSend
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowUpward,
+                        contentDescription = "Send",
+                        tint = if (hasText) Color.White else Color(0xFF9aa0a6),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
         }
     }

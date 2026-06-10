@@ -103,7 +103,8 @@ fun VitaApp(auth: FirebaseAuth?) {
     val shouldShowBottomBar = currentRoute != null &&
             currentRoute != "session" &&
             currentRoute != "auth" &&
-            !currentRoute.startsWith("workout/session")
+            !currentRoute.startsWith("workout/session") &&
+            !currentRoute.startsWith("chat")
 
     // Density and dimensions for translation Y calculation
     val density = LocalDensity.current
@@ -152,7 +153,6 @@ fun VitaApp(auth: FirebaseAuth?) {
                     else -> -1
                 }
             }
-
             val startDest = if (auth?.currentUser == null) "auth" else "dashboard"
 
             NavHost(
@@ -245,11 +245,13 @@ fun VitaApp(auth: FirebaseAuth?) {
                     )
                 }
                 composable("dashboard") { DashboardScreen(navController = navController) }
+                composable("products") { ProductsScreen(navController = navController) }
                 composable("activity") { ActivityScreen(navController = navController) }
                 composable("nutrition") { NutritionScreen() }
                 composable("chat") {
                     ChatScreen(
-                        onOpenHistory = { navController.navigate("chat/history") }
+                        onOpenHistory = { navController.navigate("chat/history") },
+                        onClose = { navController.popBackStack() }
                     )
                 }
                 composable("chat/history") {
@@ -342,7 +344,7 @@ private fun ApexNavigationBar(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
+               .height(72.dp)
                 .offset(y = 8.dp)
                 .padding(horizontal = 20.dp)
                 .background(
@@ -364,7 +366,7 @@ private fun ApexNavigationBar(
                     color = Color.Black.copy(alpha = 0.07f),
                     shape = shape
                 )
-                .padding(6.dp),
+                .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -393,7 +395,7 @@ private fun ApexNavigationBar(
                                 restoreState = true
                             }
                         }
-                        .padding(vertical = if (selected) 8.dp else 12.dp),
+                        .padding(vertical = if (selected) 12.dp else 14.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -401,7 +403,7 @@ private fun ApexNavigationBar(
                         imageVector = item.icon,
                         contentDescription = item.title,
                         tint = itemContentColor,
-                        modifier = Modifier.size(if (selected) 20.dp else 24.dp)
+                        modifier = Modifier.size(if (selected) 26.dp else 24.dp)
                     )
                     if (selected) {
                         Spacer(modifier = Modifier.height(3.dp))

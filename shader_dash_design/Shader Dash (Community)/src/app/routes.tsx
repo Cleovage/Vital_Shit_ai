@@ -5,6 +5,7 @@ import { Home, Health, Analytics, Profile, VitaChat } from "./screens/VitaApp";
 import { Splash } from "./screens/Splash";
 import { Onboarding } from "./screens/Onboarding";
 import { Auth } from "./screens/Auth";
+import { Products } from "./screens/Products";
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
           { index: true, Component: Home },
           { path: "health", Component: Health },
           { path: "analytics", Component: Analytics },
+          { path: "products", Component: Products },
           { path: "chat", Component: VitaChat },
           { path: "profile", Component: Profile },
           { path: "*", Component: () => <Navigate to="/app" replace /> },

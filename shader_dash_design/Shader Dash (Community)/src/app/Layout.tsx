@@ -1,12 +1,13 @@
 import { useRef } from "react";
 import { Outlet, Link, useLocation } from "react-router";
-import { Activity, BarChart3, Bot, BotMessageSquare, Home, User } from "lucide-react";
+import { Activity, BarChart3, Bot, BotMessageSquare, Home, User, Store } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
 const navItems = [
   { path: "/app/chat", icon: Bot, label: "Vita" },
   { path: "/app/health", icon: Activity, label: "Vitals" },
   { path: "/app", icon: Home, label: "Today" },
+  { path: "/app/products", icon: Store, label: "Products" },
   { path: "/app/analytics", icon: BarChart3, label: "Trends" },
   { path: "/app/profile", icon: User, label: "You" },
 ];
@@ -15,8 +16,9 @@ const navIndex: Record<string, number> = {
   "/app/chat": 0,
   "/app/health": 1,
   "/app": 2,
-  "/app/analytics": 3,
-  "/app/profile": 4,
+  "/app/products": 3,
+  "/app/analytics": 4,
+  "/app/profile": 5,
 };
 
 function getIndex(pathname: string) {

@@ -468,6 +468,17 @@ private fun WorkoutHome(
                     chartType = "bar"
                 )
 
+                // Active Calories Chart Card
+                ChartCard(
+                    title = "Active calories burned",
+                    value = if (snapshot.calories > 0.0) snapshot.calories.roundToInt().toString() else "--",
+                    unit = "KCAL",
+                    color = Color(0xFFF43F5E), // Match the heart rate glow color, or pick a fire-like color
+                    dataPoints = healthData.activeCaloriesTrend.ifEmpty { listOf(0f, snapshot.calories.toFloat()) },
+                    xAxisLabels = weekLabels,
+                    chartType = "bar"
+                )
+
                 // Food Logged Chart Card
                 ChartCard(
                     title = "Food logged in VitaAI",
@@ -498,6 +509,14 @@ private fun WorkoutHome(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                ActionRow(
+                    icon = Icons.Default.Store,
+                    title = "View Health Products",
+                    subtitle = "Recommended gear & supplements"
+                ) {
+                    navController.navigate("products")
+                }
+
                 ActionRow(
                     icon = Icons.Default.Add,
                     title = "Start adaptive session",
