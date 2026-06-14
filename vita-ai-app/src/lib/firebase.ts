@@ -4,12 +4,12 @@ import { getAuth } from 'firebase/auth';
 
 // TODO: Replace with your actual Firebase config from google-services.json
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCReR35SLbUAh2KQfyrgV54KbmwZdDw7yY",
+  authDomain: "wellbeing-app-45862.firebaseapp.com",
+  projectId: "wellbeing-app-45862",
+  storageBucket: "wellbeing-app-45862.firebasestorage.app",
+  messagingSenderId: "867362317050",
+  appId: "1:867362317050:android:91e1e2f8d9a92925839f43"
 };
 
 // Initialize Firebase

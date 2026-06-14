@@ -10,6 +10,9 @@ import { GlassCard } from '../components/GlassCard';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { DummyScreen } from '../screens/DummyScreen';
 import { DashboardScreen } from '../screens/DashboardScreen';
+import { VitalsScreen } from '../screens/VitalsScreen';
+import { TrendsScreen } from '../screens/TrendsScreen';
+import { ChatScreen } from '../screens/ChatScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -83,9 +86,9 @@ export const AppNavigator = () => {
         }}
       >
         <Tab.Screen name="Dashboard" component={DashboardScreen} />
-        <Tab.Screen name="Vitals" children={() => <DummyScreen title="Vitals" />} />
-        <Tab.Screen name="Chat" children={() => <DummyScreen title="VitaAI Chat" />} />
-        <Tab.Screen name="Trends" children={() => <DummyScreen title="Trends & Analytics" />} />
+        <Tab.Screen name="Vitals" component={VitalsScreen} />
+        <Tab.Screen name="Chat" component={ChatScreen} />
+        <Tab.Screen name="Trends" component={TrendsScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>
     </NavigationContainer>
