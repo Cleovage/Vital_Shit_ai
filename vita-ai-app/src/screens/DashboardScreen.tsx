@@ -1,14 +1,27 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Button } from 'react-native';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import { useThemeStore } from '../store/useThemeStore';
+import { useHealthStore } from '../store/useHealthStore';
 import { Colors } from '../theme/colors';
 import { GlassCard } from '../components/GlassCard';
-import { Flame, Dumbbell, Moon, Beef, Lightbulb, Droplets, ArrowRight } from 'lucide-react-native';
+import { Flame, Dumbbell, Moon, Beef, Lightbulb, Droplets, Heart } from 'lucide-react-native';
 
 export const DashboardScreen = () => {
   const { isDarkMode, glowEffect } = useThemeStore();
   const theme = isDarkMode ? Colors.dark : Colors.light;
+  const { hasPermissions, snapshot, requestPermissions, fetchDailySnapshot } = useHealthStore();
+
+  // Simple readiness computation based on sleep and hr (dummy logic)
+  const computeReadiness = () => {
+    let base = 70;
+    if (snapshot.sleepHours > 7) base += 20;
+    else if (snapshot.sleepHours > 5) base += 10;
+    if (snapshot.avgHeartRate > 0 && snapshot.avgHeartRate < 60) base += 10;
+    return Math.min(100, base);
+  };
+
+  const readinessScore = computeReadiness();
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]} contentContainerStyle={styles.scrollContent}>
@@ -19,19 +32,37 @@ export const DashboardScreen = () => {
         <Text style={[styles.title, { color: theme.text }]}>VitaAI</Text>
       </View>
 
+      {!hasPermissions && (
+        <GlassCard style={[styles.section, { borderColor: '#3B82F6', borderWidth: 1 }]}>
+           <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 12}}>
+              <Heart color="#3B82F6" size={24} />
+              <Text style={{fontSize: 18, fontWeight: 'bold', marginLeft: 8, color: theme.text}}>Connect Health Data</Text>
+           </View>
+           <Text style={{color: theme.textSecondary, marginBottom: 16}}>
+             Grant Health Connect access to sync your steps, sleep, and heart rate securely.
+           </Text>
+           <TouchableOpacity 
+              style={{backgroundColor: theme.primary, padding: 12, borderRadius: 8, alignItems: 'center'}}
+              onPress={requestPermissions}
+           >
+              <Text style={{color: '#FFF', fontWeight: 'bold'}}>Enable Sync</Text>
+           </TouchableOpacity>
+        </GlassCard>
+      )}
+
       {/* Readiness Score Card */}
       <GlassCard style={styles.section}>
         <View style={styles.readinessHeader}>
           <Text style={[styles.readinessTitle, { color: theme.textSecondary }]}>Readiness</Text>
           <View style={[styles.badge, { backgroundColor: 'rgba(16, 185, 129, 0.1)', borderColor: 'rgba(16, 185, 129, 0.3)' }]}>
-            <Text style={styles.badgeText}>Prime</Text>
+            <Text style={styles.badgeText}>{readinessScore > 80 ? 'Prime' : 'Good'}</Text>
           </View>
         </View>
 
         <View style={styles.readinessContent}>
           <View style={styles.readinessStats}>
             <View style={styles.scoreRow}>
-              <Text style={[styles.scoreLarge, { color: theme.text }]}>87</Text>
+              <Text style={[styles.scoreLarge, { color: theme.text }]}>{readinessScore}</Text>
               <Text style={[styles.scoreUnit, { color: theme.textSecondary }]}>%</Text>
             </View>
 
@@ -39,19 +70,19 @@ export const DashboardScreen = () => {
               <View style={styles.miniStat}>
                 <Moon color="#3B82F6" size={16} />
                 <Text style={[styles.miniStatLabel, { color: theme.textSecondary }]}>Sleep</Text>
-                <Text style={[styles.miniStatValue, { color: theme.text }]}>92%</Text>
+                <Text style={[styles.miniStatValue, { color: theme.text }]}>{snapshot.sleepHours.toFixed(1)}h</Text>
               </View>
               <View style={styles.miniStat}>
                 <Flame color="#F43F5E" size={16} />
-                <Text style={[styles.miniStatLabel, { color: theme.textSecondary }]}>HRV</Text>
-                <Text style={[styles.miniStatValue, { color: theme.text }]}>81%</Text>
+                <Text style={[styles.miniStatLabel, { color: theme.textSecondary }]}>HR</Text>
+                <Text style={[styles.miniStatValue, { color: theme.text }]}>{Math.round(snapshot.avgHeartRate)} bpm</Text>
               </View>
             </View>
           </View>
 
           <View style={styles.readinessRing}>
             <CircularProgress
-              value={87}
+              value={readinessScore}
               radius={60}
               duration={2000}
               progressValueColor={theme.text}
@@ -68,8 +99,8 @@ export const DashboardScreen = () => {
 
         <View style={styles.insightBox}>
           <Text style={[styles.insightText, { color: theme.text }]}>
-            <Text style={{ fontWeight: 'bold' }}>Prime condition. </Text>
-            Workout load is balanced. Add a protein-rich meal and 900 ml water to close your Vita ring.
+            <Text style={{ fontWeight: 'bold' }}>{readinessScore > 80 ? 'Prime condition. ' : 'Ready to move. '}</Text>
+            You have logged {snapshot.steps} steps so far. Keep pushing towards your daily goal!
           </Text>
         </View>
       </GlassCard>
@@ -80,33 +111,33 @@ export const DashboardScreen = () => {
           icon={<Flame color="#B45309" size={24} />}
           iconBg="#FEF3C7"
           label="Active energy"
-          value="450 kcal"
-          trend="+12%"
+          value={`${Math.round(snapshot.caloriesBurned)} kcal`}
+          trend=""
           trendUp={true}
         />
         <MetricCard 
           icon={<Dumbbell color="#0E7490" size={24} />}
           iconBg="#CFFAFE"
           label="Training"
-          value="45 min"
-          trend="-5%"
+          value={`${Math.round(snapshot.activeMinutes)} min`}
+          trend=""
           trendUp={false}
         />
       </View>
       <View style={styles.bentoRow}>
         <MetricCard 
-          icon={<Beef color="#A16207" size={24} />}
-          iconBg="#FEF9C3"
-          label="Protein"
-          value="85g"
-          trend="+5%"
+          icon={<Droplets color="#2563EB" size={24} />}
+          iconBg="#DBEAFE"
+          label="Hydration"
+          value={`${snapshot.hydrationLiters.toFixed(1)} L`}
+          trend=""
           trendUp={true}
         />
         <MetricCard 
           icon={<Moon color="#1D4ED8" size={24} />}
           iconBg="#DBEAFE"
           label="Sleep"
-          value="7h 15m"
+          value={`${snapshot.sleepHours.toFixed(1)}h`}
           trend=""
           trendUp={true}
         />
@@ -123,21 +154,7 @@ export const DashboardScreen = () => {
           <View style={styles.tipBody}>
             <Text style={[styles.tipTitle, { color: theme.text }]}>Recovery Prioritization</Text>
             <Text style={[styles.tipDesc, { color: theme.textSecondary }]}>
-              You had a heavy session yesterday. Consider light stretching instead of HIIT today.
-            </Text>
-          </View>
-        </View>
-      </GlassCard>
-
-      <GlassCard style={styles.tipCard}>
-        <View style={styles.tipHeader}>
-          <View style={[styles.tipIconBox, { backgroundColor: '#DBEAFE' }]}>
-            <Droplets color="#2563EB" size={20} />
-          </View>
-          <View style={styles.tipBody}>
-            <Text style={[styles.tipTitle, { color: theme.text }]}>Hydration Check-in</Text>
-            <Text style={[styles.tipDesc, { color: theme.textSecondary }]}>
-              You are slightly behind pace. Drink 500ml before your next meal.
+              {snapshot.sleepHours < 6 ? "You had a short sleep last night. Consider light stretching instead of HIIT today." : "Great sleep duration! You're ready for a heavy session."}
             </Text>
           </View>
         </View>
