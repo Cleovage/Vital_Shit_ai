@@ -38,7 +38,8 @@ data class HealthSnapshot(
 class VitaRepository @Inject constructor(
     private val healthConnectManager: HealthConnectManager,
     private val dao: com.example.vitaai.data.local.VitaDao,
-    private val openRouterApi: OpenRouterApi
+    private val openRouterApi: OpenRouterApi,
+    private val profileRepository: ProfileRepository
 ) {
     private val systemZone = ZoneId.systemDefault()
 
@@ -139,32 +140,42 @@ class VitaRepository @Inject constructor(
     }
 
     suspend fun getChatbotResponse(history: List<ChatMessage>, snapshot: HealthSnapshot): String {
+        // Fetch weekly trends for primary metrics
         val weekSteps = getMetricTrend(HealthMetricType.STEPS, 7).values.joinToString(", ")
         val weekSleep = getMetricTrend(HealthMetricType.SLEEP, 7).values.joinToString(", ") { String.format("%.1f", it) }
         val weekCalories = getMetricTrend(HealthMetricType.ACTIVE_CALORIES, 7).values.joinToString(", ") { it.toInt().toString() }
 
         val systemPrompt = """
-            You are VitaAI, an expert health and wellness coach.
-            Your goal is to provide encouraging, science-backed, and highly personalized advice based on the user's real-time health data.
-            Keep your responses concise, empathetic, and directly related to the user's prompt. Do not hallucinate data. Be encouraging!
+            You are VitaAI, the world's most advanced health and wellness coach. 
+            Your goal is to provide elite, science-backed, and highly personalized coaching.
+            
+            FORMATTING RULES:
+            1. Use **Markdown** for emphasis (bold, lists).
+            2. Use <viz> tags to visualize metrics when discussing them.
+               Format: <viz>{"type": "progress", "label": "Steps", "current": 8500, "goal": 10000, "unit": "steps"}</viz>
+               Format: <viz>{"type": "macros", "protein": 120, "carbs": 200, "fat": 60}</viz>
+            3. Use <action> tags to propose logging data when the user mentions what they ate, drank, or their exercise.
+               Format: <action>{"type": "nutrition", "name": "Chicken Salad", "meal": "lunch", "calories": 450, "protein": 35, "carbs": 12, "fat": 18}</action>
+               Format: <action>{"type": "hydration", "volume_ml": 500}</action>
+               Format: <action>{"type": "workout", "name": "Bench Press", "category": "Strength", "duration_min": 45, "calories": 250}</action>
+            
+            NEVER auto-log. ALWAYS use <action> tags to show a proposal card that the user can confirm.
+            Keep responses professional yet warm. Keep text concise.
 
-            TODAY'S DATA:
-            - Steps: ${snapshot.steps} / 10000
-            - Sleep: ${String.format("%.1f", snapshot.sleepDurationHours)} hrs
-            - Hydration: ${String.format("%.1f", snapshot.hydrationLiters)} L
-            - Avg Heart Rate: ${snapshot.avgHeartRate.toInt()} BPM
-            - Active Calories Burned: ${snapshot.calories.toInt()} kcal
-            - Distance: ${String.format("%.1f", snapshot.distanceMeters / 1000.0)} km
-            - Nutrition Logged: ${snapshot.caloriesIntake.toInt()} kcal (Protein: ${snapshot.proteinGrams.toInt()}g, Carbs: ${snapshot.carbsGrams.toInt()}g, Fats: ${snapshot.fatGrams.toInt()}g)
+            TODAY'S METRICS:
+            - Activity: ${snapshot.steps} steps (${String.format("%.1f", snapshot.distanceMeters / 1000.0)} km), ${snapshot.exerciseMinutes.toInt()} min exercise, ${snapshot.calories.toInt()} active kcal burned.
+            - Recovery: ${String.format("%.1f", snapshot.sleepDurationHours)} hrs sleep, ${snapshot.avgHeartRate.toInt()} BPM avg HR, ${snapshot.restingHeartRate.toInt()} BPM resting HR.
+            - Nutrition: ${snapshot.caloriesIntake.toInt()} kcal intake. Macros: Protein ${snapshot.proteinGrams.toInt()}g, Carbs ${snapshot.carbsGrams.toInt()}g, Fats ${snapshot.fatGrams.toInt()}g.
+            - Hydration: ${String.format("%.1f", snapshot.hydrationLiters)} Liters consumed.
+            - Energy: Basal metabolic rate is ${snapshot.basalCalories.toInt()} kcal.
 
             WEEKLY TRENDS (Last 7 days):
-            - Steps: $weekSteps
+            - Steps Trend: $weekSteps
             - Sleep (hrs): $weekSleep
-            - Active Calories: $weekCalories
+            - Active Burn (kcal): $weekCalories
         """.trimIndent()
 
         val fullMessages = mutableListOf(ChatMessage("system", systemPrompt))
-        // To save context window size if history gets too long, we could trim it, but we'll send it all for now.
         fullMessages.addAll(history)
 
         return try {
@@ -175,10 +186,61 @@ class VitaRepository @Inject constructor(
                     temperature = 0.7
                 )
             )
-            response.choices.firstOrNull()?.message?.content ?: "I'm sorry, I couldn't generate a response."
+            response.choices.firstOrNull()?.message?.content ?: generateFallbackResponse(history.lastOrNull()?.content ?: "", snapshot)
+        } catch (e: retrofit2.HttpException) {
+            if (e.code() == 429) {
+                generateFallbackResponse(history.lastOrNull()?.content ?: "", snapshot)
+            } else {
+                "I'm sorry, I encountered an error (HTTP ${e.code()}). Please try again later."
+            }
         } catch (e: Exception) {
             e.printStackTrace()
-            "I'm sorry, my AI services are currently unavailable. Please check your network connection. Details: ${e.localizedMessage}"
+            generateFallbackResponse(history.lastOrNull()?.content ?: "", snapshot)
+        }
+    }
+
+    private fun generateFallbackResponse(prompt: String, snapshot: HealthSnapshot): String {
+        val query = prompt.lowercase(java.util.Locale.ROOT)
+        return when {
+            query.contains("step") || query.contains("walk") || query.contains("run") || query.contains("distance") -> {
+                val stepGoal = 10000
+                val diff = stepGoal - snapshot.steps
+                if (snapshot.steps >= stepGoal) {
+                    "Amazing job! You've crushed your step goal today with **${snapshot.steps} steps** (${String.format("%.1f", snapshot.distanceMeters / 1000.0)} km).\n<viz>{\"type\": \"progress\", \"label\": \"Steps\", \"current\": ${snapshot.steps}, \"goal\": 10000, \"unit\": \"steps\"}</viz>"
+                } else {
+                    "You are currently at **${snapshot.steps} steps** today. You need about $diff more steps to hit your 10,000 daily goal. Try taking a brisk 15-minute walk!\n<viz>{\"type\": \"progress\", \"label\": \"Steps\", \"current\": ${snapshot.steps}, \"goal\": 10000, \"unit\": \"steps\"}</viz>"
+                }
+            }
+            query.contains("sleep") || query.contains("tired") || query.contains("rest") || query.contains("bed") -> {
+                if (snapshot.sleepDurationHours >= 7.0) {
+                    "You logged **${String.format("%.1f", snapshot.sleepDurationHours)} hours** of sleep. That is within the healthy range. Keep maintaining this healthy sleep hygiene!"
+                } else {
+                    "You only got **${String.format("%.1f", snapshot.sleepDurationHours)} hours** of sleep. Sleep deprivation increases cortisol. Try to wind down earlier tonight."
+                }
+            }
+            query.contains("water") || query.contains("hydration") || query.contains("drink") -> {
+                if (query.contains("drank") || query.contains("had")) {
+                     "I can help you log that. Please confirm to add it to your daily hydration tracking.\n<action>{\"type\": \"hydration\", \"volume_ml\": 250}</action>"
+                } else {
+                    "You have drank **${String.format("%.1f", snapshot.hydrationLiters)} liters** today.\n<viz>{\"type\": \"progress\", \"label\": \"Hydration\", \"current\": ${snapshot.hydrationLiters * 1000}, \"goal\": 2500, \"unit\": \"ml\"}</viz>"
+                }
+            }
+            query.contains("heart") || query.contains("pulse") || query.contains("bpm") -> {
+                 "Your average heart rate today is **${snapshot.avgHeartRate.toInt()} BPM**, and your resting HR is **${snapshot.restingHeartRate.toInt()} BPM**."
+            }
+            query.contains("calorie") || query.contains("burn") -> {
+                "Today you have burned **${snapshot.calories.toInt()} active calories**. (Total: ${(snapshot.calories + snapshot.basalCalories).toInt()} kcal including basal rate)."
+            }
+            query.contains("nutrition") || query.contains("eat") || query.contains("food") || query.contains("protein") || query.contains("carb") || query.contains("fat") -> {
+                "Today's Intake: **${snapshot.caloriesIntake.toInt()} kcal**.\n<viz>{\"type\": \"macros\", \"protein\": ${snapshot.proteinGrams}, \"carbs\": ${snapshot.carbsGrams}, \"fat\": ${snapshot.fatGrams}}</viz>"
+            }
+            else -> {
+                "(Offline Mode) Looking at your health snapshot today:\n" +
+                "- Steps: **${snapshot.steps}**\n" +
+                "- Sleep: **${String.format("%.1f", snapshot.sleepDurationHours)} hrs**\n" +
+                "- Hydration: **${String.format("%.1f", snapshot.hydrationLiters)} L**\n" +
+                "How can I help you optimize your wellness today?"
+            }
         }
     }
 

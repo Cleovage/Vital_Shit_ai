@@ -116,7 +116,6 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
             is DashboardUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = Primary)
             }
-            is DashboardUiState.PermissionsRequired -> PermissionsScreen(viewModel)
             is DashboardUiState.Success -> DashboardContent(
                 snapshot = state.snapshot,
                 insight = state.insight,
@@ -125,6 +124,7 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
                 goalProgress = state.goalProgress,
                 streakDays = state.streakDays,
                 goals = state.goals,
+                hasPermissions = state.hasPermissions,
                 viewModel = viewModel,
                 navController = navController
             )
@@ -186,6 +186,7 @@ private fun DashboardContent(
     goalProgress: GoalProgress,
     streakDays: Int,
     goals: DailyGoals,
+    hasPermissions: Boolean,
     viewModel: DashboardViewModel,
     navController: NavController
 ) {
@@ -217,6 +218,48 @@ private fun DashboardContent(
             // --- 1. HEADER ---
             item {
                 PageHeader(title = "VitaAI", kicker = "Health companion")
+            }
+
+            if (!hasPermissions) {
+                item {
+                    val context = LocalContext.current
+                    val healthConnectLauncher = rememberLauncherForActivityResult(
+                        contract = PermissionController.createRequestPermissionResultContract()
+                    ) { grantedPermissions -> viewModel.onPermissionsResult(grantedPermissions) }
+                    
+                    GlassCard(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Favorite, contentDescription = null, tint = Primary)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Connect Health Data", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                "Grant Health Connect access to sync your Samsung Health or Google Fit data securely. This enables the AI coach to read your steps, sleep, and heart rate.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(
+                                onClick = {
+                                    val sdkStatus = HealthConnectClient.getSdkStatus(context)
+                                    if (sdkStatus == HealthConnectClient.SDK_AVAILABLE) {
+                                        healthConnectLauncher.launch(viewModel.getRequestedPermissions())
+                                    } else {
+                                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                            data = android.net.Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata")
+                                        }
+                                        context.startActivity(intent)
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Enable Sync")
+                            }
+                        }
+                    }
+                }
             }
 
             // --- 2. READINESS SCORE CARD ---

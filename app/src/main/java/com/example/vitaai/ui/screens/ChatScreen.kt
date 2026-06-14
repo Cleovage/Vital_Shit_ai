@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.ui.text.input.ImeAction
@@ -72,6 +73,8 @@ fun ChatScreen(
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
+    val isKeyboardVisible = WindowInsets.ime.getBottom(density) > 0
 
     // Show scroll-to-bottom FAB when scrolled up
     val showScrollFab by remember {
@@ -103,11 +106,11 @@ fun ChatScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .statusBarsPadding()
+                    .imePadding()
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .imePadding()
                 ) {
                     // ─── Material 3 Expressive Header ───
                     Row(
@@ -294,11 +297,14 @@ fun ChatScreen(
 
                     // ─── Expressive Floating Input Area ───
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .navigationBarsPadding(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         ChatInputBar(
                             text = inputText,
+                            compact = isKeyboardVisible,
                             onTextChange = { inputText = it },
                             onSend = {
                                 if (inputText.isNotBlank()) {
@@ -308,12 +314,14 @@ fun ChatScreen(
                             }
                         )
 
-                        Text(
-                            text = "VitaAI Coach can make mistakes. Verify important health stats.",
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                            modifier = Modifier.padding(bottom = 12.dp)
-                        )
+                        AnimatedVisibility(visible = !isKeyboardVisible) {
+                            Text(
+                                text = "VitaAI Coach can make mistakes. Verify important health stats.",
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                        }
                     }
                 }
 
@@ -854,6 +862,7 @@ private fun ThinkingIndicatorItem() {
 @Composable
 private fun ChatInputBar(
     text: String,
+    compact: Boolean,
     onTextChange: (String) -> Unit,
     onSend: () -> Unit
 ) {
@@ -862,7 +871,7 @@ private fun ChatInputBar(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .padding(horizontal = 16.dp, vertical = if (compact) 6.dp else 12.dp)
             .animateContentSize(
                 animationSpec = tween(durationMillis = 300, easing = EaseInOutQuart)
             )
@@ -913,7 +922,7 @@ private fun ChatInputBar(
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 singleLine = false,
-                maxLines = 5,
+                maxLines = if (compact) 3 else 5,
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 decorationBox = { innerTextField ->
                     Box(contentAlignment = Alignment.CenterStart) {

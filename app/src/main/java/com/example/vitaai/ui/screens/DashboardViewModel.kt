@@ -49,15 +49,10 @@ class DashboardViewModel @Inject constructor(
     fun loadData() {
         snapshotJob?.cancel()
         viewModelScope.launch {
-            try {
-                if (!healthConnectManager.hasAllPermissions()) {
-                    _uiState.value = DashboardUiState.PermissionsRequired
-                    return@launch
-                }
+            val permissionsGranted = try {
+                healthConnectManager.hasAllPermissions()
             } catch (t: Throwable) {
-                android.util.Log.e("DashboardViewModel", "Failed to check Health Connect permissions", t)
-                _uiState.value = DashboardUiState.Error(t.localizedMessage ?: "Health Connect is unavailable")
-                return@launch
+                false
             }
 
             snapshotJob = launch {
@@ -87,7 +82,8 @@ class DashboardViewModel @Inject constructor(
                             recentWorkouts = workouts,
                             goalProgress = goalProgress,
                             streakDays = streakDays,
-                            goals = goals
+                            goals = goals,
+                            hasPermissions = permissionsGranted
                         )
                     }
                     .catch { e ->
@@ -105,11 +101,7 @@ class DashboardViewModel @Inject constructor(
     fun getRequestedPermissions() = healthConnectManager.permissions
 
     fun onPermissionsResult(grantedPermissions: Set<String>) {
-        if (grantedPermissions.containsAll(getRequiredPermissions())) {
-            loadData()
-        } else {
-            _uiState.value = DashboardUiState.PermissionsRequired
-        }
+        loadData() // Reload regardless to update the card state
     }
 
     fun logWater(oz: Int) {
@@ -126,7 +118,6 @@ class DashboardViewModel @Inject constructor(
 
 sealed class DashboardUiState {
     object Loading : DashboardUiState()
-    object PermissionsRequired : DashboardUiState()
     data class Success(
         val snapshot: HealthSnapshot, 
         val insight: String,
@@ -134,7 +125,8 @@ sealed class DashboardUiState {
         val recentWorkouts: List<com.example.vitaai.data.local.WorkoutSessionEntity>,
         val goalProgress: GoalProgress,
         val streakDays: Int,
-        val goals: DailyGoals
+        val goals: DailyGoals,
+        val hasPermissions: Boolean
     ) : DashboardUiState()
     data class Error(val message: String) : DashboardUiState()
 }
